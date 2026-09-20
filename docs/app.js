@@ -265,6 +265,7 @@ const POPULAR_DESTINATIONS = [
 // Master Simulation State - CONTROLLED BY USER (Vehicle DOES NOT move automatically!)
 const state = {
   activeScenarioKey: "mumbai",
+  activeTab: "cockpit",
   isPlaying: false, // Default to PAUSED so car does not move by itself
   isDarkTheme: true,
   progress: 0.0, // Start at 0%
@@ -462,37 +463,37 @@ function initLeafletMap() {
     zoom: initialScenario.zoom,
     zoomControl: true,
     preferCanvas: true,
+    fadeAnimation: false, // Disables slow CSS opacity transitions on tiles for instant rendering
+    zoomAnimation: true,
+    markerZoomAnimation: true,
     attributionControl: false
   });
 
-  // 1. Google Maps Daylight Street View (Standard Roadmap)
-  googleTileLayers["google_roadmap"] = L.tileLayer("https://mt{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}", {
+  const commonTileOptions = {
     subdomains: "0123",
-    maxZoom: 20
-  });
+    maxZoom: 20,
+    minZoom: 3,
+    tileSize: 256,
+    updateWhenIdle: true,
+    updateWhenZooming: false,
+    keepBuffer: 8
+  };
+
+  // 1. Google Maps Daylight Street View (Standard Roadmap)
+  googleTileLayers["google_roadmap"] = L.tileLayer("https://mt{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}", commonTileOptions);
 
   // 2. Google Earth High-Resolution Satellite
-  googleTileLayers["google_satellite"] = L.tileLayer("https://mt{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}", {
-    subdomains: "0123",
-    maxZoom: 20
-  });
+  googleTileLayers["google_satellite"] = L.tileLayer("https://mt{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}", commonTileOptions);
 
   // 3. Google Maps Hybrid (Satellite Imagery + Street Labels)
-  googleTileLayers["google_hybrid"] = L.tileLayer("https://mt{s}.google.com/vt/lyrs=y&x={x}&y={y}&z={z}", {
-    subdomains: "0123",
-    maxZoom: 20
-  });
+  googleTileLayers["google_hybrid"] = L.tileLayer("https://mt{s}.google.com/vt/lyrs=y&x={x}&y={y}&z={z}", commonTileOptions);
 
   // 4. Google Maps Topographical Terrain & Elevation
-  googleTileLayers["google_terrain"] = L.tileLayer("https://mt{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}", {
-    subdomains: "0123",
-    maxZoom: 20
-  });
+  googleTileLayers["google_terrain"] = L.tileLayer("https://mt{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}", commonTileOptions);
 
   // 5. Google Maps Dark Night Mode (Automotive HUD)
   googleTileLayers["google_dark"] = L.tileLayer("https://mt{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}", {
-    subdomains: "0123",
-    maxZoom: 20,
+    ...commonTileOptions,
     className: "google-dark-tiles"
   });
 
@@ -652,13 +653,23 @@ const GOOGLE_MODE_METAS = {
 let autoTourInterval = null;
 
 function switchGoogleMapMode(modeKey) {
-  if (!map || !googleTileLayers[modeKey]) return;
+  if (!map || !googleTileLayers[modeKey] || modeKey === currentGoogleLayerKey) return;
 
-  if (googleTileLayers[currentGoogleLayerKey]) {
-    map.removeLayer(googleTileLayers[currentGoogleLayerKey]);
-  }
-  googleTileLayers[modeKey].addTo(map);
+  const prevKey = currentGoogleLayerKey;
+  const newLayer = googleTileLayers[modeKey];
+
+  // Add new layer to map immediately
+  newLayer.addTo(map);
   currentGoogleLayerKey = modeKey;
+
+  // Cleanly remove old layer after 90ms to avoid blank flashes
+  setTimeout(() => {
+    if (prevKey && prevKey !== modeKey && googleTileLayers[prevKey]) {
+      if (map.hasLayer(googleTileLayers[prevKey])) {
+        map.removeLayer(googleTileLayers[prevKey]);
+      }
+    }
+  }, 90);
 
   el.gmodeBtns.forEach(btn => {
     btn.classList.toggle("active", btn.getAttribute("data-layer") === modeKey);
@@ -673,7 +684,7 @@ function switchGoogleMapMode(modeKey) {
     el.currentMapModeDesc.textContent = meta.desc;
   }
 
-  showToast(`🗺️ Google Maps Mode: ${meta.label} (${meta.desc})`);
+  showToast(`🗺️ Google Maps: ${meta.label} (${meta.desc})`);
 }
 
 function toggleAutoTourModes() {
@@ -1315,24 +1326,23 @@ function simulationTick(dt = 0.016) {
   state.currentLng = pos.lng;
   state.headingDeg = pos.headingDeg;
 
-  if (state.isPlaying && state.speed > 1.0) {
-    state.drivenHistory.push([pos.lat, pos.lng]);
-    if (state.drivenHistory.length > 300) {
-      state.drivenHistory.shift();
-    }
-  }
-
-  if (el.scrubberPercentLabel) {
-    const pct = (state.progress * 100).toFixed(1);
-    el.scrubberPercentLabel.textContent = `${pct}% (${inTunnel ? "Inside Tunnel Blackout" : "Open Sky GNSS"})`;
-  }
-
   generateSimulatedImu(pos);
   updateMapVisuals();
-  updateCockpitUi();
-  updateTurnHud();
-  updatePatternLabUi();
-  updateFeatureBadges();
+
+  const now = performance.now();
+  if (now - lastUiUpdate > 45) {
+    lastUiUpdate = now;
+    if (el.scrubberPercentLabel) {
+      const pct = (state.progress * 100).toFixed(1);
+      el.scrubberPercentLabel.textContent = `${pct}% (${inTunnel ? "Inside Tunnel Blackout" : "Open Sky GNSS"})`;
+    }
+    updateCockpitUi();
+    updateTurnHud();
+    if (state.activeTab === "sensor-lab") {
+      updatePatternLabUi();
+      updateFeatureBadges();
+    }
+  }
 }
 
 // Interactive Turn-by-Turn Dynamic Navigation HUD
@@ -1409,15 +1419,22 @@ function updateTurnHud() {
   }
 }
 
+let lastPolylineUpdate = 0;
+let lastDrivenLat = 0;
+let lastDrivenLng = 0;
+let cachedVehicleIconInner = null;
+
 function updateMapVisuals() {
   if (!map || !vehicleMarker) return;
 
   const currentLatLng = [state.currentLat, state.currentLng];
   vehicleMarker.setLatLng(currentLatLng);
 
-  const iconEl = document.getElementById("vehicleIconInner");
-  if (iconEl) {
-    iconEl.style.transform = `rotate(${state.headingDeg}deg)`;
+  if (!cachedVehicleIconInner) {
+    cachedVehicleIconInner = document.getElementById("vehicleIconInner");
+  }
+  if (cachedVehicleIconInner) {
+    cachedVehicleIconInner.style.transform = `rotate(${state.headingDeg}deg)`;
   }
 
   if (confidenceCircle) {
@@ -1425,8 +1442,21 @@ function updateMapVisuals() {
     confidenceCircle.setRadius(Math.max(1.0, state.uncertaintyRadius * 3.5));
   }
 
-  if (drivenPolyline && state.drivenHistory.length > 1) {
-    drivenPolyline.setLatLngs(state.drivenHistory);
+  // Smooth throttled polyline: only append point when vehicle moves noticeably (>= 8 meters)
+  const now = performance.now();
+  if (drivenPolyline && state.isPlaying && state.speed > 1.0) {
+    const dLat = Math.abs(state.currentLat - lastDrivenLat);
+    const dLng = Math.abs(state.currentLng - lastDrivenLng);
+    if ((dLat > 0.00008 || dLng > 0.00008) && (now - lastPolylineUpdate > 100)) {
+      lastPolylineUpdate = now;
+      lastDrivenLat = state.currentLat;
+      lastDrivenLng = state.currentLng;
+      state.drivenHistory.push(currentLatLng);
+      if (state.drivenHistory.length > 250) {
+        state.drivenHistory.shift();
+      }
+      drivenPolyline.setLatLngs(state.drivenHistory);
+    }
   }
 }
 
@@ -2135,6 +2165,7 @@ function setupTabNavigation() {
       el.tabPanes.forEach(p => p.classList.remove("active"));
 
       btn.classList.add("active");
+      state.activeTab = tabTarget;
       const targetPane = document.getElementById(`view-${tabTarget}`);
       if (targetPane) {
         targetPane.classList.add("active");
@@ -2297,14 +2328,23 @@ function buildRouteMilestonePins() {
 // =============================================================================
 
 let lastLoopTimestamp = 0;
+let lastUiUpdate = 0;
+let lastCanvasRender = 0;
 
 function mainLoop(timestamp = 0) {
   if (!lastLoopTimestamp) lastLoopTimestamp = timestamp;
   const dt = Math.min(0.05, Math.max(0.001, (timestamp - lastLoopTimestamp) / 1000));
   lastLoopTimestamp = timestamp;
 
+  // 1. Simulation physics & vehicle progression
   simulationTick(dt);
-  renderOscilloscopes();
+
+  // 2. Waveform canvas render: ONLY when sensor-lab tab is active, throttled to 25 FPS (40ms)
+  if (state.activeTab === "sensor-lab" && timestamp - lastCanvasRender > 40) {
+    lastCanvasRender = timestamp;
+    renderOscilloscopes();
+  }
+
   requestAnimationFrame(mainLoop);
 }
 

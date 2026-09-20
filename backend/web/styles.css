@@ -776,9 +776,13 @@ body.theme-light .nav-tab-btn.active {
   z-index: 1;
 }
 
-/* Custom dark tile filter for Google Dark mode */
+/* Custom GPU-accelerated dark tile filter for Google Dark mode */
 .google-dark-tiles {
-  filter: invert(100%) hue-rotate(180deg) brightness(90%) contrast(90%) saturate(140%);
+  filter: invert(100%) hue-rotate(180deg) brightness(92%);
+  -webkit-filter: invert(100%) hue-rotate(180deg) brightness(92%);
+  transform: translate3d(0, 0, 0);
+  -webkit-transform: translate3d(0, 0, 0);
+  will-change: transform;
 }
 
 /* Google Maps Mode Switcher Toolbar - Dedicated Cockpit Header */
