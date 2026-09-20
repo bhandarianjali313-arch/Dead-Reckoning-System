@@ -349,41 +349,88 @@ body.theme-light .nav-tab-btn.active {
   filter: invert(100%) hue-rotate(180deg) brightness(90%) contrast(90%) saturate(140%);
 }
 
-.map-layer-selector {
+/* Google Maps Mode Switcher Toolbar */
+.google-maps-toolbar {
   position: absolute;
   top: 10px;
+  left: 10px;
   right: 10px;
   z-index: 1000;
   display: flex;
-  gap: 4px;
-  background: rgba(13, 19, 34, 0.88);
-  backdrop-filter: blur(8px);
-  padding: 4px;
-  border-radius: 8px;
-  border: 1px solid var(--border);
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(10, 14, 23, 0.92);
+  backdrop-filter: blur(12px);
+  padding: 6px 12px;
+  border-radius: 10px;
+  border: 1.5px solid var(--border);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
-.map-layer-btn {
-  background: transparent;
-  border: none;
+.gmaps-brand-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.gmaps-logo {
+  font-size: 12.5px;
+  font-weight: 900;
+  color: #fff;
+  letter-spacing: -0.2px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.gmaps-mode-tag {
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--accent-cyan);
+  background: rgba(0, 242, 254, 0.15);
+  border: 1px solid rgba(0, 242, 254, 0.3);
+  padding: 2px 8px;
+  border-radius: 12px;
+  text-transform: uppercase;
+}
+
+.gmaps-mode-buttons {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.gmode-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border);
   color: var(--text-muted);
   font-size: 11px;
-  font-weight: 700;
-  padding: 4px 8px;
-  border-radius: 6px;
+  font-weight: 800;
+  padding: 5px 11px;
+  border-radius: 7px;
   cursor: pointer;
   transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
-.map-layer-btn:hover {
-  color: var(--text-main);
-  background: rgba(255, 255, 255, 0.06);
+.gmode-btn:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
-.map-layer-btn.active {
-  background: var(--accent-cyan);
+.gmode-btn.active {
+  background: #00f2fe;
   color: #0b111e;
+  border-color: #00f2fe;
+  box-shadow: 0 0 14px rgba(0, 242, 254, 0.5);
 }
+
 
 .camera-hud-overlay {
   position: absolute;
@@ -777,56 +824,150 @@ body.theme-light .nav-tab-btn.active {
   background: rgba(168, 85, 247, 0.18);
 }
 
+/* Route Progress Scrubber Bar */
+.route-scrubber-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: var(--bg-surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 12px 18px;
+  margin-top: 14px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+}
+
+.scrubber-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--text-muted);
+}
+
+.scrubber-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-main);
+}
+
+.route-slider {
+  width: 100%;
+  height: 8px;
+  border-radius: 4px;
+  background: #1e293b;
+  outline: none;
+  cursor: pointer;
+  accent-color: var(--accent-cyan);
+  transition: all 0.2s ease;
+}
+
+.route-slider:hover {
+  filter: brightness(1.2);
+}
+
+.scrubber-milestones {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: var(--text-muted);
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+
 /* Cockpit Control Bar */
 .cockpit-controls {
-
   display: flex;
   align-items: center;
   justify-content: space-between;
   background: var(--bg-surface);
-  border: 1px solid var(--border);
+  border: 1.5px solid var(--border);
   border-radius: var(--radius-lg);
-  padding: 10px 16px;
+  padding: 12px 18px;
   gap: 12px;
   flex-wrap: wrap;
-  margin-top: 16px;
+  margin-top: 12px;
 }
 
 .btn-drive-main {
-  background: linear-gradient(135deg, #00f2fe, #0284c7);
-  color: #000;
+  background: linear-gradient(135deg, #00e676, #0284c7);
+  color: #050811;
   border: none;
-  font-weight: 800;
-  font-size: 13px;
-  padding: 9px 22px;
-  border-radius: 8px;
+  font-weight: 900;
+  font-size: 13.5px;
+  padding: 10px 22px;
+  border-radius: 10px;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 7px;
+  box-shadow: 0 0 16px rgba(0, 230, 118, 0.4);
 }
 
 .btn-drive-main:hover {
   filter: brightness(1.15);
-  box-shadow: var(--shadow-glow-cyan);
+  box-shadow: 0 0 24px rgba(0, 230, 118, 0.65);
+  transform: translateY(-1px);
+}
+
+.btn-drive-gas {
+  background: rgba(0, 230, 118, 0.15);
+  border: 1.5px solid rgba(0, 230, 118, 0.4);
+  color: var(--accent-green);
+  font-weight: 800;
+  font-size: 13px;
+  padding: 10px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-drive-gas:hover {
+  background: rgba(0, 230, 118, 0.25);
+  border-color: var(--accent-green);
+  box-shadow: 0 0 14px rgba(0, 230, 118, 0.4);
+  transform: translateY(-1px);
+}
+
+.btn-drive-brake {
+  background: rgba(255, 56, 92, 0.15);
+  border: 1.5px solid rgba(255, 56, 92, 0.4);
+  color: #ff5277;
+  font-weight: 800;
+  font-size: 13px;
+  padding: 10px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-drive-brake:hover {
+  background: rgba(255, 56, 92, 0.25);
+  border-color: #ff385c;
+  box-shadow: 0 0 14px rgba(255, 56, 92, 0.4);
+  transform: translateY(-1px);
 }
 
 .btn-drive-reset {
   background: var(--bg-card);
-  border: 1px solid var(--border);
+  border: 1.5px solid var(--border);
   color: var(--text-main);
-  font-weight: 700;
+  font-weight: 800;
   font-size: 13px;
-  padding: 9px 16px;
-  border-radius: 8px;
+  padding: 10px 18px;
+  border-radius: 10px;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
 }
 
 .btn-drive-reset:hover {
   border-color: var(--accent-cyan);
+  background: rgba(255, 255, 255, 0.08);
 }
+
 
 .scenario-select {
   background: var(--bg-card);
