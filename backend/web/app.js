@@ -366,6 +366,9 @@ const el = {
   corridorChips: document.querySelectorAll(".corridor-chip"),
   gmodeBtns: document.querySelectorAll(".gmode-btn"),
   currentMapModeLabel: document.getElementById("currentMapModeLabel"),
+  currentMapModeDesc: document.getElementById("currentMapModeDesc"),
+  btnAutoTourModes: document.getElementById("btnAutoTourModes"),
+  tourBtnIcon: document.getElementById("tourBtnIcon"),
 
   cameraHudOverlay: document.getElementById("cameraHudOverlay"),
   cameraCanvas: document.getElementById("cameraCanvas"),
@@ -618,6 +621,36 @@ function buildIndiaCityPins() {
 }
 
 // Switch Google Maps Display Mode
+const GOOGLE_MODE_METAS = {
+  google_roadmap: {
+    label: "Street View",
+    desc: "Daylight Road Network",
+    detail: "High-clarity vector roads, lane markings, and highway shields"
+  },
+  google_satellite: {
+    label: "Satellite",
+    desc: "Google Earth Imagery",
+    detail: "High-resolution optical aerial photography without labels"
+  },
+  google_hybrid: {
+    label: "Hybrid",
+    desc: "Satellite + Roads",
+    detail: "Satellite photography combined with street names & route overlays"
+  },
+  google_terrain: {
+    label: "Terrain",
+    desc: "Topography & Elevation",
+    detail: "Topographical shaded relief contours & mountain elevation gradients"
+  },
+  google_dark: {
+    label: "Dark HUD",
+    desc: "Automotive Night Mode",
+    detail: "High-contrast dark palette engineered for night driving & tunnel blackouts"
+  }
+};
+
+let autoTourInterval = null;
+
 function switchGoogleMapMode(modeKey) {
   if (!map || !googleTileLayers[modeKey]) return;
 
@@ -631,19 +664,39 @@ function switchGoogleMapMode(modeKey) {
     btn.classList.toggle("active", btn.getAttribute("data-layer") === modeKey);
   });
 
-  const modeLabels = {
-    google_roadmap: "Street View",
-    google_satellite: "Satellite",
-    google_hybrid: "Hybrid (Satellite + Roads)",
-    google_terrain: "Terrain",
-    google_dark: "Dark Night Mode"
-  };
+  const meta = GOOGLE_MODE_METAS[modeKey] || { label: modeKey, desc: "Map Mode", detail: "" };
 
   if (el.currentMapModeLabel) {
-    el.currentMapModeLabel.textContent = modeLabels[modeKey] || modeKey;
+    el.currentMapModeLabel.textContent = meta.label;
+  }
+  if (el.currentMapModeDesc) {
+    el.currentMapModeDesc.textContent = meta.desc;
   }
 
-  showToast(`Google Maps Mode: ${modeLabels[modeKey] || modeKey}`);
+  showToast(`🗺️ Google Maps Mode: ${meta.label} (${meta.desc})`);
+}
+
+function toggleAutoTourModes() {
+  if (autoTourInterval) {
+    clearInterval(autoTourInterval);
+    autoTourInterval = null;
+    if (el.btnAutoTourModes) el.btnAutoTourModes.classList.remove("touring");
+    if (el.tourBtnIcon) el.tourBtnIcon.textContent = "▶️";
+    showToast("⏹️ Google Maps Mode Auto-Tour Stopped");
+    return;
+  }
+
+  const modeKeys = ["google_roadmap", "google_satellite", "google_hybrid", "google_terrain", "google_dark"];
+  let currentIndex = modeKeys.indexOf(currentGoogleLayerKey);
+
+  if (el.btnAutoTourModes) el.btnAutoTourModes.classList.add("touring");
+  if (el.tourBtnIcon) el.tourBtnIcon.textContent = "⏸️";
+  showToast("▶️ Google Maps Auto-Tour Started! Cycling through all 5 modes...");
+
+  autoTourInterval = setInterval(() => {
+    currentIndex = (currentIndex + 1) % modeKeys.length;
+    switchGoogleMapMode(modeKeys[currentIndex]);
+  }, 3200);
 }
 
 // =============================================================================
@@ -1746,6 +1799,25 @@ function setupEventHandlers() {
       const modeKey = btn.getAttribute("data-layer");
       switchGoogleMapMode(modeKey);
     });
+  });
+
+  // Google Maps Mode Auto-Tour Button
+  if (el.btnAutoTourModes) {
+    el.btnAutoTourModes.addEventListener("click", () => {
+      toggleAutoTourModes();
+    });
+  }
+
+  // Keyboard Shortcuts: Press 1-5 to switch Google Maps modes directly
+  window.addEventListener("keydown", (e) => {
+    const activeEl = document.activeElement;
+    if (activeEl && (activeEl.tagName === "INPUT" || activeEl.tagName === "TEXTAREA")) return;
+
+    if (e.key === "1") switchGoogleMapMode("google_roadmap");
+    else if (e.key === "2") switchGoogleMapMode("google_satellite");
+    else if (e.key === "3") switchGoogleMapMode("google_hybrid");
+    else if (e.key === "4") switchGoogleMapMode("google_terrain");
+    else if (e.key === "5") switchGoogleMapMode("google_dark");
   });
 
   // User-Controlled Play / Pause Driving Button

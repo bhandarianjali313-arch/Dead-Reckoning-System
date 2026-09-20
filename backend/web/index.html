@@ -110,23 +110,27 @@
             <div class="google-maps-toolbar">
               <div class="gmaps-brand-label">
                 <span class="gmaps-logo">🗺️ Google Maps</span>
-                <span class="gmaps-mode-tag" id="currentMapModeLabel">Night Mode</span>
+                <span class="gmaps-mode-tag" id="currentMapModeLabel">Dark HUD</span>
+                <span class="gmaps-mode-desc-tag" id="currentMapModeDesc">Automotive Night Mode</span>
               </div>
               <div class="gmaps-mode-buttons">
-                <button class="gmode-btn" data-layer="google_roadmap" title="Google Maps Daylight Street View">
-                  🚗 Street
+                <button class="gmode-btn" data-layer="google_roadmap" title="Google Maps Daylight Street View (Press 1)">
+                  <span class="gmode-key-hint">1</span> 🚗 Street
                 </button>
-                <button class="gmode-btn" data-layer="google_satellite" title="Google Earth High-Resolution Satellite">
-                  🛰️ Satellite
+                <button class="gmode-btn" data-layer="google_satellite" title="Google Earth High-Resolution Satellite (Press 2)">
+                  <span class="gmode-key-hint">2</span> 🛰️ Satellite
                 </button>
-                <button class="gmode-btn" data-layer="google_hybrid" title="Google Maps Hybrid: Satellite with Roads &amp; Labels">
-                  🌐 Hybrid
+                <button class="gmode-btn" data-layer="google_hybrid" title="Google Maps Hybrid: Satellite with Roads &amp; Labels (Press 3)">
+                  <span class="gmode-key-hint">3</span> 🌐 Hybrid
                 </button>
-                <button class="gmode-btn" data-layer="google_terrain" title="Google Maps Topographical Terrain &amp; Elevation">
-                  🏔️ Terrain
+                <button class="gmode-btn" data-layer="google_terrain" title="Google Maps Topographical Terrain &amp; Elevation (Press 4)">
+                  <span class="gmode-key-hint">4</span> 🏔️ Terrain
                 </button>
-                <button class="gmode-btn active" data-layer="google_dark" title="Google Maps Dark Automotive Night View">
-                  🌙 Dark Night
+                <button class="gmode-btn active" data-layer="google_dark" title="Google Maps Dark Automotive Night View (Press 5)">
+                  <span class="gmode-key-hint">5</span> 🌙 Dark HUD
+                </button>
+                <button id="btnAutoTourModes" class="gmode-btn btn-auto-tour" title="Auto-Tour: Automatically cycle and show all 5 Google Maps modes">
+                  <span id="tourBtnIcon">▶️</span> Tour Modes
                 </button>
               </div>
             </div>
