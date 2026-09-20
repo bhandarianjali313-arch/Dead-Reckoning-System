@@ -1,15 +1,6 @@
-# 🚗 AI/ML-Based Intelligent Dead Reckoning System for Seamless Navigation
+# 🚗 AI/ML-Based Intelligent Dead Reckoning System for Seamless Navigation 
 
-[![Live Demo: GitHub Pages](https://img.shields.io/badge/Live%20Demo-GitHub%20Pages-brightgreen?logo=github)](https://bhandarianjali313-arch.github.io/Dead-Reckoning-System/)
-[![Status: Production Ready](https://img.shields.io/badge/Status-Production%20Ready-brightgreen.svg)]()
-[![Features: 6/6 Verified](https://img.shields.io/badge/Unique%20Features-6%2F6%20Verified-00f2fe.svg)]()
-[![Tech Stack: Complete](https://img.shields.io/badge/Tech%20Stack-8%20Tiers%20Covered-blueviolet.svg)]()
-[![Map Engine: Google Maps Platform](https://img.shields.io/badge/Map%20Engine-Google%20Maps%20Platform-4285F4.svg)]()
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)]()
 
-> 🌐 **Live Web Platform**: Experience the live interactive navigation cockpit hosted on GitHub Pages:  
-> 🔗 **[https://bhandarianjali313-arch.github.io/Dead-Reckoning-System/](https://bhandarianjali313-arch.github.io/Dead-Reckoning-System/)**  
-> 📱 **Mobile PWA App**: **[https://bhandarianjali313-arch.github.io/Dead-Reckoning-System/mobile/](https://bhandarianjali313-arch.github.io/Dead-Reckoning-System/mobile/)**
 
 A commercial-grade, end-to-end intelligent dead-reckoning vehicular navigation platform engineered to continuously and reliably track vehicles in **GPS/GNSS-denied environments** (undersea tunnels, mountain passages, underground expressways, dense urban street canyons, dense forest canopies) using smartphone inertial sensor fusion (IMU), deep learning motion characterization, kinematic vehicle constraints, and high-precision Google Maps cartography.
 
