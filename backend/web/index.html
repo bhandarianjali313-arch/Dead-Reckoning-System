@@ -46,41 +46,59 @@
     <section id="view-cockpit" class="tab-pane active">
       <div class="panel-card">
         
-        <!-- Address & Status Banner -->
-        <div class="cockpit-top-bar">
-          <div class="address-group">
-            <span style="font-size: 18px;">📍</span>
-            <span id="cockpitAddressText" class="address-txt">🇮🇳 Pan-India Overview: Strategic Underground Tunnels &amp; High-Speed Corridors</span>
+        <!-- USER DESTINATION SEARCH & NAVIGATION CONSOLE -->
+        <div class="search-destination-box">
+          <div class="search-input-row">
+            <span class="search-icon-prefix">🔍</span>
+            <input 
+              type="text" 
+              id="destSearchInput" 
+              class="dest-search-input" 
+              placeholder="Search any destination in India or worldwide (e.g. Connaught Place Delhi, Marine Drive Mumbai, Bengaluru Airport, Goa, Taj Mahal...)"
+              autocomplete="off"
+            />
+            <button id="btnClearSearch" class="btn-clear-search" title="Clear Search" style="display: none;">✕</button>
+            <button id="btnSearchDest" class="btn-search-dest" title="Search Destination">
+              <span>Search Destination</span>
+            </button>
           </div>
-          <div class="address-src-tag">All-India GNSS Blackout Defense Network</div>
-        </div>
+          
+          <!-- Autocomplete & Search Results Dropdown -->
+          <div id="destSearchResults" class="dest-search-results" style="display: none;"></div>
 
-        <!-- PAN-INDIA INTERACTIVE CORRIDOR SELECTION RIBBON -->
-        <div class="corridor-ribbon">
-          <button class="corridor-chip corridor-chip-india active" data-scenario="india">
-            <span>🇮🇳</span> Whole India Overview
-          </button>
-          <button class="corridor-chip" data-scenario="mumbai">
-            <span>🌊</span> Mumbai Undersea (2.07 km)
-          </button>
-          <button class="corridor-chip" data-scenario="atal">
-            <span>🏔️</span> Atal Tunnel Rohtang (9.02 km)
-          </button>
-          <button class="corridor-chip" data-scenario="delhi">
-            <span>🏛️</span> Delhi Pragati Maidan (1.3 km)
-          </button>
-          <button class="corridor-chip" data-scenario="lucknow">
-            <span>🎓</span> Lucknow BBD Corridor
-          </button>
-          <button class="corridor-chip" data-scenario="bengaluru">
-            <span>✈️</span> Bengaluru Airport Express
-          </button>
-          <button class="corridor-chip" data-scenario="kolkata">
-            <span>🚇</span> Kolkata Metro Under-River
-          </button>
-          <button class="corridor-chip" data-scenario="kashmir">
-            <span>❄️</span> Kashmir Chenani-Nashri (9.28 km)
-          </button>
+          <!-- Active Destination & Route Details Banner (Dynamic, shows user's searched destination) -->
+          <div id="activeDestDetails" class="active-dest-details">
+            <div class="active-dest-left">
+              <div class="active-dest-badge" id="activeDestBadge">🏁 ACTIVE DESTINATION</div>
+              <div id="activeDestName" class="active-dest-name">🔍 Type any destination above or click anywhere on the map to set destination!</div>
+              <div id="activeDestMetrics" class="active-dest-metrics">
+                <span>AI Dead Reckoning Active</span>
+                <span>•</span>
+                <span>15-State ES-EKF Fusion</span>
+                <span>•</span>
+                <span>Subterranean Tunnel Blackout Defense Ready</span>
+              </div>
+            </div>
+            <div class="active-dest-right">
+              <button id="btnChangeDest" class="btn-change-dest" title="Clear and search new destination">🔄 Search Another Place</button>
+            </div>
+          </div>
+
+          <!-- Quick Destination Search Shortcuts -->
+          <div class="quick-dest-shortcuts">
+            <span class="quick-dest-label">✨ Quick Search:</span>
+            <button class="quick-chip" data-dest="New Delhi (Connaught Place &amp; India Gate)" data-lat="28.6280" data-lng="77.2180">🏛️ New Delhi</button>
+            <button class="quick-chip" data-dest="Mumbai (Marine Drive &amp; Coastal Road)" data-lat="18.9438" data-lng="72.8232">🌊 Mumbai</button>
+            <button class="quick-chip" data-dest="Himachal Pradesh (Atal Tunnel Rohtang)" data-lat="32.4030" data-lng="77.1490">🏔️ Atal Tunnel</button>
+            <button class="quick-chip" data-dest="Bengaluru (Kempegowda Int'l Airport Express)" data-lat="13.1980" data-lng="77.7060">✈️ Bengaluru</button>
+            <button class="quick-chip" data-dest="Lucknow (BBD University Corridor)" data-lat="26.8955" data-lng="81.0720">🎓 Lucknow</button>
+            <button class="quick-chip" data-dest="Kolkata (Hooghly River Underwater Metro)" data-lat="22.5800" data-lng="88.3450">🚇 Kolkata</button>
+            <button class="quick-chip" data-dest="Goa (Calangute Beach Highway)" data-lat="15.5430" data-lng="73.7554">🏖️ Goa</button>
+            <button class="quick-chip" data-dest="Jaipur (Hawa Mahal &amp; Pink City)" data-lat="26.9239" data-lng="75.8267">🏰 Jaipur</button>
+            <button class="quick-chip" data-dest="Agra (Taj Mahal Gateway)" data-lat="27.1751" data-lng="78.0421">🕌 Agra</button>
+            <button class="quick-chip" data-dest="Chenani-Nashri Tunnel, Jammu &amp; Kashmir" data-lat="33.0450" data-lng="75.2950">❄️ Kashmir</button>
+            <button class="quick-chip" data-dest="Pan-India Overview" data-lat="22.5000" data-lng="78.9629" data-pan="true">🇮🇳 Whole India</button>
+          </div>
         </div>
 
         <!-- Cockpit Map & Telemetry Grid -->
@@ -248,6 +266,7 @@
             <button id="btnReset" class="btn-drive-reset">↺ Reset to Start</button>
             
             <select id="scenarioSelect" class="scenario-select">
+              <option value="custom" id="customScenarioOpt" style="display:none;">🏁 Custom Destination</option>
               <option value="mumbai">🌊 Mumbai: Coastal Road Undersea Tunnel (2.07 km)</option>
               <option value="atal">🏔️ Himachal: Atal Tunnel Rohtang (9.02 km)</option>
               <option value="delhi">🏛️ New Delhi: Pragati Maidan Tunnel (1.3 km)</option>

@@ -210,6 +210,58 @@ const INDIA_CITIES = [
   { key: "kashmir", label: "❄️ Kashmir Chenani-Nashri (9.28 km)", lat: 33.0450, lng: 75.2950 }
 ];
 
+// Rich Pre-Cached Database of Popular Indian Destinations & Landmarks (Instant 0ms Autocomplete)
+const POPULAR_DESTINATIONS = [
+  // Delhi NCR
+  { name: "Connaught Place, New Delhi", sub: "Central Business District & Inner Circle, New Delhi", lat: 28.6315, lng: 77.2167, icon: "🏛️", tags: ["delhi", "cp", "connaught", "capital"] },
+  { name: "India Gate & Kartavya Path, New Delhi", sub: "Rajpath, India Gate War Memorial, New Delhi", lat: 28.6129, lng: 77.2295, icon: "🇮🇳", tags: ["delhi", "india gate", "rajpath"] },
+  { name: "Pragati Maidan Integrated Transit Tunnel", sub: "Mathura Road to Ring Road Box Tunnel, New Delhi", lat: 28.6220, lng: 77.2490, icon: "🚇", tags: ["delhi", "pragati", "tunnel"] },
+  { name: "Indira Gandhi International Airport (DEL)", sub: "Terminal 3, Aerocity, New Delhi", lat: 28.5562, lng: 77.1000, icon: "✈️", tags: ["delhi", "airport", "igi", "aerocity"] },
+  { name: "Red Fort (Lal Qila), Old Delhi", sub: "Netaji Subhash Marg, Chandni Chowk, Delhi", lat: 28.6562, lng: 77.2410, icon: "🏰", tags: ["delhi", "red fort", "lal qila"] },
+
+  // Mumbai & Maharashtra
+  { name: "Marine Drive & Coastal Road Undersea Tunnel", sub: "Nariman Point to Worli Sea Face, Mumbai, Maharashtra", lat: 18.9438, lng: 72.8232, icon: "🌊", tags: ["mumbai", "marine drive", "coastal", "tunnel", "undersea"] },
+  { name: "Gateway of India & Colaba", sub: "Apollo Bandar, Colaba, Mumbai, Maharashtra", lat: 18.9220, lng: 72.8347, icon: "⚓", tags: ["mumbai", "gateway", "colaba"] },
+  { name: "Bandra-Worli Sea Link", sub: "Mahim Bay Cable Bridge, Mumbai, Maharashtra", lat: 19.0365, lng: 72.8172, icon: "🌉", tags: ["mumbai", "bandra", "worli", "sea link"] },
+  { name: "Chhatrapati Shivaji Maharaj Terminus (CSMT)", sub: "Fort, Mumbai, Maharashtra", lat: 18.9400, lng: 72.8353, icon: "🚉", tags: ["mumbai", "csmt", "vt", "station"] },
+  { name: "Hinjawadi IT Park, Pune", sub: "Phase 1 Infotech Park, Pune, Maharashtra", lat: 18.5913, lng: 73.7389, icon: "💻", tags: ["pune", "hinjawadi", "it park"] },
+
+  // Himachal Pradesh & North
+  { name: "Atal Tunnel Rohtang", sub: "Dhundi to Sissu, Leh-Manali Highway, Himachal Pradesh", lat: 32.4030, lng: 77.1490, icon: "🏔️", tags: ["atal", "rohtang", "manali", "himachal", "tunnel"] },
+  { name: "Manali Mall Road", sub: "Kullu Valley, Manali, Himachal Pradesh", lat: 32.2396, lng: 77.1887, icon: "🌲", tags: ["manali", "mall road", "himachal"] },
+  { name: "The Ridge & Mall Road, Shimla", sub: "Shimla Hills, Himachal Pradesh", lat: 31.1048, lng: 77.1734, icon: "⛰️", tags: ["shimla", "himachal", "ridge"] },
+  { name: "Chenani-Nashri Tunnel (Dr. Syama Prasad Mookerjee Tunnel)", sub: "NH 44, Udhampur to Ramban, Jammu & Kashmir", lat: 33.0450, lng: 75.2950, icon: "❄️", tags: ["kashmir", "chenani", "nashri", "tunnel", "jammu"] },
+  { name: "Dal Lake, Srinagar", sub: "Boulevard Road, Srinagar, Jammu & Kashmir", lat: 34.0837, lng: 74.8370, icon: "🚣", tags: ["srinagar", "kashmir", "dal lake"] },
+  { name: "Golden Temple (Harmandir Sahib), Amritsar", sub: "Amritsar, Punjab", lat: 31.6200, lng: 74.8765, icon: "✨", tags: ["amritsar", "golden temple", "punjab"] },
+
+  // Karnataka & Bengaluru
+  { name: "Kempegowda International Airport Bengaluru (BLR)", sub: "KIAL Expressway, Devanahalli, Bengaluru, Karnataka", lat: 13.1980, lng: 77.7060, icon: "✈️", tags: ["bengaluru", "bangalore", "airport", "kempegowda", "expressway"] },
+  { name: "Electronic City Tech Corridor, Bengaluru", sub: "Hosur Road Elevated Expressway, Bengaluru, Karnataka", lat: 12.8399, lng: 77.6770, icon: "🏢", tags: ["bengaluru", "electronic city", "tech"] },
+  { name: "MG Road & Brigade Road, Bengaluru", sub: "Central Business District, Bengaluru, Karnataka", lat: 12.9756, lng: 77.6066, icon: "🛍️", tags: ["bengaluru", "mg road", "brigade"] },
+
+  // Uttar Pradesh & Lucknow
+  { name: "BBD University & Faizabad Road Corridor", sub: "Babu Banarasi Das University, Lucknow, Uttar Pradesh", lat: 26.8955, lng: 81.0720, icon: "🎓", tags: ["lucknow", "bbd", "university", "faizabad"] },
+  { name: "Hazratganj Heritage Market, Lucknow", sub: "City Center, Lucknow, Uttar Pradesh", lat: 26.8500, lng: 80.9490, icon: "🏛️", tags: ["lucknow", "hazratganj", "up"] },
+  { name: "Taj Mahal & Yamuna Expressway, Agra", sub: "Tajganj, Agra, Uttar Pradesh", lat: 27.1751, lng: 78.0421, icon: "🕌", tags: ["agra", "taj mahal", "yamuna"] },
+  { name: "Kashi Vishwanath Corridor, Varanasi", sub: "Ganga Ghats, Varanasi, Uttar Pradesh", lat: 25.3109, lng: 83.0107, icon: "🕉️", tags: ["varanasi", "kashi", "banaras", "ganga"] },
+
+  // West Bengal & East
+  { name: "Hooghly River Underwater Metro Tunnel, Kolkata", sub: "Howrah Station to Mahakaran, Kolkata, West Bengal", lat: 22.5800, lng: 88.3450, icon: "🚇", tags: ["kolkata", "hooghly", "underwater", "metro", "tunnel", "howrah"] },
+  { name: "Victoria Memorial, Kolkata", sub: "Queens Way, Maidan, Kolkata, West Bengal", lat: 22.5448, lng: 88.3426, icon: "🏛️", tags: ["kolkata", "victoria memorial"] },
+
+  // Rajasthan & West
+  { name: "Hawa Mahal & Pink City, Jaipur", sub: "Badi Choupad, Pink City, Jaipur, Rajasthan", lat: 26.9239, lng: 75.8267, icon: "🏰", tags: ["jaipur", "hawa mahal", "pink city", "rajasthan"] },
+  { name: "Sabarmati Riverfront, Ahmedabad", sub: "Ashram Road, Ahmedabad, Gujarat", lat: 23.0300, lng: 72.5800, icon: "🌊", tags: ["ahmedabad", "sabarmati", "gujarat"] },
+  { name: "GIFT City Financial Hub, Gandhinagar", sub: "Gujarat International Finance Tec-City, Gujarat", lat: 23.1600, lng: 72.6840, icon: "💎", tags: ["gift city", "gandhinagar", "gujarat"] },
+
+  // South & Coast
+  { name: "Calangute & Baga Beach Coastal Highway, Goa", sub: "North Goa Coastal Route, Goa", lat: 15.5430, lng: 73.7554, icon: "🏖️", tags: ["goa", "calangute", "baga", "beach"] },
+  { name: "HITEC City & Cyber Towers, Hyderabad", sub: "Madhapur Tech Corridor, Hyderabad, Telangana", lat: 17.4435, lng: 78.3772, icon: "🏢", tags: ["hyderabad", "hitec city", "cyber", "telangana"] },
+  { name: "Charminar & Old City, Hyderabad", sub: "Old City, Hyderabad, Telangana", lat: 17.3616, lng: 78.4747, icon: "🕌", tags: ["hyderabad", "charminar"] },
+  { name: "Marina Beach & Santhome, Chennai", sub: "Kamajar Salai, Chennai, Tamil Nadu", lat: 13.0500, lng: 80.2824, icon: "🌊", tags: ["chennai", "marina beach", "tamil nadu"] },
+  { name: "Marine Drive Kochi & Bolgatty", sub: "Ernakulam, Kochi, Kerala", lat: 9.9816, lng: 76.2750, icon: "🌴", tags: ["kochi", "cochin", "kerala", "marine drive"] }
+];
+
 // Master Simulation State - CONTROLLED BY USER (Vehicle DOES NOT move automatically!)
 const state = {
   activeScenarioKey: "mumbai",
@@ -265,6 +317,7 @@ let drivenPolyline = null;
 let tunnelPolygonLayer = null;
 let confidenceCircle = null;
 let vehicleMarker = null;
+let destinationMarker = null;
 let indiaCityMarkers = [];
 
 // =============================================================================
@@ -278,6 +331,19 @@ const el = {
   headerModeBadge: document.getElementById("headerModeBadge"),
   btnThemeToggle: document.getElementById("btnThemeToggle"),
   cockpitAddressText: document.getElementById("cockpitAddressText"),
+
+  // User Destination Search Elements
+  destSearchInput: document.getElementById("destSearchInput"),
+  btnSearchDest: document.getElementById("btnSearchDest"),
+  btnClearSearch: document.getElementById("btnClearSearch"),
+  destSearchResults: document.getElementById("destSearchResults"),
+  activeDestDetails: document.getElementById("activeDestDetails"),
+  activeDestBadge: document.getElementById("activeDestBadge"),
+  activeDestName: document.getElementById("activeDestName"),
+  activeDestMetrics: document.getElementById("activeDestMetrics"),
+  btnChangeDest: document.getElementById("btnChangeDest"),
+  quickChips: document.querySelectorAll(".quick-chip"),
+  customScenarioOpt: document.getElementById("customScenarioOpt"),
 
   corridorChips: document.querySelectorAll(".corridor-chip"),
   gmodeBtns: document.querySelectorAll(".gmode-btn"),
@@ -470,6 +536,30 @@ function initLeafletMap() {
 
   buildIndiaCityPins();
 
+  // Interactive Map Click: Set Destination Anywhere on Map
+  map.on("click", (e) => {
+    const { lat, lng } = e.latlng;
+    const popupDiv = document.createElement("div");
+    popupDiv.className = "map-click-popup";
+    popupDiv.innerHTML = `
+      <div style="font-weight: 800; color: #00f2fe; margin-bottom: 2px;">📍 Selected Location</div>
+      <div style="font-size: 11px; color: #94a3b8; margin-bottom: 6px;">Lat: ${lat.toFixed(4)}, Lng: ${lng.toFixed(4)}</div>
+      <button class="btn-popup-set-dest" id="btnPopupSetDest">🏁 Set as My Destination</button>
+    `;
+    L.popup()
+      .setLatLng([lat, lng])
+      .setContent(popupDiv)
+      .openOn(map);
+
+    const btn = popupDiv.querySelector("#btnPopupSetDest");
+    if (btn) {
+      btn.addEventListener("click", () => {
+        map.closePopup();
+        applyCustomDestination(`Pinned Point (${lat.toFixed(4)}, ${lng.toFixed(4)})`, lat, lng);
+      });
+    }
+  });
+
   window.addEventListener("resize", () => {
     if (map) map.invalidateSize();
   });
@@ -551,9 +641,36 @@ function setScenario(key) {
     el.btnPlay.style.background = "linear-gradient(135deg, #00e676, #0284c7)";
   }
 
-  // Update address banner
-  if (el.cockpitAddressText) {
-    el.cockpitAddressText.textContent = scen.address;
+  // Update active destination UI and marker
+  if (key !== "india") {
+    const endCoord = scen.coordinates[scen.coordinates.length - 1];
+    setDestinationMarker(scen.name, endCoord[0], endCoord[1]);
+    if (el.destSearchInput) el.destSearchInput.value = scen.name;
+    if (el.btnClearSearch) el.btnClearSearch.style.display = "block";
+    if (el.activeDestBadge) el.activeDestBadge.textContent = "🏁 ACTIVE CORRIDOR";
+    if (el.activeDestName) el.activeDestName.textContent = scen.name;
+    if (el.activeDestMetrics) {
+      el.activeDestMetrics.innerHTML = `
+        <span>📍 <strong>${scen.address}</strong></span>
+        <span>•</span>
+        <span>${scen.srcTag}</span>
+      `;
+    }
+  } else {
+    if (destinationMarker && map && map.hasLayer(destinationMarker)) {
+      map.removeLayer(destinationMarker);
+    }
+    if (el.destSearchInput) el.destSearchInput.value = "";
+    if (el.btnClearSearch) el.btnClearSearch.style.display = "none";
+    if (el.activeDestBadge) el.activeDestBadge.textContent = "🇮🇳 WHOLE INDIA OVERVIEW";
+    if (el.activeDestName) el.activeDestName.textContent = "🔍 Whole India Overview: Search any destination above or click anywhere on the map!";
+    if (el.activeDestMetrics) {
+      el.activeDestMetrics.innerHTML = `
+        <span>All-India GNSS Blackout Defense Network</span>
+        <span>•</span>
+        <span>Ready for Destination Search</span>
+      `;
+    }
   }
 
   // Sync Ribbon chips
@@ -629,6 +746,278 @@ function setScenario(key) {
 
   updateCockpitUi();
   showToast(`Loaded: ${scen.name}`);
+}
+
+// =============================================================================
+// 4B. DESTINATION SEARCH & DYNAMIC ROUTE GENERATOR
+// =============================================================================
+
+function setDestinationMarker(label, lat, lng) {
+  if (!map) return;
+  if (!destinationMarker) {
+    const destIcon = L.divIcon({
+      className: "dest-marker-container",
+      html: `
+        <div class="dest-marker-icon">
+          <div class="dest-flag-badge">🏁</div>
+          <div class="dest-label-tooltip" id="destMarkerTooltip">${label}</div>
+        </div>
+      `,
+      iconSize: [36, 48],
+      iconAnchor: [18, 48]
+    });
+    destinationMarker = L.marker([lat, lng], { icon: destIcon, zIndexOffset: 1200 }).addTo(map);
+  } else {
+    destinationMarker.setLatLng([lat, lng]);
+    const tooltipEl = document.getElementById("destMarkerTooltip");
+    if (tooltipEl) tooltipEl.textContent = label;
+    if (!map.hasLayer(destinationMarker)) destinationMarker.addTo(map);
+  }
+}
+
+function applyCustomDestination(destName, destLat, destLng) {
+  // Generate realistic route approach from ~3.5km south-west
+  const latOffset = -0.028;
+  const lngOffset = -0.022;
+  const startLat = destLat + latOffset;
+  const startLng = destLng + lngOffset;
+
+  const coords = [];
+  const nPoints = 8;
+  for (let i = 0; i <= nPoints; i++) {
+    const frac = i / nPoints;
+    const curve = Math.sin(frac * Math.PI) * 0.005;
+    const ptLat = startLat + (destLat - startLat) * frac + curve * 0.4;
+    const ptLng = startLng + (destLng - startLng) * frac + curve;
+    coords.push([ptLat, ptLng]);
+  }
+
+  // Blackout tunnel zone between 30% and 75%
+  const tunnelStartIdx = 2;
+  const tunnelEndIdx = 6;
+  const tPtStart = coords[tunnelStartIdx];
+  const tPtEnd = coords[tunnelEndIdx];
+  const polyDelta = 0.0028;
+  const tunnelPolygon = [
+    [tPtStart[0] - polyDelta, tPtStart[1] - polyDelta],
+    [tPtEnd[0] - polyDelta, tPtEnd[1] - polyDelta],
+    [tPtEnd[0] + polyDelta, tPtEnd[1] + polyDelta],
+    [tPtStart[0] + polyDelta, tPtStart[1] + polyDelta]
+  ];
+
+  const dLatKm = (destLat - startLat) * 111.0;
+  const dLngKm = (destLng - startLng) * 111.0 * Math.cos(destLat * Math.PI / 180);
+  const routeDistKm = Math.max(2.4, (Math.sqrt(dLatKm * dLatKm + dLngKm * dLngKm) * 1.2)).toFixed(1);
+  const estMinutes = Math.max(3, Math.round(routeDistKm / 40.0 * 60.0));
+
+  SCENARIOS["custom"] = {
+    name: destName,
+    address: `Route to: ${destName}`,
+    srcTag: "Real-Time AI Dead Reckoning • 15 Satellites Active",
+    center: [(startLat + destLat) / 2, (startLng + destLng) / 2],
+    zoom: 14,
+    baseSpeed: 50.0,
+    tunnelStart: 0.30,
+    tunnelEnd: 0.75,
+    isPanIndia: false,
+    coordinates: coords,
+    tunnelPolygon: tunnelPolygon
+  };
+
+  state.activeScenarioKey = "custom";
+  state.isPlaying = false; // Vehicle starts stationary at 0 km/h
+  state.progress = 0.0;
+  state.speed = 0.0;
+  state.targetSpeed = 0.0;
+  state.isManualTunnel = false;
+  state.isPotholeShock = false;
+  state.isStandstill = false;
+  state.isFallback = false;
+  state.uncertaintyRadius = 1.18;
+  state.satellites = 14;
+  state.navMode = "GNSS_AIDED";
+  state.drivenHistory = [];
+
+  // Update vehicle position to start of new route
+  const pos = getLatLngAlongPath(0.0);
+  state.currentLat = pos.lat;
+  state.currentLng = pos.lng;
+  state.headingDeg = pos.headingDeg;
+
+  // Add or update destination marker
+  setDestinationMarker(destName, destLat, destLng);
+
+  // Hide Pan-India pins and show vehicle & tunnel layers
+  indiaCityMarkers.forEach(m => {
+    if (map && map.hasLayer(m)) map.removeLayer(m);
+  });
+  if (vehicleMarker && !map.hasLayer(vehicleMarker)) vehicleMarker.addTo(map);
+  if (confidenceCircle && !map.hasLayer(confidenceCircle)) confidenceCircle.addTo(map);
+  if (tunnelPolygonLayer && !map.hasLayer(tunnelPolygonLayer)) tunnelPolygonLayer.addTo(map);
+
+  if (map) {
+    if (routePolyline) routePolyline.setLatLngs(coords);
+    if (tunnelPolygonLayer) tunnelPolygonLayer.setLatLngs(tunnelPolygon);
+    if (drivenPolyline) drivenPolyline.setLatLngs([]);
+    map.fitBounds(L.latLngBounds(coords), { padding: [60, 60], maxZoom: 15 });
+  }
+
+  // Update Scrubber milestones
+  if (el.routeScrubber) el.routeScrubber.value = 0;
+  if (el.scrubberPercentLabel) {
+    el.scrubberPercentLabel.textContent = `0.0% (Standby at Start Line - Destination: ${destName})`;
+  }
+  if (el.milestoneTunnelIn) {
+    el.milestoneTunnelIn.textContent = `🚇 30% Tunnel Entry (AI Blackout)`;
+  }
+  if (el.milestoneTunnelOut) {
+    el.milestoneTunnelOut.textContent = `☀️ 75% Tunnel Exit (GNSS Damping)`;
+  }
+
+  if (el.btnPlay) {
+    el.btnPlay.textContent = "▶ Start Drive";
+    el.btnPlay.style.background = "linear-gradient(135deg, #00e676, #0284c7)";
+  }
+
+  // Update Search UI
+  if (el.destSearchInput) {
+    el.destSearchInput.value = destName;
+  }
+  if (el.btnClearSearch) {
+    el.btnClearSearch.style.display = "block";
+  }
+  if (el.destSearchResults) {
+    el.destSearchResults.style.display = "none";
+  }
+
+  if (el.activeDestBadge) {
+    el.activeDestBadge.textContent = "🏁 ACTIVE DESTINATION";
+    el.activeDestBadge.style.background = "var(--accent-cyan)";
+  }
+  if (el.activeDestName) {
+    el.activeDestName.textContent = `Destination: ${destName}`;
+  }
+  if (el.activeDestMetrics) {
+    el.activeDestMetrics.innerHTML = `
+      <span>📏 Distance: <strong>${routeDistKm} km</strong></span>
+      <span>•</span>
+      <span>⏱️ Est. Time: <strong>${estMinutes} mins</strong></span>
+      <span>•</span>
+      <span>🚇 Subterranean Tunnel Outage: <strong>${(routeDistKm * 0.45).toFixed(1)} km (AI Dead Reckoning Active)</strong></span>
+    `;
+  }
+
+  if (el.customScenarioOpt) {
+    el.customScenarioOpt.style.display = "block";
+    el.customScenarioOpt.textContent = `🏁 ${destName.substring(0, 30)}`;
+  }
+  if (el.scenarioSelect) {
+    el.scenarioSelect.value = "custom";
+  }
+
+  if (el.quickChips) {
+    el.quickChips.forEach(chip => {
+      const chipDest = chip.getAttribute("data-dest") || "";
+      chip.classList.toggle("active", chipDest.toLowerCase().includes(destName.toLowerCase()) || destName.toLowerCase().includes(chipDest.toLowerCase()));
+    });
+  }
+
+  updateMapVisuals();
+  updateCockpitUi();
+  showToast(`🏁 Route created to: ${destName}`);
+}
+
+let searchDebounceTimer = null;
+
+function handleDestSearchInput() {
+  const query = (el.destSearchInput ? el.destSearchInput.value : "").trim();
+  if (el.btnClearSearch) {
+    el.btnClearSearch.style.display = query.length > 0 ? "block" : "none";
+  }
+
+  if (query.length < 2) {
+    if (el.destSearchResults) el.destSearchResults.style.display = "none";
+    return;
+  }
+
+  clearTimeout(searchDebounceTimer);
+  searchDebounceTimer = setTimeout(() => {
+    performSearch(query);
+  }, 200);
+}
+
+function performSearch(query) {
+  const qLower = query.toLowerCase();
+  // 1. Instant local filter
+  const localMatches = POPULAR_DESTINATIONS.filter(item =>
+    item.name.toLowerCase().includes(qLower) ||
+    item.sub.toLowerCase().includes(qLower) ||
+    (item.tags && item.tags.some(t => t.toLowerCase().includes(qLower)))
+  );
+
+  renderSearchResults(localMatches, query);
+
+  // 2. Query Nominatim for online live places
+  const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&countrycodes=in&limit=6&addressdetails=1`;
+  fetch(url, { headers: { "Accept-Language": "en" } })
+    .then(res => res.json())
+    .then(data => {
+      if (Array.isArray(data) && data.length > 0) {
+        const osmItems = data.map(item => ({
+          name: item.display_name.split(",")[0],
+          sub: item.display_name.split(",").slice(1, 4).join(", ").trim(),
+          lat: parseFloat(item.lat),
+          lng: parseFloat(item.lon),
+          icon: "📍",
+          category: "Address"
+        }));
+
+        const combined = [...localMatches];
+        osmItems.forEach(osm => {
+          if (!combined.some(c => Math.abs(c.lat - osm.lat) < 0.01 && Math.abs(c.lng - osm.lng) < 0.01)) {
+            combined.push(osm);
+          }
+        });
+        renderSearchResults(combined, query);
+      }
+    })
+    .catch(() => {
+      // Offline fallback: local results already shown
+    });
+}
+
+function renderSearchResults(items, query) {
+  if (!el.destSearchResults) return;
+
+  if (!items || items.length === 0) {
+    el.destSearchResults.innerHTML = `
+      <div class="dest-result-item" style="cursor: default; color: var(--text-muted); font-size: 12px; padding: 12px;">
+        <span>🔍 No places found matching "${query}". Try searching a city, airport, or landmark.</span>
+      </div>
+    `;
+    el.destSearchResults.style.display = "flex";
+    return;
+  }
+
+  el.destSearchResults.innerHTML = "";
+  items.slice(0, 8).forEach(item => {
+    const row = document.createElement("div");
+    row.className = "dest-result-item";
+    row.innerHTML = `
+      <span class="dest-result-icon">${item.icon || "📍"}</span>
+      <div class="dest-result-content">
+        <span class="dest-result-title">${item.name}</span>
+        <span class="dest-result-sub">${item.sub}</span>
+      </div>
+    `;
+    row.addEventListener("click", () => {
+      applyCustomDestination(item.name, item.lat, item.lng);
+      el.destSearchResults.style.display = "none";
+    });
+    el.destSearchResults.appendChild(row);
+  });
+
+  el.destSearchResults.style.display = "flex";
 }
 
 function getLatLngAlongPath(t) {
@@ -1393,6 +1782,82 @@ function setupEventHandlers() {
       setScenario(e.target.value);
     });
   }
+
+  // Destination Search Input (live typing with debounce)
+  if (el.destSearchInput) {
+    el.destSearchInput.addEventListener("input", handleDestSearchInput);
+    el.destSearchInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        const query = el.destSearchInput.value.trim();
+        if (query.length > 0) {
+          performSearch(query);
+        }
+      }
+    });
+  }
+
+  // Destination Search Go Button
+  if (el.btnSearchDest) {
+    el.btnSearchDest.addEventListener("click", () => {
+      const query = (el.destSearchInput ? el.destSearchInput.value : "").trim();
+      if (query.length > 0) {
+        performSearch(query);
+      } else {
+        showToast("Type a destination name or click anywhere on the map!");
+      }
+    });
+  }
+
+  // Clear Search Input Button
+  if (el.btnClearSearch) {
+    el.btnClearSearch.addEventListener("click", () => {
+      if (el.destSearchInput) {
+        el.destSearchInput.value = "";
+        el.destSearchInput.focus();
+      }
+      el.btnClearSearch.style.display = "none";
+      if (el.destSearchResults) el.destSearchResults.style.display = "none";
+    });
+  }
+
+  // Change Destination Button in Active Banner
+  if (el.btnChangeDest) {
+    el.btnChangeDest.addEventListener("click", () => {
+      if (el.destSearchInput) {
+        el.destSearchInput.value = "";
+        el.destSearchInput.focus();
+      }
+      if (el.btnClearSearch) el.btnClearSearch.style.display = "none";
+      if (el.destSearchResults) el.destSearchResults.style.display = "none";
+      showToast("Type any destination in the search box or click on the map.");
+    });
+  }
+
+  // Quick Destination Search Shortcut Chips
+  if (el.quickChips) {
+    el.quickChips.forEach(chip => {
+      chip.addEventListener("click", () => {
+        const isPan = chip.getAttribute("data-pan") === "true";
+        if (isPan) {
+          setScenario("india");
+          return;
+        }
+        const destName = chip.getAttribute("data-dest");
+        const lat = parseFloat(chip.getAttribute("data-lat"));
+        const lng = parseFloat(chip.getAttribute("data-lng"));
+        if (!isNaN(lat) && !isNaN(lng)) {
+          applyCustomDestination(destName, lat, lng);
+        }
+      });
+    });
+  }
+
+  // Close search results dropdown on outside click
+  document.addEventListener("click", (e) => {
+    if (el.destSearchResults && !e.target.closest(".search-destination-box")) {
+      el.destSearchResults.style.display = "none";
+    }
+  });
 
   // Theme Toggle
   if (el.btnThemeToggle) {
