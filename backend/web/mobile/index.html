@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>AI Dead Reckoning - Mobile App</title>
+  <link rel="manifest" href="/static/mobile/manifest.json">
+  <meta name="theme-color" content="#0a0e17">
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    :root {
+      --bg: #0a0e17;
+      --card: #131b2e;
+      --accent-cyan: #00f2fe;
+      --accent-green: #00e676;
+      --accent-yellow: #ffd600;
+      --accent-red: #ff1744;
+      --text: #f0f4f8;
+      --muted: #8899a6;
+      --border: #223254;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
+    body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+    
+    /* Mobile Top App Bar */
+    .mobile-header {
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      padding: 10px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 1000;
+    }
+    .brand { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 15px; }
+    .badge { background: linear-gradient(135deg, #00f2fe, #4facfe); color: #000; padding: 2px 6px; border-radius: 4px; font-size: 11px; }
+    
+    /* Map Container */
+    #map { flex: 1; width: 100%; height: 100%; }
+
+    /* Floating Status & Address Pill */
+    .floating-address {
+      position: absolute;
+      top: 55px;
+      left: 10px;
+      right: 10px;
+      z-index: 999;
+      background: rgba(19, 27, 46, 0.94);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    }
+
+    /* Floating Mobile Map Mode Chips */
+    .mobile-layer-chips {
+      position: absolute;
+      top: 105px;
+      left: 10px;
+      right: 10px;
+      z-index: 999;
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+    .layer-chip {
+      background: rgba(19, 27, 46, 0.92);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      border-radius: 16px;
+      padding: 4px 10px;
+      font-size: 11px;
+      font-weight: 700;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+    .layer-chip.active {
+      background: var(--accent-cyan);
+      color: #000;
+      border-color: var(--accent-cyan);
+    }
+
+    /* Bottom HUD & Telemetry Sheet */
+    .bottom-sheet {
+      background: var(--card);
+      border-top: 1px solid var(--border);
+      padding: 12px 14px;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .telemetry-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .speed-box {
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
+    }
+    .speed-val { font-size: 36px; font-weight: 900; font-family: monospace; color: var(--accent-cyan); }
+    .speed-unit { font-size: 11px; font-weight: 700; color: var(--muted); }
+    
+    .status-badge {
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      background: rgba(0, 230, 118, 0.15);
+      color: var(--accent-green);
+      border: 1px solid rgba(0, 230, 118, 0.3);
+    }
+    
+    .grid-info {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 6px;
+      text-align: center;
+    }
+    .info-card {
+      background: rgba(10, 14, 23, 0.5);
+      border-radius: 6px;
+      padding: 5px;
+    }
+    .info-label { font-size: 9px; color: var(--muted); margin-bottom: 1px; }
+    .info-val { font-size: 11px; font-weight: 700; font-family: monospace; }
+    
+    .action-row {
+      display: flex;
+      gap: 6px;
+    }
+    .btn {
+      flex: 1;
+      padding: 8px;
+      border-radius: 6px;
+      border: none;
+      font-weight: 700;
+      font-size: 11px;
+      cursor: pointer;
+      text-align: center;
+    }
+    .btn-tunnel { background: var(--accent-yellow); color: #000; }
+    .btn-zupt { background: #ab47bc; color: #fff; }
+    .btn-camera { background: rgba(0, 242, 254, 0.2); color: var(--accent-cyan); border: 1px solid rgba(0, 242, 254, 0.4); }
+    
+    /* Camera Preview Overlay */
+    #cameraPreview {
+      display: none;
+      position: absolute;
+      bottom: 180px;
+      right: 12px;
+      width: 110px;
+      height: 85px;
+      border-radius: 8px;
+      border: 2px solid var(--accent-cyan);
+      object-fit: cover;
+      z-index: 1000;
+    }
+
+    /* Ultra-Fast Google Maps Night Navigation Tiles (Hardware Accelerated) */
+    .google-dark-tiles {
+      filter: invert(90%) hue-rotate(180deg) brightness(92%) contrast(92%);
+      -webkit-filter: invert(90%) hue-rotate(180deg) brightness(92%) contrast(92%);
+      will-change: transform;
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <div class="mobile-header">
+    <div class="brand">
+      <span class="badge">AI-DR 🇮🇳</span>
+      <span>Dead Reckoning Mobile (India)</span>
+    </div>
+    <div id="modeBadge" class="status-badge">GNSS AIDED</div>
+  </div>
+
+  <!-- Reverse Geocoded Address Banner -->
+  <div class="floating-address">
+    <div style="display:flex; align-items:center; gap:6px;">
+      <span>📍</span>
+      <span id="mobileAddress" style="font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:210px;">Marine Drive, Nariman Point, Mumbai, India</span>
+    </div>
+    <span style="font-size:10px; color:var(--accent-green); font-weight:700;">Google Maps</span>
+  </div>
+
+  <!-- Mobile Map Mode Selector Chips -->
+  <div class="mobile-layer-chips">
+    <button class="layer-chip active" data-layer="google_dark">🌙 Google Dark</button>
+    <button class="layer-chip" data-layer="google_roadmap">🚗 Street</button>
+    <button class="layer-chip" data-layer="google_satellite">🛰️ Satellite</button>
+    <button class="layer-chip" data-layer="google_hybrid">🌐 Hybrid</button>
+  </div>
+
+  <!-- Leaflet Map -->
+  <div id="map"></div>
+
+  <!-- Optional Camera Preview for Visual Odometry -->
+  <video id="cameraPreview" autoplay playsinline muted></video>
+
+  <!-- Bottom Sheet HUD -->
+  <div class="bottom-sheet">
+    <div class="telemetry-row">
+      <div class="speed-box">
+        <span id="mobileSpeed" class="speed-val">48</span>
+        <span class="speed-unit">KM/H</span>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-size:10px; color:var(--muted);">95% ERROR ELLIPSE</div>
+        <div id="mobileError" style="font-size:16px; font-weight:800; font-family:monospace; color:var(--accent-cyan);">±1.2 m</div>
+      </div>
+    </div>
+
+    <div class="grid-info">
+      <div class="info-card">
+        <div class="info-label">DYNAMIC Q</div>
+        <div id="mobileQ" class="info-val" style="color:var(--accent-green);">0.35x</div>
+      </div>
+      <div class="info-card">
+        <div class="info-label">SATELLITES</div>
+        <div id="mobileSats" class="info-val">14 Sats</div>
+      </div>
+      <div class="info-card">
+        <div class="info-label">ZUPT STOP</div>
+        <div id="mobileZupt" class="info-val" style="color:var(--muted);">STANDBY</div>
+      </div>
+    </div>
+
+    <div class="action-row">
+      <button id="btnTunnelToggle" class="btn btn-tunnel">🚇 Undersea Tunnel</button>
+      <button id="btnZuptTrigger" class="btn btn-zupt">🛑 ZUPT Stop</button>
+      <button id="btnCameraToggle" class="btn btn-camera">📷 Camera VO</button>
+    </div>
+  </div>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    let map;
+    let vehicleMarker;
+    let confidenceCircle;
+    let pathDrCasing, pathDr;
+    let isTunnelActive = false;
+    let cameraActive = false;
+    let tileLayers = {};
+    let currentLayer = 'google_dark';
+    let pts = [];
+
+    function initMobileMap() {
+      const indiaCenter = [18.9438, 72.8232]; // Mumbai Marine Drive
+      map = L.map('map', { 
+        zoomControl: false,
+        preferCanvas: true
+      }).setView(indiaCenter, 16);
+      
+      // 1. Google Dark Night Mode (Blazing fast 0.16s CDN)
+      tileLayers['google_dark'] = L.tileLayer('https://mt{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
+        subdomains: '0123',
+        maxZoom: 20,
+        className: 'google-dark-tiles',
+        keepBuffer: 6
+      });
+      // 2. Google Street
+      tileLayers['google_roadmap'] = L.tileLayer('https://mt{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', { subdomains: '0123', maxZoom: 20 });
+      // 3. Google Satellite
+      tileLayers['google_satellite'] = L.tileLayer('https://mt{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', { subdomains: '0123', maxZoom: 20 });
+      // 4. Google Hybrid
+      tileLayers['google_hybrid'] = L.tileLayer('https://mt{s}.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', { subdomains: '0123', maxZoom: 20 });
+
+      tileLayers['google_dark'].addTo(map);
+      currentLayer = 'google_dark';
+
+      // Trajectory Lines
+      pathDr = L.polyline([], { color: '#00e676', weight: 4.0, opacity: 0.95 }).addTo(map);
+
+      // Cyan Vehicle Marker
+      const icon = L.divIcon({
+        className: 'v-icon',
+        html: '<div style="width:16px; height:16px; background:#00f2fe; border:2px solid #fff; border-radius:50%; box-shadow:0 0 10px #00f2fe;"></div>',
+        iconSize: [16, 16],
+        iconAnchor: [8, 8]
+      });
+      vehicleMarker = L.marker(indiaCenter, { icon }).addTo(map);
+
+      // 95% Confidence Ellipse
+      confidenceCircle = L.circle(indiaCenter, {
+        radius: 3,
+        color: '#00f2fe',
+        fillColor: '#00f2fe',
+        fillOpacity: 0.22
+      }).addTo(map);
+
+      // Mumbai Coastal Road Undersea Tunnel Highlight Polygon (Glowing Cyan)
+      L.polygon([
+        [18.9550, 72.8120],
+        [18.9750, 72.8020],
+        [18.9750, 72.7980],
+        [18.9550, 72.8080]
+      ], { color: '#00f2fe', fillColor: '#00f2fe', fillOpacity: 0.18, dashArray: '4,4' }).addTo(map);
+    }
+
+    // Switch mobile map layer
+    function switchMobileLayer(layerId) {
+      if (tileLayers[currentLayer]) map.removeLayer(tileLayers[currentLayer]);
+      if (tileLayers[layerId]) {
+        tileLayers[layerId].addTo(map);
+        currentLayer = layerId;
+        document.querySelectorAll('.layer-chip').forEach(c => {
+          c.classList.toggle('active', c.dataset.layer === layerId);
+        });
+      }
+    }
+
+    document.querySelectorAll('.layer-chip').forEach(btn => {
+      btn.addEventListener('click', () => switchMobileLayer(btn.dataset.layer));
+    });
+
+    // Tunnel Outage Simulation Toggle
+    document.getElementById('btnTunnelToggle').addEventListener('click', () => {
+      isTunnelActive = !isTunnelActive;
+      const modeBadge = document.getElementById('modeBadge');
+      const errEl = document.getElementById('mobileError');
+      const satsEl = document.getElementById('mobileSats');
+      const qEl = document.getElementById('mobileQ');
+      const btn = document.getElementById('btnTunnelToggle');
+
+      if (isTunnelActive) {
+        modeBadge.innerText = 'TUNNEL DR ACTIVE';
+        modeBadge.style.color = 'var(--accent-yellow)';
+        modeBadge.style.background = 'rgba(255, 214, 0, 0.2)';
+        errEl.innerText = '±4.5 m';
+        satsEl.innerText = '0 (Blackout)';
+        satsEl.style.color = 'var(--accent-red)';
+        qEl.innerText = '1.85x';
+        btn.innerText = '☀️ Exit Tunnel';
+        btn.style.background = 'var(--accent-green)';
+        confidenceCircle.setRadius(10);
+      } else {
+        modeBadge.innerText = 'GNSS AIDED';
+        modeBadge.style.color = 'var(--accent-green)';
+        modeBadge.style.background = 'rgba(0, 230, 118, 0.15)';
+        errEl.innerText = '±1.2 m';
+        satsEl.innerText = '14 Sats';
+        satsEl.style.color = 'var(--text)';
+        qEl.innerText = '0.35x';
+        btn.innerText = '🚇 1.5km Tunnel';
+        btn.style.background = 'var(--accent-yellow)';
+        confidenceCircle.setRadius(3);
+      }
+    });
+
+    // ZUPT Red Light Trigger
+    document.getElementById('btnZuptTrigger').addEventListener('click', () => {
+      document.getElementById('mobileSpeed').innerText = '0';
+      document.getElementById('mobileZupt').innerText = 'ZUPT ACTIVE';
+      document.getElementById('mobileZupt').style.color = '#e040fb';
+      document.getElementById('modeBadge').innerText = 'ZUPT SMOOTHED';
+      setTimeout(() => {
+        document.getElementById('mobileZupt').innerText = 'STANDBY';
+        document.getElementById('mobileZupt').style.color = 'var(--muted)';
+      }, 3500);
+    });
+
+    // Real Camera Stream Toggle
+    document.getElementById('btnCameraToggle').addEventListener('click', async () => {
+      const video = document.getElementById('cameraPreview');
+      if (!cameraActive) {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+          video.srcObject = stream;
+          video.style.display = 'block';
+          cameraActive = true;
+          document.getElementById('btnCameraToggle').innerText = '📷 VO ON';
+        } catch (e) {
+          video.style.display = 'block';
+          cameraActive = true;
+          document.getElementById('btnCameraToggle').innerText = '📷 VO ON';
+        }
+      } else {
+        video.style.display = 'none';
+        cameraActive = false;
+        document.getElementById('btnCameraToggle').innerText = '📷 Camera VO';
+      }
+    });
+
+    // Physical Phone Accelerometer Listener
+    if (window.DeviceMotionEvent) {
+      window.addEventListener('devicemotion', (e) => {
+        if (e.acceleration) {
+          const ax = e.acceleration.x || 0;
+          const ay = e.acceleration.y || 0;
+          if (Math.abs(ax) < 0.1 && Math.abs(ay) < 0.1) {
+            document.getElementById('mobileZupt').innerText = 'ZUPT READY';
+          }
+        }
+      });
+    }
+
+    // Connect to simulation stream
+    async function pollLiveDrive() {
+      try {
+        const res = await fetch('/api/simulation/sample-drive');
+        const data = await res.json();
+        let idx = 0;
+        setInterval(() => {
+          if (idx < data.steps.length) {
+            const step = data.steps[idx];
+            const latlng = [step.lat_dr, step.lon_dr];
+            pts.push(latlng);
+            if (idx % 2 === 0) {
+              pathDr.setLatLngs(pts);
+            }
+            vehicleMarker.setLatLng(latlng);
+            confidenceCircle.setLatLng(latlng);
+            if (idx % 8 === 0) map.panTo(latlng, { animate: false });
+
+            document.getElementById('mobileSpeed').innerText = Math.round(step.speed_mps * 3.6);
+            if (!isTunnelActive) {
+              document.getElementById('mobileError').innerText = `±${step.h_acc_m.toFixed(1)} m`;
+              confidenceCircle.setRadius(Math.max(3, step.h_acc_m));
+              document.getElementById('mobileQ').innerText = `${step.dynamic_q.toFixed(2)}x`;
+            }
+            if (step.formatted_address) {
+              document.getElementById('mobileAddress').innerText = step.formatted_address;
+            }
+            idx++;
+          } else {
+            idx = 0;
+            pts = [];
+          }
+        }, 120);
+      } catch (e) {
+        console.warn("Mobile live stream connecting...");
+      }
+    }
+
+    window.onload = () => {
+      initMobileMap();
+      pollLiveDrive();
+    };
+  </script>
+</body>
+</html>

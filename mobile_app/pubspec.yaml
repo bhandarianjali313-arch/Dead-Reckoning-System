@@ -1,0 +1,27 @@
+name: ai_dead_reckoning_mobile
+description: "AI-ML Based Intelligent Dead Reckoning Navigation Mobile Application"
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.6
+  sensors_plus: ^5.0.1
+  geolocator: ^10.1.0
+  camera: ^0.10.5
+  flutter_map: ^6.1.0
+  latlong2: ^0.9.0
+  http: ^1.2.0
+  provider: ^6.1.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
