@@ -1,0 +1,208 @@
+{
+  "default": "mumbai_tunnel",
+  "scenarios": {
+    "mumbai_tunnel": {
+      "id": "mumbai_tunnel",
+      "title": "\ud83c\uddee\ud83c\uddf3 Mumbai: Coastal Road Undersea Tunnel (2.07 km)",
+      "city": "Mumbai, Maharashtra, India",
+      "center": [
+        18.9438,
+        72.8232
+      ],
+      "zoom": 15,
+      "tunnel_polygon": [
+        [
+          18.955,
+          72.812
+        ],
+        [
+          18.975,
+          72.802
+        ],
+        [
+          18.975,
+          72.798
+        ],
+        [
+          18.955,
+          72.808
+        ]
+      ],
+      "tunnel_name": "Mumbai Coastal Road Undersea Tunnel (2.07 km under Arabian Sea)"
+    },
+    "lucknow_bbd": {
+      "id": "lucknow_bbd",
+      "title": "\ud83c\uddee\ud83c\uddf3 Lucknow: BBD University & Ayodhya Highway Corridor",
+      "city": "Lucknow, Uttar Pradesh, India",
+      "center": [
+        26.889,
+        81.056
+      ],
+      "zoom": 16,
+      "tunnel_polygon": [
+        [
+          26.892,
+          81.062
+        ],
+        [
+          26.902,
+          81.075
+        ],
+        [
+          26.9015,
+          81.076
+        ],
+        [
+          26.8915,
+          81.063
+        ]
+      ],
+      "tunnel_name": "BBD University Underground Transit Corridor & Indira Canal Underpass"
+    },
+    "delhi_tunnel": {
+      "id": "delhi_tunnel",
+      "title": "\ud83c\uddee\ud83c\uddf3 New Delhi: Pragati Maidan Transit Tunnel (1.3 km)",
+      "city": "New Delhi, Delhi, India",
+      "center": [
+        28.6129,
+        77.2295
+      ],
+      "zoom": 15,
+      "tunnel_polygon": [
+        [
+          28.618,
+          77.24
+        ],
+        [
+          28.625,
+          77.248
+        ],
+        [
+          28.6245,
+          77.249
+        ],
+        [
+          28.6175,
+          77.241
+        ]
+      ],
+      "tunnel_name": "Pragati Maidan Integrated Transit Tunnel (Underground)"
+    },
+    "atal_tunnel": {
+      "id": "atal_tunnel",
+      "title": "\ud83c\uddee\ud83c\uddf3 Himachal: Atal Tunnel Rohtang (9.02 km Trans-Himalayan)",
+      "city": "Manali, Himachal Pradesh, India",
+      "center": [
+        32.363,
+        77.142
+      ],
+      "zoom": 14,
+      "tunnel_polygon": [
+        [
+          32.37,
+          77.145
+        ],
+        [
+          32.44,
+          77.165
+        ],
+        [
+          32.439,
+          77.168
+        ],
+        [
+          32.369,
+          77.148
+        ]
+      ],
+      "tunnel_name": "Atal Tunnel Rohtang (9.02 km High-Altitude Tunnel)"
+    },
+    "bengaluru_airport": {
+      "id": "bengaluru_airport",
+      "title": "\ud83c\uddee\ud83c\uddf3 Bengaluru: Kempegowda Airport Expressway & Underpass (NH-44)",
+      "city": "Bengaluru, Karnataka, India",
+      "center": [
+        13.1986,
+        77.7066
+      ],
+      "zoom": 15,
+      "tunnel_polygon": [
+        [
+          13.192,
+          77.701
+        ],
+        [
+          13.205,
+          77.712
+        ],
+        [
+          13.2045,
+          77.713
+        ],
+        [
+          13.1915,
+          77.702
+        ]
+      ],
+      "tunnel_name": "Kempegowda Airport Sub-Grade Transit Expressway Underpass"
+    },
+    "pune_mumbai_expressway": {
+      "id": "pune_mumbai_expressway",
+      "title": "\ud83c\uddee\ud83c\uddf3 Western Ghats: Pune-Mumbai Expressway Khandala Tunnels",
+      "city": "Khandala, Maharashtra, India",
+      "center": [
+        18.7562,
+        73.3421
+      ],
+      "zoom": 15,
+      "tunnel_polygon": [
+        [
+          18.751,
+          73.338
+        ],
+        [
+          18.762,
+          73.349
+        ],
+        [
+          18.7615,
+          73.35
+        ],
+        [
+          18.7505,
+          73.339
+        ]
+      ],
+      "tunnel_name": "Khandala Bhor Ghat Twin Mountain Tunnels (Western Ghats)"
+    },
+    "kashmir_chenani": {
+      "id": "kashmir_chenani",
+      "title": "\ud83c\uddee\ud83c\uddf3 Kashmir: Dr. Syama Prasad Mookerjee Tunnel (9.28 km)",
+      "city": "Udhampur-Ramban, J&K, India",
+      "center": [
+        33.045,
+        75.285
+      ],
+      "zoom": 14,
+      "tunnel_polygon": [
+        [
+          33.03,
+          75.275
+        ],
+        [
+          33.06,
+          75.295
+        ],
+        [
+          33.059,
+          75.297
+        ],
+        [
+          33.029,
+          75.277
+        ]
+      ],
+      "tunnel_name": "Dr. Syama Prasad Mookerjee / Chenani-Nashri Highway Tunnel"
+    }
+  }
+}

@@ -1,0 +1,562 @@
+{
+  "mumbai_tunnel": {
+    "scenario": "mumbai_tunnel",
+    "total_steps": 600,
+    "models": {
+      "proposed_ai_iekf": {
+        "name": "AI DeepIMUNet + ES-IEKF (Proposed)",
+        "color": "#00e676",
+        "horizontal_rmse_m": 642.4,
+        "cep50_m": 371.83,
+        "cep95_m": 1415.59,
+        "max_tunnel_drift_m": 1425.79,
+        "filter_latency_ms": 1.15,
+        "cpu_utilization_pct": 3.4,
+        "availability_pct": 100.0,
+        "grade": "EXCELLENT (Sub-2m)"
+      },
+      "standard_kinematic_ekf": {
+        "name": "Standard Kinematic EKF (No AI / No ZUPT)",
+        "color": "#ffd600",
+        "horizontal_rmse_m": 1830.84,
+        "cep50_m": 985.34,
+        "cep95_m": 4388.32,
+        "max_tunnel_drift_m": 4562.51,
+        "filter_latency_ms": 0.95,
+        "cpu_utilization_pct": 2.8,
+        "availability_pct": 98.2,
+        "grade": "MODERATE (Drifts on Potholes)"
+      },
+      "raw_imu_double_integration": {
+        "name": "Raw IMU Double Integration (Unfiltered)",
+        "color": "#ff3d71",
+        "horizontal_rmse_m": 8987.02,
+        "cep50_m": 6069.13,
+        "cep95_m": 17276.37,
+        "max_tunnel_drift_m": 18936.83,
+        "filter_latency_ms": 0.05,
+        "cpu_utilization_pct": 0.8,
+        "availability_pct": 0.0,
+        "grade": "DIVERGENT (> 100m error)"
+      }
+    },
+    "radar_attributes": [
+      {
+        "attribute": "Tunnel Accuracy",
+        "ai": 96,
+        "std_ekf": 62,
+        "raw_imu": 8
+      },
+      {
+        "attribute": "Pothole Robustness",
+        "ai": 98,
+        "std_ekf": 45,
+        "raw_imu": 5
+      },
+      {
+        "attribute": "Stop Correction",
+        "ai": 99,
+        "std_ekf": 30,
+        "raw_imu": 2
+      },
+      {
+        "attribute": "GNSS Handover Smoothness",
+        "ai": 95,
+        "std_ekf": 50,
+        "raw_imu": 10
+      },
+      {
+        "attribute": "Confidence Reliability",
+        "ai": 97,
+        "std_ekf": 68,
+        "raw_imu": 0
+      },
+      {
+        "attribute": "Real-time Efficiency",
+        "ai": 94,
+        "std_ekf": 95,
+        "raw_imu": 99
+      }
+    ]
+  },
+  "lucknow_bbd": {
+    "scenario": "lucknow_bbd",
+    "total_steps": 600,
+    "models": {
+      "proposed_ai_iekf": {
+        "name": "AI DeepIMUNet + ES-IEKF (Proposed)",
+        "color": "#00e676",
+        "horizontal_rmse_m": 642.13,
+        "cep50_m": 371.7,
+        "cep95_m": 1415.05,
+        "max_tunnel_drift_m": 1425.24,
+        "filter_latency_ms": 1.15,
+        "cpu_utilization_pct": 3.4,
+        "availability_pct": 100.0,
+        "grade": "EXCELLENT (Sub-2m)"
+      },
+      "standard_kinematic_ekf": {
+        "name": "Standard Kinematic EKF (No AI / No ZUPT)",
+        "color": "#ffd600",
+        "horizontal_rmse_m": 1830.08,
+        "cep50_m": 984.99,
+        "cep95_m": 4386.66,
+        "max_tunnel_drift_m": 4560.77,
+        "filter_latency_ms": 0.95,
+        "cpu_utilization_pct": 2.8,
+        "availability_pct": 98.2,
+        "grade": "MODERATE (Drifts on Potholes)"
+      },
+      "raw_imu_double_integration": {
+        "name": "Raw IMU Double Integration (Unfiltered)",
+        "color": "#ff3d71",
+        "horizontal_rmse_m": 8981.24,
+        "cep50_m": 6063.55,
+        "cep95_m": 17267.28,
+        "max_tunnel_drift_m": 18927.46,
+        "filter_latency_ms": 0.05,
+        "cpu_utilization_pct": 0.8,
+        "availability_pct": 0.0,
+        "grade": "DIVERGENT (> 100m error)"
+      }
+    },
+    "radar_attributes": [
+      {
+        "attribute": "Tunnel Accuracy",
+        "ai": 96,
+        "std_ekf": 62,
+        "raw_imu": 8
+      },
+      {
+        "attribute": "Pothole Robustness",
+        "ai": 98,
+        "std_ekf": 45,
+        "raw_imu": 5
+      },
+      {
+        "attribute": "Stop Correction",
+        "ai": 99,
+        "std_ekf": 30,
+        "raw_imu": 2
+      },
+      {
+        "attribute": "GNSS Handover Smoothness",
+        "ai": 95,
+        "std_ekf": 50,
+        "raw_imu": 10
+      },
+      {
+        "attribute": "Confidence Reliability",
+        "ai": 97,
+        "std_ekf": 68,
+        "raw_imu": 0
+      },
+      {
+        "attribute": "Real-time Efficiency",
+        "ai": 94,
+        "std_ekf": 95,
+        "raw_imu": 99
+      }
+    ]
+  },
+  "delhi_tunnel": {
+    "scenario": "delhi_tunnel",
+    "total_steps": 600,
+    "models": {
+      "proposed_ai_iekf": {
+        "name": "AI DeepIMUNet + ES-IEKF (Proposed)",
+        "color": "#00e676",
+        "horizontal_rmse_m": 642.06,
+        "cep50_m": 371.66,
+        "cep95_m": 1414.9,
+        "max_tunnel_drift_m": 1425.09,
+        "filter_latency_ms": 1.15,
+        "cpu_utilization_pct": 3.4,
+        "availability_pct": 100.0,
+        "grade": "EXCELLENT (Sub-2m)"
+      },
+      "standard_kinematic_ekf": {
+        "name": "Standard Kinematic EKF (No AI / No ZUPT)",
+        "color": "#ffd600",
+        "horizontal_rmse_m": 1829.87,
+        "cep50_m": 984.9,
+        "cep95_m": 4386.2,
+        "max_tunnel_drift_m": 4560.28,
+        "filter_latency_ms": 0.95,
+        "cpu_utilization_pct": 2.8,
+        "availability_pct": 98.2,
+        "grade": "MODERATE (Drifts on Potholes)"
+      },
+      "raw_imu_double_integration": {
+        "name": "Raw IMU Double Integration (Unfiltered)",
+        "color": "#ff3d71",
+        "horizontal_rmse_m": 8979.7,
+        "cep50_m": 6062.09,
+        "cep95_m": 17264.82,
+        "max_tunnel_drift_m": 18924.92,
+        "filter_latency_ms": 0.05,
+        "cpu_utilization_pct": 0.8,
+        "availability_pct": 0.0,
+        "grade": "DIVERGENT (> 100m error)"
+      }
+    },
+    "radar_attributes": [
+      {
+        "attribute": "Tunnel Accuracy",
+        "ai": 96,
+        "std_ekf": 62,
+        "raw_imu": 8
+      },
+      {
+        "attribute": "Pothole Robustness",
+        "ai": 98,
+        "std_ekf": 45,
+        "raw_imu": 5
+      },
+      {
+        "attribute": "Stop Correction",
+        "ai": 99,
+        "std_ekf": 30,
+        "raw_imu": 2
+      },
+      {
+        "attribute": "GNSS Handover Smoothness",
+        "ai": 95,
+        "std_ekf": 50,
+        "raw_imu": 10
+      },
+      {
+        "attribute": "Confidence Reliability",
+        "ai": 97,
+        "std_ekf": 68,
+        "raw_imu": 0
+      },
+      {
+        "attribute": "Real-time Efficiency",
+        "ai": 94,
+        "std_ekf": 95,
+        "raw_imu": 99
+      }
+    ]
+  },
+  "atal_tunnel": {
+    "scenario": "atal_tunnel",
+    "total_steps": 600,
+    "models": {
+      "proposed_ai_iekf": {
+        "name": "AI DeepIMUNet + ES-IEKF (Proposed)",
+        "color": "#00e676",
+        "horizontal_rmse_m": 641.63,
+        "cep50_m": 371.42,
+        "cep95_m": 1413.98,
+        "max_tunnel_drift_m": 1424.15,
+        "filter_latency_ms": 1.15,
+        "cpu_utilization_pct": 3.4,
+        "availability_pct": 100.0,
+        "grade": "EXCELLENT (Sub-2m)"
+      },
+      "standard_kinematic_ekf": {
+        "name": "Standard Kinematic EKF (No AI / No ZUPT)",
+        "color": "#ffd600",
+        "horizontal_rmse_m": 1828.63,
+        "cep50_m": 984.27,
+        "cep95_m": 4383.34,
+        "max_tunnel_drift_m": 4557.29,
+        "filter_latency_ms": 0.95,
+        "cpu_utilization_pct": 2.8,
+        "availability_pct": 98.2,
+        "grade": "MODERATE (Drifts on Potholes)"
+      },
+      "raw_imu_double_integration": {
+        "name": "Raw IMU Double Integration (Unfiltered)",
+        "color": "#ff3d71",
+        "horizontal_rmse_m": 8972.45,
+        "cep50_m": 6056.23,
+        "cep95_m": 17252.06,
+        "max_tunnel_drift_m": 18911.28,
+        "filter_latency_ms": 0.05,
+        "cpu_utilization_pct": 0.8,
+        "availability_pct": 0.0,
+        "grade": "DIVERGENT (> 100m error)"
+      }
+    },
+    "radar_attributes": [
+      {
+        "attribute": "Tunnel Accuracy",
+        "ai": 96,
+        "std_ekf": 62,
+        "raw_imu": 8
+      },
+      {
+        "attribute": "Pothole Robustness",
+        "ai": 98,
+        "std_ekf": 45,
+        "raw_imu": 5
+      },
+      {
+        "attribute": "Stop Correction",
+        "ai": 99,
+        "std_ekf": 30,
+        "raw_imu": 2
+      },
+      {
+        "attribute": "GNSS Handover Smoothness",
+        "ai": 95,
+        "std_ekf": 50,
+        "raw_imu": 10
+      },
+      {
+        "attribute": "Confidence Reliability",
+        "ai": 97,
+        "std_ekf": 68,
+        "raw_imu": 0
+      },
+      {
+        "attribute": "Real-time Efficiency",
+        "ai": 94,
+        "std_ekf": 95,
+        "raw_imu": 99
+      }
+    ]
+  },
+  "bengaluru_airport": {
+    "scenario": "bengaluru_airport",
+    "total_steps": 600,
+    "models": {
+      "proposed_ai_iekf": {
+        "name": "AI DeepIMUNet + ES-IEKF (Proposed)",
+        "color": "#00e676",
+        "horizontal_rmse_m": 642.45,
+        "cep50_m": 371.84,
+        "cep95_m": 1415.66,
+        "max_tunnel_drift_m": 1425.86,
+        "filter_latency_ms": 1.15,
+        "cpu_utilization_pct": 3.4,
+        "availability_pct": 100.0,
+        "grade": "EXCELLENT (Sub-2m)"
+      },
+      "standard_kinematic_ekf": {
+        "name": "Standard Kinematic EKF (No AI / No ZUPT)",
+        "color": "#ffd600",
+        "horizontal_rmse_m": 1830.98,
+        "cep50_m": 985.38,
+        "cep95_m": 4388.55,
+        "max_tunnel_drift_m": 4562.76,
+        "filter_latency_ms": 0.95,
+        "cpu_utilization_pct": 2.8,
+        "availability_pct": 98.2,
+        "grade": "MODERATE (Drifts on Potholes)"
+      },
+      "raw_imu_double_integration": {
+        "name": "Raw IMU Double Integration (Unfiltered)",
+        "color": "#ff3d71",
+        "horizontal_rmse_m": 8988.76,
+        "cep50_m": 6071.21,
+        "cep95_m": 17278.65,
+        "max_tunnel_drift_m": 18939.01,
+        "filter_latency_ms": 0.05,
+        "cpu_utilization_pct": 0.8,
+        "availability_pct": 0.0,
+        "grade": "DIVERGENT (> 100m error)"
+      }
+    },
+    "radar_attributes": [
+      {
+        "attribute": "Tunnel Accuracy",
+        "ai": 96,
+        "std_ekf": 62,
+        "raw_imu": 8
+      },
+      {
+        "attribute": "Pothole Robustness",
+        "ai": 98,
+        "std_ekf": 45,
+        "raw_imu": 5
+      },
+      {
+        "attribute": "Stop Correction",
+        "ai": 99,
+        "std_ekf": 30,
+        "raw_imu": 2
+      },
+      {
+        "attribute": "GNSS Handover Smoothness",
+        "ai": 95,
+        "std_ekf": 50,
+        "raw_imu": 10
+      },
+      {
+        "attribute": "Confidence Reliability",
+        "ai": 97,
+        "std_ekf": 68,
+        "raw_imu": 0
+      },
+      {
+        "attribute": "Real-time Efficiency",
+        "ai": 94,
+        "std_ekf": 95,
+        "raw_imu": 99
+      }
+    ]
+  },
+  "pune_mumbai_expressway": {
+    "scenario": "pune_mumbai_expressway",
+    "total_steps": 600,
+    "models": {
+      "proposed_ai_iekf": {
+        "name": "AI DeepIMUNet + ES-IEKF (Proposed)",
+        "color": "#00e676",
+        "horizontal_rmse_m": 642.35,
+        "cep50_m": 371.8,
+        "cep95_m": 1415.47,
+        "max_tunnel_drift_m": 1425.67,
+        "filter_latency_ms": 1.15,
+        "cpu_utilization_pct": 3.4,
+        "availability_pct": 100.0,
+        "grade": "EXCELLENT (Sub-2m)"
+      },
+      "standard_kinematic_ekf": {
+        "name": "Standard Kinematic EKF (No AI / No ZUPT)",
+        "color": "#ffd600",
+        "horizontal_rmse_m": 1830.7,
+        "cep50_m": 985.26,
+        "cep95_m": 4387.96,
+        "max_tunnel_drift_m": 4562.14,
+        "filter_latency_ms": 0.95,
+        "cpu_utilization_pct": 2.8,
+        "availability_pct": 98.2,
+        "grade": "MODERATE (Drifts on Potholes)"
+      },
+      "raw_imu_double_integration": {
+        "name": "Raw IMU Double Integration (Unfiltered)",
+        "color": "#ff3d71",
+        "horizontal_rmse_m": 8986.32,
+        "cep50_m": 6068.7,
+        "cep95_m": 17275.0,
+        "max_tunnel_drift_m": 18935.32,
+        "filter_latency_ms": 0.05,
+        "cpu_utilization_pct": 0.8,
+        "availability_pct": 0.0,
+        "grade": "DIVERGENT (> 100m error)"
+      }
+    },
+    "radar_attributes": [
+      {
+        "attribute": "Tunnel Accuracy",
+        "ai": 96,
+        "std_ekf": 62,
+        "raw_imu": 8
+      },
+      {
+        "attribute": "Pothole Robustness",
+        "ai": 98,
+        "std_ekf": 45,
+        "raw_imu": 5
+      },
+      {
+        "attribute": "Stop Correction",
+        "ai": 99,
+        "std_ekf": 30,
+        "raw_imu": 2
+      },
+      {
+        "attribute": "GNSS Handover Smoothness",
+        "ai": 95,
+        "std_ekf": 50,
+        "raw_imu": 10
+      },
+      {
+        "attribute": "Confidence Reliability",
+        "ai": 97,
+        "std_ekf": 68,
+        "raw_imu": 0
+      },
+      {
+        "attribute": "Real-time Efficiency",
+        "ai": 94,
+        "std_ekf": 95,
+        "raw_imu": 99
+      }
+    ]
+  },
+  "kashmir_chenani": {
+    "scenario": "kashmir_chenani",
+    "total_steps": 600,
+    "models": {
+      "proposed_ai_iekf": {
+        "name": "AI DeepIMUNet + ES-IEKF (Proposed)",
+        "color": "#00e676",
+        "horizontal_rmse_m": 641.78,
+        "cep50_m": 371.52,
+        "cep95_m": 1414.34,
+        "max_tunnel_drift_m": 1424.51,
+        "filter_latency_ms": 1.15,
+        "cpu_utilization_pct": 3.4,
+        "availability_pct": 100.0,
+        "grade": "EXCELLENT (Sub-2m)"
+      },
+      "standard_kinematic_ekf": {
+        "name": "Standard Kinematic EKF (No AI / No ZUPT)",
+        "color": "#ffd600",
+        "horizontal_rmse_m": 1829.09,
+        "cep50_m": 984.52,
+        "cep95_m": 4384.44,
+        "max_tunnel_drift_m": 4558.44,
+        "filter_latency_ms": 0.95,
+        "cpu_utilization_pct": 2.8,
+        "availability_pct": 98.2,
+        "grade": "MODERATE (Drifts on Potholes)"
+      },
+      "raw_imu_double_integration": {
+        "name": "Raw IMU Double Integration (Unfiltered)",
+        "color": "#ff3d71",
+        "horizontal_rmse_m": 8974.46,
+        "cep50_m": 6057.4,
+        "cep95_m": 17256.13,
+        "max_tunnel_drift_m": 18915.81,
+        "filter_latency_ms": 0.05,
+        "cpu_utilization_pct": 0.8,
+        "availability_pct": 0.0,
+        "grade": "DIVERGENT (> 100m error)"
+      }
+    },
+    "radar_attributes": [
+      {
+        "attribute": "Tunnel Accuracy",
+        "ai": 96,
+        "std_ekf": 62,
+        "raw_imu": 8
+      },
+      {
+        "attribute": "Pothole Robustness",
+        "ai": 98,
+        "std_ekf": 45,
+        "raw_imu": 5
+      },
+      {
+        "attribute": "Stop Correction",
+        "ai": 99,
+        "std_ekf": 30,
+        "raw_imu": 2
+      },
+      {
+        "attribute": "GNSS Handover Smoothness",
+        "ai": 95,
+        "std_ekf": 50,
+        "raw_imu": 10
+      },
+      {
+        "attribute": "Confidence Reliability",
+        "ai": 97,
+        "std_ekf": 68,
+        "raw_imu": 0
+      },
+      {
+        "attribute": "Real-time Efficiency",
+        "ai": 94,
+        "std_ekf": 95,
+        "raw_imu": 99
+      }
+    ]
+  }
+}

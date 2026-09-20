@@ -1,0 +1,194 @@
+{
+  "title": "AI-ML Based Intelligent Dead Reckoning System for Seamless Navigation",
+  "description": "Continuously tracks a vehicle even when GPS/GNSS is unavailable, such as inside tunnels, underground roads, dense urban areas or forests.",
+  "pipeline_stages": [
+    {
+      "stage": 1,
+      "name": "Smartphone Sensor Data Ingestion",
+      "description": "Takes raw continuous high-rate data from smartphone sensors.",
+      "sensors": [
+        "Accelerometer (3-Axis)",
+        "Gyroscope (3-Axis)",
+        "Magnetometer (3-Axis)",
+        "GNSS Receiver",
+        "Smartphone Camera (Optional VO)"
+      ]
+    },
+    {
+      "stage": 2,
+      "name": "Data Cleaning & Automatic Virtual Orientation Alignment",
+      "description": "Cleans sensor noise and automatically understands phone orientation inside vehicle, so phone does not have to be kept in a fixed position.",
+      "features": [
+        "Gravity vector extraction",
+        "Forward acceleration projection",
+        "Virtual rotation matrix R_phone_to_vehicle",
+        "Arbitrary placement support"
+      ]
+    },
+    {
+      "stage": 3,
+      "name": "AI Motion Pattern & Disturbance Characterization",
+      "description": "Deep learning models (TensorFlow / PyTorch 1D-CNN + GRU) analyze sensor patterns in real time.",
+      "analyzed_patterns": [
+        {
+          "name": "Speed",
+          "description": "Forward velocity estimation from inertial signatures"
+        },
+        {
+          "name": "Acceleration & Braking",
+          "description": "Longitudinal force dynamics identification"
+        },
+        {
+          "name": "Turning",
+          "description": "Cornering and yaw rate recognition"
+        },
+        {
+          "name": "Bumps & Potholes",
+          "description": "Road surface roughness and transient shock detection"
+        },
+        {
+          "name": "Vibration",
+          "description": "Engine and road micro-vibration analysis"
+        },
+        {
+          "name": "Unwanted Phone Movement",
+          "description": "Distinguishes phone handling/drops from vehicle maneuvers"
+        },
+        {
+          "name": "Sensor Reliability",
+          "description": "Epistemic uncertainty and sensor trust metric estimation"
+        }
+      ]
+    },
+    {
+      "stage": 4,
+      "name": "EKF / UKF / IEKF Sensor-Fusion & Positioning",
+      "description": "Sensor-fusion algorithm combining cleaned information, map matching, and vehicle motion constraints.",
+      "rules": [
+        "When GNSS is available: Quietly helps maintain accurate positioning.",
+        "When GNSS disappears: Automatically switches to AI + IMU dead reckoning without user intervention.",
+        "Map Matching & Constraints: Non-Holonomic Constraints (NHC) ensure vehicle stays on realistic road and prevents physically impossible movements."
+      ]
+    }
+  ],
+  "unique_features": [
+    {
+      "id": 1,
+      "name": "Dynamic Process-Noise Adaptation",
+      "summary": "Instead of keeping uncertainty fixed, AI changes it according to driving situation.",
+      "rule": "Smooth road \u2192 lower uncertainty (Q ~ 0.35x); bumpy road or sharp turn \u2192 higher uncertainty (Q ~ 5.5x)."
+    },
+    {
+      "id": 2,
+      "name": "Stop-Based Drift Correction",
+      "summary": "Standstill detection (ZUPT) combined with retrospective trajectory smoothing.",
+      "rule": "When vehicle stops, compares estimated journey with road map to correct previous A \u2192 B trajectory before continuing to C."
+    },
+    {
+      "id": 3,
+      "name": "AI Fallback Mechanism",
+      "summary": "Never blindly trusts AI. Safeguarded with physics failover.",
+      "rule": "If AI becomes uncertain (abnormal sensor data, sudden phone movement), temporarily falls back to traditional IEKF."
+    },
+    {
+      "id": 4,
+      "name": "Seamless GNSS Switching",
+      "summary": "Dual-mode operation with smooth innovation damping.",
+      "rule": "When GNSS returns, smoothly corrects accumulated error with exponential damping instead of suddenly jumping."
+    },
+    {
+      "id": 5,
+      "name": "Confidence-Aware Navigation",
+      "summary": "Continuous real-time uncertainty indication.",
+      "rule": "Provides 95% horizontal confidence error ellipses (\u00b1 meters) and confidence tiers (HIGH, MODERATE, DEGRADED)."
+    },
+    {
+      "id": 6,
+      "name": "Optional Camera Assistance",
+      "summary": "Visual odometry optical flow forward speed assist.",
+      "rule": "Camera provides additional visual movement estimate alongside IMU to bound longitudinal drift."
+    }
+  ],
+  "tech_stack_mapping": [
+    {
+      "tier": 1,
+      "domain": "Mobile App Development",
+      "technologies": [
+        "Flutter",
+        "Android",
+        "iOS"
+      ],
+      "implementation": "mobile_app/ and web/mobile/"
+    },
+    {
+      "tier": 2,
+      "domain": "Sensor Data Collection",
+      "technologies": [
+        "Accelerometer",
+        "Gyroscope",
+        "Magnetometer",
+        "GNSS",
+        "Camera"
+      ],
+      "implementation": "core/types.py and data/trajectory_generator.py"
+    },
+    {
+      "tier": 3,
+      "domain": "Data Preprocessing",
+      "technologies": [
+        "Python",
+        "NumPy",
+        "Pandas"
+      ],
+      "implementation": "core/virtual_alignment.py and core/coordinate_transforms.py"
+    },
+    {
+      "tier": 4,
+      "domain": "AI/ML Models",
+      "technologies": [
+        "TensorFlow",
+        "PyTorch"
+      ],
+      "implementation": "ai_models/network.py (DeepIMUNet 1D-CNN + GRU)"
+    },
+    {
+      "tier": 5,
+      "domain": "Sensor Fusion & Positioning",
+      "technologies": [
+        "MATLAB",
+        "Python"
+      ],
+      "implementation": "fusion/es_ekf.py and matlab/sensor_fusion_dead_reckoning.m"
+    },
+    {
+      "tier": 6,
+      "domain": "Maps & Location Services",
+      "technologies": [
+        "OpenStreetMap",
+        "Google Maps Platform API"
+      ],
+      "implementation": "map_matching/ and backend/web/"
+    },
+    {
+      "tier": 7,
+      "domain": "Backend & Cloud",
+      "technologies": [
+        "FastAPI",
+        "Firebase Firestore",
+        "AWS DynamoDB"
+      ],
+      "implementation": "backend/main.py and backend/cloud_sync.py"
+    },
+    {
+      "tier": 8,
+      "domain": "Development & Testing Tools",
+      "technologies": [
+        "VS Code",
+        "GitHub",
+        "Jupyter",
+        "Matplotlib"
+      ],
+      "implementation": "tools/verify_all_features.py and tools/benchmark_evaluation.py"
+    }
+  ]
+}

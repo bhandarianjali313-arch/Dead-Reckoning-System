@@ -1,0 +1,21 @@
+{
+  "name": "AI Dead Reckoning Navigation",
+  "short_name": "AI-DR Nav",
+  "description": "AI-ML Based Intelligent Dead Reckoning Navigation Mobile App",
+  "start_url": "/mobile/",
+  "display": "standalone",
+  "background_color": "#0a0e17",
+  "theme_color": "#00f2fe",
+  "icons": [
+    {
+      "src": "https://img.icons8.com/fluency/192/navigation.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://img.icons8.com/fluency/512/navigation.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

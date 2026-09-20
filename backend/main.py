@@ -53,7 +53,19 @@ app.add_middleware(
 
 # Mount static web directory
 WEB_DIR = Path(__file__).parent / "web"
+DOCS_DATA_DIR = Path(__file__).parent.parent / "docs" / "data"
+
 app.mount("/static", StaticFiles(directory=str(WEB_DIR)), name="static")
+if DOCS_DATA_DIR.exists():
+    app.mount("/data", StaticFiles(directory=str(DOCS_DATA_DIR)), name="data_static")
+
+@app.get("/styles.css")
+def serve_styles():
+    return FileResponse(str(WEB_DIR / "styles.css"))
+
+@app.get("/app.js")
+def serve_app_js():
+    return FileResponse(str(WEB_DIR / "app.js"))
 
 cloud_sync = CloudSyncManager(provider="firebase")
 map_matcher = HMMMapMatcher()
