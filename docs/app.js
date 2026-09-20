@@ -592,6 +592,9 @@ function initLeafletMap() {
   window.addEventListener("resize", () => {
     if (map) map.invalidateSize();
   });
+  setTimeout(() => {
+    if (map) map.invalidateSize();
+  }, 250);
 }
 
 function buildIndiaCityPins() {
@@ -1349,6 +1352,7 @@ function updateTurnHud() {
     } else {
       el.elevationStatusText.textContent = `Surface Grade: 0m (Dual-Band GNSS Active • 14 Sats)`;
       el.elevationStatusText.style.color = "var(--accent-green)";
+    }
   }
 }
 
