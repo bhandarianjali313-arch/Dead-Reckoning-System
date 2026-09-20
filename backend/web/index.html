@@ -131,6 +131,18 @@
               </div>
             </div>
 
+            <!-- Interactive Live Turn-by-Turn Guidance HUD -->
+            <div id="liveTurnHud" class="live-turn-hud">
+              <div class="turn-symbol-circle" id="turnSymbol">⬆️</div>
+              <div class="turn-text-content">
+                <div class="turn-instruction-main" id="turnMainText">Proceed along road towards corridor destination</div>
+                <div class="turn-instruction-sub" id="turnSubText">Clear Sky GNSS Navigation Active • 14 Satellites</div>
+              </div>
+              <div class="turn-metrics-badge">
+                <span id="turnDistVal">4.2 km</span>
+                <span class="turn-dist-unit">REMAINING</span>
+              </div>
+            </div>
 
             <!-- The Real Interactive Leaflet Map Container -->
             <div id="map"></div>
@@ -152,12 +164,20 @@
           <!-- Telemetry Column (Right 2 cols) -->
           <div class="telemetry-column">
             
-            <!-- Speedometer Card -->
+            <!-- Speedometer Card with Interactive Presets -->
             <div class="speedometer-card">
               <div class="speedometer-title">VEHICULAR SPEED</div>
               <div class="speed-row">
                 <span id="speedDisplay" class="speed-number">0</span>
                 <span class="speed-unit">KM/H</span>
+              </div>
+              <!-- Interactive Speed Presets Bar -->
+              <div class="speed-preset-bar">
+                <button class="btn-speed-preset" data-speed="0">🛑 Stop</button>
+                <button class="btn-speed-preset" data-speed="30">30 km/h</button>
+                <button class="btn-speed-preset active" data-speed="50">50 km/h</button>
+                <button class="btn-speed-preset" data-speed="75">75 km/h</button>
+                <button class="btn-speed-preset" data-speed="95">95 km/h</button>
               </div>
             </div>
 
@@ -257,6 +277,22 @@
           </div>
         </div>
 
+        <!-- Interactive Subterranean Elevation Profile Card -->
+        <div class="elevation-profile-card">
+          <div class="elevation-header">
+            <span>📉 SUBTERRANEAN BLACKOUT DEPTH PROFILE (CROSS-SECTION)</span>
+            <span id="elevationStatusText" style="font-family: var(--font-mono); color: var(--accent-green);">Surface Grade: 0m (GNSS Active)</span>
+          </div>
+          <div class="elevation-track" id="elevationTrack">
+            <div class="elevation-zone-surface" style="left: 0%; width: 28%;"></div>
+            <div class="elevation-zone-tunnel" id="elevationTunnelZone" style="left: 28%; width: 50%;">
+              <span>🚇 Subterranean Blackout Zone (-32m Undersea / Deep Tunnel Outage)</span>
+            </div>
+            <div class="elevation-zone-surface" style="left: 78%; width: 22%;"></div>
+            <div class="elevation-car-cursor" id="elevationCarCursor" style="left: 0%;" title="Vehicle Cross-Section Position">🚗</div>
+          </div>
+        </div>
+
         <!-- Cockpit Controls Bar -->
         <div class="cockpit-controls">
           <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
@@ -265,6 +301,15 @@
             <button id="btnBrake" class="btn-drive-brake" title="Manual Brake / Slow (-10 km/h)">🛑 Brake (-10)</button>
             <button id="btnReset" class="btn-drive-reset">↺ Reset to Start</button>
             
+            <!-- Interactive Simulation Speed Rate Selector -->
+            <div class="sim-speed-selector" title="Simulation Speed Rate">
+              <span class="sim-speed-label">⏱️ Drive Pace:</span>
+              <button class="btn-sim-speed" data-rate="0.25">🐢 0.25x</button>
+              <button class="btn-sim-speed active" data-rate="0.6">🚗 0.6x</button>
+              <button class="btn-sim-speed" data-rate="1.2">🏎️ 1.2x</button>
+              <button class="btn-sim-speed" data-rate="2.2">⚡ 2.2x</button>
+            </div>
+
             <select id="scenarioSelect" class="scenario-select">
               <option value="custom" id="customScenarioOpt" style="display:none;">🏁 Custom Destination</option>
               <option value="mumbai">🌊 Mumbai: Coastal Road Undersea Tunnel (2.07 km)</option>

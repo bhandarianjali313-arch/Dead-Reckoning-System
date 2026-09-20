@@ -235,16 +235,16 @@ body.theme-light .nav-tab-btn.active {
   color: var(--accent-cyan);
 }
 
-/* Main Content Area */
+/* Main Content Area - Expansive Layout */
 .main-content {
   flex: 1;
-  max-width: 1280px;
-  width: 100%;
+  max-width: 1720px;
+  width: 96%;
   margin: 0 auto;
-  padding: 16px 20px 40px;
+  padding: 16px 24px 48px;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 24px;
 }
 
 .tab-pane {
@@ -642,11 +642,11 @@ body.theme-light .nav-tab-btn.active {
 
 .cockpit-grid {
   display: grid;
-  grid-template-columns: 3fr 2fr;
-  gap: 16px;
+  grid-template-columns: 3.5fr 2fr;
+  gap: 20px;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1080px) {
   .cockpit-grid {
     grid-template-columns: 1fr;
   }
@@ -654,12 +654,103 @@ body.theme-light .nav-tab-btn.active {
 
 .map-viewport {
   background: #050811;
-  border: 1.5px solid var(--border);
+  border: 2px solid var(--border);
   border-radius: var(--radius-lg);
   position: relative;
-  height: 480px;
+  height: 640px;
   overflow: hidden;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 8px 36px rgba(0, 0, 0, 0.6);
+}
+
+@media (min-width: 1440px) {
+  .map-viewport {
+    height: 700px;
+  }
+}
+
+/* Live Turn-by-Turn Dynamic Guidance HUD */
+.live-turn-hud {
+  position: absolute;
+  top: 56px;
+  left: 12px;
+  right: 12px;
+  z-index: 1000;
+  background: rgba(10, 14, 26, 0.94);
+  backdrop-filter: blur(14px);
+  border: 1.5px solid var(--accent-cyan);
+  border-radius: 12px;
+  padding: 8px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6), 0 0 16px rgba(0, 242, 254, 0.25);
+  animation: fadeIn 0.3s ease;
+  pointer-events: auto;
+}
+
+.turn-symbol-circle {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(0, 242, 254, 0.2), rgba(37, 99, 235, 0.3));
+  border: 2px solid var(--accent-cyan);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+  box-shadow: 0 0 12px rgba(0, 242, 254, 0.4);
+}
+
+.turn-text-content {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  flex: 1;
+}
+
+.turn-instruction-main {
+  font-size: 13.5px;
+  font-weight: 800;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: -0.2px;
+}
+
+.turn-instruction-sub {
+  font-size: 11.5px;
+  color: var(--accent-green);
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.turn-metrics-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  flex-shrink: 0;
+  padding-left: 10px;
+  border-left: 1px solid var(--border);
+}
+
+#turnDistVal {
+  font-size: 16px;
+  font-weight: 900;
+  font-family: var(--font-mono);
+  color: var(--accent-cyan);
+  line-height: 1.1;
+}
+
+.turn-dist-unit {
+  font-size: 9px;
+  font-weight: 800;
+  color: var(--text-muted);
+  letter-spacing: 0.8px;
 }
 
 
@@ -888,19 +979,55 @@ body.theme-light .nav-tab-btn.active {
 }
 
 .speed-number {
-  font-size: 54px;
+  font-size: 64px;
   font-weight: 900;
   font-family: var(--font-mono);
   color: var(--accent-cyan);
   line-height: 1;
-  text-shadow: 0 0 28px rgba(0, 242, 254, 0.6);
+  text-shadow: 0 0 32px rgba(0, 242, 254, 0.7);
 }
 
 .speed-unit {
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 800;
   color: var(--text-muted);
   letter-spacing: 0.5px;
+}
+
+/* Interactive Speed Presets Bar inside Speedometer */
+.speed-preset-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.btn-speed-preset {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 800;
+  padding: 4px 9px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-speed-preset:hover {
+  border-color: var(--accent-cyan);
+  color: var(--text-main);
+  background: rgba(0, 242, 254, 0.1);
+  transform: translateY(-1px);
+}
+
+.btn-speed-preset.active {
+  background: rgba(0, 242, 254, 0.25);
+  border-color: var(--accent-cyan);
+  color: var(--accent-cyan);
+  box-shadow: 0 0 10px rgba(0, 242, 254, 0.4);
 }
 
 .metric-cards-grid {
@@ -1305,6 +1432,154 @@ body.theme-light .nav-tab-btn.active {
   border-radius: 8px;
   outline: none;
   cursor: pointer;
+}
+
+/* Interactive Simulation Speed Controls */
+.sim-speed-selector {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 4px 8px;
+}
+
+.sim-speed-label {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-right: 2px;
+}
+
+.btn-sim-speed {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 800;
+  padding: 5px 9px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.18s;
+  white-space: nowrap;
+}
+
+.btn-sim-speed:hover {
+  color: var(--text-main);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.btn-sim-speed.active {
+  background: linear-gradient(135deg, rgba(0, 242, 254, 0.2), rgba(37, 99, 235, 0.3));
+  border-color: var(--accent-cyan);
+  color: var(--accent-cyan);
+  font-weight: 900;
+  box-shadow: 0 0 10px rgba(0, 242, 254, 0.35);
+}
+
+/* Interactive Subterranean Elevation Profile Bar */
+.elevation-profile-card {
+  background: var(--bg-surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 12px 18px;
+  margin-top: 14px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.elevation-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--text-muted);
+}
+
+.elevation-track {
+  position: relative;
+  width: 100%;
+  height: 38px;
+  background: linear-gradient(180deg, #090e1a 0%, #03060d 100%);
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+}
+
+.elevation-zone-surface {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background: rgba(0, 230, 118, 0.08);
+  border-right: 1px dashed rgba(0, 230, 118, 0.4);
+}
+
+.elevation-zone-tunnel {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background: rgba(30, 58, 138, 0.4);
+  border-left: 2px solid #3b82f6;
+  border-right: 2px solid #3b82f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #60a5fa;
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
+.elevation-car-cursor {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--accent-cyan);
+  border: 2px solid #fff;
+  box-shadow: 0 0 14px var(--accent-cyan);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  z-index: 10;
+  transition: left 0.1s linear;
+  cursor: grab;
+}
+
+/* Interactive Milestone Node Pins on Leaflet Map */
+.milestone-pin-badge {
+  background: rgba(10, 14, 26, 0.94);
+  border: 1.5px solid var(--border);
+  color: #ffffff;
+  padding: 4px 8px;
+  border-radius: 14px;
+  font-size: 10.5px;
+  font-weight: 800;
+  white-space: nowrap;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.2s ease;
+}
+
+.milestone-pin-badge:hover {
+  transform: scale(1.15) translateY(-2px);
+  border-color: var(--accent-cyan);
+  box-shadow: 0 0 16px rgba(0, 242, 254, 0.7);
+  color: var(--accent-cyan);
 }
 
 /* ==========================================================================

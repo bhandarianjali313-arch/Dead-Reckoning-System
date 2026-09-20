@@ -270,6 +270,7 @@ const state = {
   progress: 0.0, // Start at 0%
   speed: 0.0,    // Start stationary
   targetSpeed: 0.0,
+  simSpeedMultiplier: 0.6, // Calm, smooth, realistic drive pace (user controllable)
   currentLat: 18.9438,
   currentLng: 72.8232,
   headingDeg: 0,
@@ -319,6 +320,7 @@ let confidenceCircle = null;
 let vehicleMarker = null;
 let destinationMarker = null;
 let indiaCityMarkers = [];
+let milestoneMarkers = [];
 
 // =============================================================================
 // 2. DOM REFERENCES
@@ -344,6 +346,22 @@ const el = {
   btnChangeDest: document.getElementById("btnChangeDest"),
   quickChips: document.querySelectorAll(".quick-chip"),
   customScenarioOpt: document.getElementById("customScenarioOpt"),
+
+  // Live Dynamic Turn HUD
+  liveTurnHud: document.getElementById("liveTurnHud"),
+  turnSymbol: document.getElementById("turnSymbol"),
+  turnMainText: document.getElementById("turnMainText"),
+  turnSubText: document.getElementById("turnSubText"),
+  turnDistVal: document.getElementById("turnDistVal"),
+
+  // Interactive Speed Presets & Simulation Pace
+  speedPresetBtns: document.querySelectorAll(".btn-speed-preset"),
+  simSpeedBtns: document.querySelectorAll(".btn-sim-speed"),
+
+  // Subterranean Elevation Profile
+  elevationTunnelZone: document.getElementById("elevationTunnelZone"),
+  elevationCarCursor: document.getElementById("elevationCarCursor"),
+  elevationStatusText: document.getElementById("elevationStatusText"),
 
   corridorChips: document.querySelectorAll(".corridor-chip"),
   gmodeBtns: document.querySelectorAll(".gmode-btn"),
@@ -531,8 +549,19 @@ function initLeafletMap() {
 
   vehicleMarker = L.marker([state.currentLat, state.currentLng], {
     icon: vehicleIcon,
-    zIndexOffset: 1000
+    zIndexOffset: 1000,
+    draggable: true
   }).addTo(map);
+
+  vehicleMarker.on("drag", (e) => {
+    const latlng = e.target.getLatLng();
+    snapCarToNearestProgress(latlng.lat, latlng.lng);
+  });
+  vehicleMarker.on("dragend", () => {
+    const pos = getLatLngAlongPath(state.progress);
+    vehicleMarker.setLatLng([pos.lat, pos.lng]);
+    showToast(`Car repositioned to ${(state.progress * 100).toFixed(1)}% on route`);
+  });
 
   buildIndiaCityPins();
 
@@ -745,6 +774,8 @@ function setScenario(key) {
   }
 
   updateCockpitUi();
+  buildRouteMilestonePins();
+  updateTurnHud();
   showToast(`Loaded: ${scen.name}`);
 }
 
@@ -924,6 +955,8 @@ function applyCustomDestination(destName, destLat, destLng) {
 
   updateMapVisuals();
   updateCockpitUi();
+  buildRouteMilestonePins();
+  updateTurnHud();
   showToast(`🏁 Route created to: ${destName}`);
 }
 
@@ -1041,7 +1074,7 @@ function getLatLngAlongPath(t) {
   return { lat, lng, headingDeg, dLat, dLng };
 }
 
-// Manually move vehicle via Route Scrubber slider
+// Manually move vehicle via Route Scrubber slider or Drag
 function setVehiclePositionByProgress(progressFraction) {
   state.progress = Math.max(0.0, Math.min(1.0, progressFraction));
 
@@ -1067,6 +1100,7 @@ function setVehiclePositionByProgress(progressFraction) {
 
   updateMapVisuals();
   updateCockpitUi();
+  updateTurnHud();
   updatePatternLabUi();
   updateFeatureBadges();
 
@@ -1076,25 +1110,49 @@ function setVehiclePositionByProgress(progressFraction) {
   }
 }
 
+// Snaps car marker to nearest path coordinate when user drags car on map
+function snapCarToNearestProgress(lat, lng) {
+  const scen = SCENARIOS[state.activeScenarioKey];
+  if (scen.isPanIndia) return;
+
+  let bestProg = 0;
+  let minDistSq = Infinity;
+  for (let i = 0; i <= 100; i++) {
+    const frac = i / 100.0;
+    const pt = getLatLngAlongPath(frac);
+    const dLat = pt.lat - lat;
+    const dLng = pt.lng - lng;
+    const distSq = dLat * dLat + dLng * dLng;
+    if (distSq < minDistSq) {
+      minDistSq = distSq;
+      bestProg = frac;
+    }
+  }
+  setVehiclePositionByProgress(bestProg);
+}
+
 // =============================================================================
-// 5. VEHICULAR SIMULATION TICK (RUNS WHEN USER STARTS DRIVE)
+// 5. VEHICULAR SIMULATION TICK - REALISTIC LEISURELY SPEED RATE
 // =============================================================================
 
-function simulationTick() {
+function simulationTick(dt = 0.016) {
   const scen = SCENARIOS[state.activeScenarioKey];
   if (scen.isPanIndia) return; // Do not animate car across entire country
 
   // ONLY advance vehicle if user has started driving!
   if (state.isPlaying) {
-    // Smooth acceleration toward target speed
-    state.speed += (state.targetSpeed - state.speed) * 0.05;
+    // Smooth, realistic acceleration toward target speed
+    state.speed += (state.targetSpeed - state.speed) * Math.min(1.0, 2.5 * dt);
 
-    // Advance along road
-    const speedNormalized = (state.speed / 50.0) * 0.0016;
-    state.progress += speedNormalized;
+    // Realistic leisurely progression speed:
+    // At 45 km/h with default 0.6x simSpeedMultiplier, full traversal takes ~120s
+    const basePace = 0.012 * (state.simSpeedMultiplier || 0.6);
+    const speedFactor = state.speed / 45.0;
+    const progressDelta = speedFactor * basePace * dt;
+    state.progress += progressDelta;
 
     // Check if reached end of corridor
-    if (state.progress >= 0.99) {
+    if (state.progress >= 0.999) {
       state.progress = 1.0;
       state.isPlaying = false;
       state.speed = 0.0;
@@ -1103,7 +1161,7 @@ function simulationTick() {
         el.btnPlay.textContent = "▶ Start Drive";
         el.btnPlay.style.background = "linear-gradient(135deg, #00e676, #0284c7)";
       }
-      showToast("🏁 Reached corridor terminal. Click Reset to start again.");
+      showToast("🏁 Reached destination terminal. Click Reset to drive again.");
     }
 
     // Update scrubber slider position
@@ -1111,24 +1169,24 @@ function simulationTick() {
       el.routeScrubber.value = (state.progress * 100).toFixed(1);
     }
   } else {
-    // When paused, gracefully decelerate to 0
-    state.speed = Math.max(0.0, state.speed - 2.5);
+    // Gracefully decelerate when paused
+    state.speed = Math.max(0.0, state.speed - 30.0 * dt);
   }
 
   // Feature 2: Standstill ZUPT logic
   if (state.isStandstill) {
-    state.stopTimer -= 0.016;
-    state.speed = Math.max(0, state.speed - 3.5);
+    state.stopTimer -= dt;
+    state.speed = Math.max(0, state.speed - 45.0 * dt);
     if (state.stopTimer <= 0) {
       state.isStandstill = false;
-      state.targetSpeed = scen.baseSpeed;
+      state.targetSpeed = scen.baseSpeed || 45.0;
       showToast("Signal turned GREEN. Accelerating out of standstill.");
     }
   }
 
   // Feature 3: AI Fallback countdown
   if (state.isFallback) {
-    state.fallbackTimer -= 0.016;
+    state.fallbackTimer -= dt;
     if (state.fallbackTimer <= 0) {
       state.isFallback = false;
       showToast("AI Epistemic Uncertainty normalized. Multi-task network resumed.");
@@ -1137,7 +1195,7 @@ function simulationTick() {
 
   // Feature 1: Road Pothole shock scaling
   if (state.isPotholeShock) {
-    state.potholeTimer -= 0.016;
+    state.potholeTimer -= dt;
     state.dynamicQ = 4.2 + Math.random() * 0.8;
     if (state.potholeTimer <= 0) {
       state.isPotholeShock = false;
@@ -1165,7 +1223,7 @@ function simulationTick() {
     state.navMode = "AI_DEAD_RECKONING";
   } else if (state.dampingTimer > 0) {
     state.navMode = "SEAMLESS_DAMPING";
-    state.dampingTimer -= 0.016;
+    state.dampingTimer -= dt;
   } else {
     state.navMode = "GNSS_AIDED";
   }
@@ -1178,17 +1236,21 @@ function simulationTick() {
   // Feature 5: Horizontal uncertainty radius evolution
   if (state.navMode === "AI_DEAD_RECKONING") {
     state.satellites = 0;
-    state.uncertaintyRadius = Math.min(2.82, state.uncertaintyRadius + 0.0035);
+    state.uncertaintyRadius = Math.min(3.2, state.uncertaintyRadius + 0.15 * dt);
+    state.reliabilityScore = Math.max(0.72, state.reliabilityScore - 0.03 * dt);
   } else if (state.navMode === "ZUPT_STOP_CORRECTION") {
-    state.uncertaintyRadius = Math.max(0.75, state.uncertaintyRadius - 0.025);
+    state.uncertaintyRadius = Math.max(0.75, state.uncertaintyRadius - 0.8 * dt);
+    state.reliabilityScore = 0.99;
   } else if (state.navMode === "SEAMLESS_DAMPING") {
     state.satellites = 14;
-    state.uncertaintyRadius = Math.max(1.15, state.uncertaintyRadius - 0.015);
+    state.uncertaintyRadius = Math.max(1.15, state.uncertaintyRadius - 1.2 * dt);
+    state.reliabilityScore = Math.min(0.985, state.reliabilityScore + 0.08 * dt);
   } else if (state.navMode === "FALLBACK_IEKF") {
     state.uncertaintyRadius = 1.95 + Math.random() * 0.2;
   } else {
     state.satellites = 14 + Math.floor(Math.random() * 3);
     state.uncertaintyRadius = 1.15 + Math.random() * 0.08;
+    state.reliabilityScore = 0.985;
   }
 
   // Calculate geodetic position on road
@@ -1209,12 +1271,85 @@ function simulationTick() {
     el.scrubberPercentLabel.textContent = `${pct}% (${inTunnel ? "Inside Tunnel Blackout" : "Open Sky GNSS"})`;
   }
 
-  updateMapVisuals();
   generateSimulatedImu(pos);
+  updateMapVisuals();
   updateCockpitUi();
+  updateTurnHud();
   updatePatternLabUi();
   updateFeatureBadges();
-  renderCameraHud();
+}
+
+// Interactive Turn-by-Turn Dynamic Navigation HUD
+function updateTurnHud() {
+  if (!el.liveTurnHud) return;
+
+  const scen = SCENARIOS[state.activeScenarioKey];
+  if (!scen) return;
+
+  if (scen.isPanIndia) {
+    if (el.turnSymbol) el.turnSymbol.textContent = "🇮🇳";
+    if (el.turnMainText) el.turnMainText.textContent = "Whole India Overview: Search destination or click city pin";
+    if (el.turnSubText) el.turnSubText.textContent = "All-India GNSS Blackout Defense Network Online";
+    if (el.turnDistVal) el.turnDistVal.textContent = "PAN-INDIA";
+    return;
+  }
+
+  const p = state.progress;
+  const matchDist = scen.name.match(/([\d.]+)\s*km/);
+  const totalKm = matchDist ? parseFloat(matchDist[1]) : 4.5;
+  const remKm = Math.max(0.0, totalKm * (1.0 - p));
+  if (el.turnDistVal) {
+    el.turnDistVal.textContent = remKm < 1.0 ? `${Math.round(remKm * 1000)}m` : `${remKm.toFixed(1)} km`;
+  }
+
+  if (p < 0.02) {
+    if (el.turnSymbol) el.turnSymbol.textContent = "🚗";
+    if (el.turnMainText) el.turnMainText.textContent = `Ready to drive towards ${scen.name}`;
+    if (el.turnSubText) el.turnSubText.textContent = "Press '▶ Start Drive' or tap a speed preset to cruise";
+  } else if (p < scen.tunnelStart - 0.07) {
+    if (el.turnSymbol) el.turnSymbol.textContent = "⬆️";
+    if (el.turnMainText) el.turnMainText.textContent = `Proceed along road towards ${scen.name}`;
+    const distM = Math.round((scen.tunnelStart - p) * totalKm * 1000);
+    if (el.turnSubText) el.turnSubText.textContent = `In ${distM}m: Subterranean Blackout Zone Ahead (Dual-Band GNSS: 14 Sats)`;
+  } else if (p < scen.tunnelStart) {
+    if (el.turnSymbol) el.turnSymbol.textContent = "⚠️";
+    if (el.turnMainText) el.turnMainText.textContent = "Entering Subterranean Tunnel Portal (Blackout Imminent)";
+    if (el.turnSubText) el.turnSubText.textContent = "GNSS dropping to 0 Sats • AI Multi-Task IMU Dead Reckoning armed";
+  } else if (p < scen.tunnelEnd - 0.05) {
+    if (el.turnSymbol) el.turnSymbol.textContent = "🚇";
+    if (el.turnMainText) el.turnMainText.textContent = "Inside Subterranean Tunnel Outage (AI Dead Reckoning Active)";
+    if (el.turnSubText) el.turnSubText.textContent = `15-State ES-EKF Filter + Dynamic Process-Noise (Q=${state.dynamicQ.toFixed(2)}x)`;
+  } else if (p <= scen.tunnelEnd) {
+    if (el.turnSymbol) el.turnSymbol.textContent = "☀️";
+    if (el.turnMainText) el.turnMainText.textContent = "Tunnel Exit Portal Approaching (GNSS Re-acquisition)";
+    if (el.turnSubText) el.turnSubText.textContent = "Smooth Exponential Innovation Damping Active (No Map Jumps)";
+  } else if (p < 0.98) {
+    if (el.turnSymbol) el.turnSymbol.textContent = "🛣️";
+    if (el.turnMainText) el.turnMainText.textContent = "Cruising along Open Highway towards Destination Terminal";
+    if (el.turnSubText) el.turnSubText.textContent = "Full GNSS Locked • 14 Satellites Synchronized";
+  } else {
+    if (el.turnSymbol) el.turnSymbol.textContent = "🏁";
+    if (el.turnMainText) el.turnMainText.textContent = `Arrived at Destination: ${scen.name}`;
+    if (el.turnSubText) el.turnSubText.textContent = "Standstill Stop ZUPT Restoring Drift backwards along corridor";
+  }
+
+  // Update Subterranean Elevation Profile
+  if (el.elevationCarCursor) {
+    el.elevationCarCursor.style.left = (p * 100).toFixed(1) + "%";
+  }
+  if (el.elevationTunnelZone) {
+    el.elevationTunnelZone.style.left = (scen.tunnelStart * 100).toFixed(1) + "%";
+    el.elevationTunnelZone.style.width = ((scen.tunnelEnd - scen.tunnelStart) * 100).toFixed(1) + "%";
+  }
+  if (el.elevationStatusText) {
+    const inTunnel = (p >= scen.tunnelStart && p <= scen.tunnelEnd) || state.isManualTunnel;
+    if (inTunnel) {
+      el.elevationStatusText.textContent = `🚇 Subterranean Tunnel Outage: -32m Depth (AI IMU Fusion Active • 0 Sats)`;
+      el.elevationStatusText.style.color = "var(--accent-yellow)";
+    } else {
+      el.elevationStatusText.textContent = `Surface Grade: 0m (Dual-Band GNSS Active • 14 Sats)`;
+      el.elevationStatusText.style.color = "var(--accent-green)";
+  }
 }
 
 function updateMapVisuals() {
@@ -1859,6 +1994,48 @@ function setupEventHandlers() {
     }
   });
 
+  // Speed Presets inside Speedometer Card
+  if (el.speedPresetBtns) {
+    el.speedPresetBtns.forEach(btn => {
+      btn.addEventListener("click", () => {
+        const spd = parseFloat(btn.getAttribute("data-speed"));
+        el.speedPresetBtns.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+
+        if (spd === 0) {
+          state.isPlaying = false;
+          state.targetSpeed = 0;
+          if (el.btnPlay) {
+            el.btnPlay.textContent = "▶ Start Drive";
+            el.btnPlay.style.background = "linear-gradient(135deg, #00e676, #0284c7)";
+          }
+          showToast("Speed set to: 🛑 Stop (0 km/h)");
+        } else {
+          state.targetSpeed = spd;
+          state.isPlaying = true;
+          if (el.btnPlay) {
+            el.btnPlay.textContent = "⏸ Pause Drive";
+            el.btnPlay.style.background = "linear-gradient(135deg, #f59e0b, #ea580c)";
+          }
+          showToast(`Cruising set to: ${spd} km/h`);
+        }
+      });
+    });
+  }
+
+  // Simulation Speed Rate Multiplier (Slow / Normal / Cruise / Fast)
+  if (el.simSpeedBtns) {
+    el.simSpeedBtns.forEach(btn => {
+      btn.addEventListener("click", () => {
+        const rate = parseFloat(btn.getAttribute("data-rate"));
+        state.simSpeedMultiplier = rate;
+        el.simSpeedBtns.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        showToast(`Simulation Drive Pace: ${btn.textContent.trim()}`);
+      });
+    });
+  }
+
   // Theme Toggle
   if (el.btnThemeToggle) {
     el.btnThemeToggle.addEventListener("click", () => {
@@ -2004,12 +2181,53 @@ function setupDataExporters() {
   }
 }
 
+function buildRouteMilestonePins() {
+  milestoneMarkers.forEach(m => {
+    if (map && map.hasLayer(m)) map.removeLayer(m);
+  });
+  milestoneMarkers = [];
+
+  const scen = SCENARIOS[state.activeScenarioKey];
+  if (!scen || scen.isPanIndia || !map) return;
+
+  const milestones = [
+    { label: "🟢 0% Start", progress: 0.0 },
+    { label: "🚇 Tunnel In", progress: scen.tunnelStart },
+    { label: "☀️ Tunnel Out", progress: scen.tunnelEnd },
+    { label: "🏁 100% End", progress: 1.0 }
+  ];
+
+  milestones.forEach(ms => {
+    const pos = getLatLngAlongPath(ms.progress);
+    const icon = L.divIcon({
+      className: "milestone-pin-container",
+      html: `<div class="milestone-pin-badge">${ms.label}</div>`,
+      iconSize: [84, 24],
+      iconAnchor: [42, 12]
+    });
+    const marker = L.marker([pos.lat, pos.lng], { icon, zIndexOffset: 750 });
+    marker.on("click", (e) => {
+      L.DomEvent.stopPropagation(e);
+      setVehiclePositionByProgress(ms.progress);
+      showToast(`Jumped to milestone: ${ms.label}`);
+    });
+    milestoneMarkers.push(marker);
+    marker.addTo(map);
+  });
+}
+
 // =============================================================================
-// 10. MAIN ENGINE LOOP
+// 10. MAIN ENGINE LOOP - DELTA TIME PRECISION
 // =============================================================================
 
-function mainLoop() {
-  simulationTick();
+let lastLoopTimestamp = 0;
+
+function mainLoop(timestamp = 0) {
+  if (!lastLoopTimestamp) lastLoopTimestamp = timestamp;
+  const dt = Math.min(0.05, Math.max(0.001, (timestamp - lastLoopTimestamp) / 1000));
+  lastLoopTimestamp = timestamp;
+
+  simulationTick(dt);
   renderOscilloscopes();
   requestAnimationFrame(mainLoop);
 }
