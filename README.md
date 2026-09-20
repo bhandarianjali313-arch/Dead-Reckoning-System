@@ -1,7 +1,7 @@
 # 🚗 AI/ML-Based Intelligent Dead Reckoning System for Seamless Navigation
 
 [![Status: Production Ready](https://img.shields.io/badge/Status-Production%20Ready-brightgreen.svg)]()
-[![Features: 12 Unique Features](https://img.shields.io/badge/Features-12%20Unique%20Features-00f2fe.svg)]()
+[![Features: 6/6 Verified](https://img.shields.io/badge/Unique%20Features-6%2F6%20Verified-00f2fe.svg)]()
 [![Tech Stack: Complete](https://img.shields.io/badge/Tech%20Stack-8%20Tiers%20Covered-blueviolet.svg)]()
 [![Map Engine: Google Maps Platform](https://img.shields.io/badge/Map%20Engine-Google%20Maps%20Platform-4285F4.svg)]()
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)]()
@@ -10,22 +10,16 @@ A commercial-grade, end-to-end intelligent dead-reckoning vehicular navigation p
 
 ---
 
-## 🌟 The 12 Unique Features
+## ⭐ Our 6 Unique Features
 
-| # | Feature Name | Core Mechanism | Impact |
-|---|--------------|----------------|--------|
-| **1** | **Dynamic Process-Noise Adaptation** | Neural prediction of continuous scaling factor $\alpha_Q \in [0.1, 10.0]$ based on spectral roughness and steering dynamics. | Smooth roads yield low uncertainty ($Q \sim 0.35$); severe potholes or bumps expand $Q$ to $5.5\times$, preventing filter blowup from spurious IMU shocks. |
-| **2** | **Stop-Based Drift Correction** | Generalized Likelihood Ratio standstill detection (ZUPT) combined with RTS backwards trajectory smoother. | When stopping at red lights, eliminates accumulated drift backwards along the completed $A \rightarrow B$ road segment before proceeding to $C$. |
-| **3** | **AI Fallback Mechanism** | Dual tripwire arbiter evaluating epistemic uncertainty ($\sigma_{ai} > 0.45$) and sudden phone handling/repositioning. | Never blindly trusts AI. Instantly fails over to a robust physics-based Invariant EKF with Non-Holonomic Constraints, keeping navigation safely alive. |
-| **4** | **Seamless GNSS Switching** | Exponential innovation damping ($\beta(t) = 1 - e^{-3t/\tau}$) upon tunnel exit. | Eliminates jarring map teleportation and heading jumps upon GPS re-acquisition, smoothly guiding the vehicle back to ground truth over 2.5s. |
-| **5** | **Confidence-Aware Navigation** | Real-time 2D covariance eigen-decomposition extracting 95% horizontal confidence error ellipses. | Provides drivers and autonomous agents with exact metric uncertainty radii ($\pm 1.2\text{m}$) and confidence tiers (`HIGH`, `MODERATE`, `DEGRADED`). |
-| **6** | **Optional Camera Assistance** | Monocular optical flow visual odometry speed updates ($z_{cam} = v_{flow}$). | Bounds longitudinal velocity drift rate during prolonged GNSS blackouts when camera frames are available. |
-| **7** | **Synthetic Voice Guidance & Audio Alerts** | Web Audio API oscillator synthesis & HTML5 SpeechSynthesis voice engine. | Announces tunnel entry/blackout, pothole dynamic-Q spikes, ZUPT stops, and seamless GNSS re-acquisition with customizable voice toggle (`🔊 Voice ON/OFF`). |
-| **8** | **Aerospace Compass Heading Tape** | Continuous $0^\circ \rightarrow 360^\circ$ dynamic magnetic heading ribbon across the map. | Renders live magnetic declination, cardinal orientation, and numerical heading degrees at 60 FPS. |
-| **9** | **3D Vehicle Attitude & Artificial Horizon** | Real-time Pitch ($\theta$), Roll ($\phi$), and Yaw ($\psi$) gyroscope horizon. | Visualizes phone-to-vehicle virtual frame transformation ($R_{phone}^{vehicle}$), proving phone placement independence. |
-| **10** | **High-Frequency WebSocket Telemetry** | Full-duplex bidirectional WebSocket streaming (`/ws/telemetry`) up to 50 Hz. | Connects remote smartphones or telemetry sinks for live real-time state streaming and sensor data ingestion. |
-| **11** | **Trajectory & Telemetry Data Exporter** | One-click export to GeoJSON (`.geojson`) and CSV (`.csv`). | Formats driven tracks, ground truth coordinates, covariance ellipses, and speed logs for QGIS, Google Earth Pro, MATLAB, or Python GeoPandas. |
-| **12** | **7 Iconic Indian Corridors & Tunnels** | Pre-cached regional simulations across major Indian infrastructure. | Mumbai Undersea Tunnel, Lucknow BBD Corridor, Delhi Pragati Maidan, Atal Tunnel Rohtang, Bengaluru Airport Expressway, Pune-Mumbai Ghats, and Kashmir Chenani-Nashri Tunnel. |
+| # | Feature Name | Core Principle & Mechanism | Practical Impact |
+|---|---|---|---|
+| **1** | **Dynamic Process-Noise Adaptation** | **Adaptive Uncertainty Tuning**: Instead of keeping uncertainty fixed, AI changes it according to the driving situation based on IMU spectral roughness and steering dynamics. | Smooth road → lower uncertainty ($Q \sim 0.35$); bumpy road or sharp turn → higher uncertainty ($Q \sim 5.5$), preventing filter divergence from spurious IMU shocks. |
+| **2** | **Stop-Based Drift Correction** | **Standstill Detection & Smoothing**: When the vehicle stops, the system gets an opportunity to estimate accumulated drift by comparing the estimated journey with the road map. | Performs Zero-Velocity Updates (ZUPT) and corrects the previous $A \rightarrow B$ trajectory before the vehicle continues toward $C$. |
+| **3** | **AI Fallback Mechanism** | **Dual Tripwire Arbiter**: We don't blindly trust AI. If the AI becomes uncertain because of abnormal sensor data, sudden phone movement, or an unfamiliar situation, the system safely intervenes. | Temporarily falls back to the traditional robust physics-based Invariant EKF (IEKF) with non-holonomic constraints, keeping navigation 100% alive. |
+| **4** | **Seamless GNSS Switching** | **Smooth Transition Re-acquisition**: GNSS and dead reckoning work together when GNSS is available. When GNSS disappears, the system automatically relies more on IMU, AI, and map-based positioning. | When GNSS returns, it smoothly dampens innovation errors over 2.5s and corrects accumulated drift instead of suddenly jumping or teleporting the vehicle. |
+| **5** | **Confidence-Aware Navigation** | **Horizontal Error Ellipse Extraction**: Real-time covariance eigen-decomposition extracting 95% confidence bounds and status indicators. | Provides drivers and autonomous agents with not only the estimated position, but also an exact indication of how confident it is in that position and how much error may exist ($\pm \text{meters}$). |
+| **6** | **Optional Camera Assistance** | **Visual Odometry Speed Update**: If needed, the smartphone camera can provide an additional movement estimate using visual optical flow information alongside IMU data. | Bounds longitudinal velocity drift rate during prolonged GNSS blackouts when camera frames are available. |
 
 ---
 
