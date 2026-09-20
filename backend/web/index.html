@@ -12,16 +12,16 @@
   <!-- MASTER TOP STICKY HEADER -->
   <header class="master-header">
     <div class="brand-section">
-      <div class="brand-badge">AI-DR 🇮🇳</div>
+      <div class="brand-badge">🇮🇳 AI-DR</div>
       <div class="brand-meta">
-        <h1 class="brand-title">AI-ML Intelligent Dead Reckoning System</h1>
-        <div class="brand-sub">Seamless Navigation in GPS/GNSS-Denied Environments (Tunnels, Underground Roads, Canyons, Forests)</div>
+        <h1 class="brand-title">All-India AI-ML Dead Reckoning System</h1>
+        <div class="brand-sub">Continuous Subterranean, Mountain & Tunnel Tracking Across India (GNSS-Denied Sensor Fusion)</div>
       </div>
     </div>
 
     <!-- Navigation Tabs -->
     <nav class="nav-tabs">
-      <button class="nav-tab-btn active" data-tab="cockpit">🧭 1. Cockpit</button>
+      <button class="nav-tab-btn active" data-tab="cockpit">🧭 1. India Cockpit</button>
       <button class="nav-tab-btn" data-tab="sensor-lab">🧠 2. AI Sensor Lab</button>
       <button class="nav-tab-btn" data-tab="features">⭐ 3. 6 Features</button>
       <button class="nav-tab-btn" data-tab="tech-stack">🛠️ 4. 8 Tech Tiers</button>
@@ -32,10 +32,10 @@
     <!-- Header Actions -->
     <div class="header-actions">
       <div id="headerModeBadge" class="status-pill status-gnss">GNSS_AIDED</div>
-      <button id="btnVoiceToggle" class="btn-header active" title="Synthetic Voice Navigation Guidance">🔊 Voice: ON</button>
       <button id="btnThemeToggle" class="btn-header" title="Toggle Light / Dark Mode">☀️ Light Mode</button>
     </div>
   </header>
+
 
   <!-- MAIN VIEWPORT CONTAINER -->
   <main class="main-content">
@@ -49,10 +49,38 @@
         <!-- Address & Status Banner -->
         <div class="cockpit-top-bar">
           <div class="address-group">
-            <span style="font-size: 16px;">📍</span>
-            <span id="cockpitAddressText" class="address-txt">Marine Drive (Netaji Subhash Chandra Bose Rd), Nariman Point, Mumbai, India</span>
+            <span style="font-size: 18px;">📍</span>
+            <span id="cockpitAddressText" class="address-txt">🇮🇳 Pan-India Overview: Strategic Underground Tunnels &amp; High-Speed Corridors</span>
           </div>
-          <div class="address-src-tag">OSM / Google Maps India • 14 Satellites Active</div>
+          <div class="address-src-tag">All-India GNSS Blackout Defense Network</div>
+        </div>
+
+        <!-- PAN-INDIA INTERACTIVE CORRIDOR SELECTION RIBBON -->
+        <div class="corridor-ribbon">
+          <button class="corridor-chip corridor-chip-india active" data-scenario="india">
+            <span>🇮🇳</span> Whole India Overview
+          </button>
+          <button class="corridor-chip" data-scenario="mumbai">
+            <span>🌊</span> Mumbai Undersea (2.07 km)
+          </button>
+          <button class="corridor-chip" data-scenario="atal">
+            <span>🏔️</span> Atal Tunnel Rohtang (9.02 km)
+          </button>
+          <button class="corridor-chip" data-scenario="delhi">
+            <span>🏛️</span> Delhi Pragati Maidan (1.3 km)
+          </button>
+          <button class="corridor-chip" data-scenario="lucknow">
+            <span>🎓</span> Lucknow BBD Corridor
+          </button>
+          <button class="corridor-chip" data-scenario="bengaluru">
+            <span>✈️</span> Bengaluru Airport Express
+          </button>
+          <button class="corridor-chip" data-scenario="kolkata">
+            <span>🚇</span> Kolkata Metro Under-River
+          </button>
+          <button class="corridor-chip" data-scenario="kashmir">
+            <span>❄️</span> Kashmir Chenani-Nashri (9.28 km)
+          </button>
         </div>
 
         <!-- Cockpit Map & Telemetry Grid -->
@@ -117,47 +145,78 @@
               </div>
             </div>
 
-            <!-- 6 Dedicated Interactive Feature Action Buttons -->
-            <div style="font-size: 11px; font-weight: 800; color: var(--text-muted); margin-top: 6px; letter-spacing: 0.5px;">
+            <!-- 6 Dedicated Interactive Feature Action Buttons (Large, Clear, High-Contrast) -->
+            <div style="font-size: 11px; font-weight: 900; color: var(--text-muted); margin-top: 4px; letter-spacing: 1px;">
               ⭐ TEST THE 6 UNIQUE FEATURES LIVE:
             </div>
             <div class="feature-action-grid">
-              <button id="btnPothole" class="btn-feat-act" title="Feature 1: Dynamic Process-Noise Adaptation">
-                ⚡ F1: Pothole
+              <button id="btnPothole" class="btn-feat-card feat-f1" title="Feature 1: Dynamic Process-Noise Adaptation">
+                <span class="feat-icon">⚡</span>
+                <div class="feat-txt-group">
+                  <span class="feat-title">F1: Road Pothole</span>
+                  <span class="feat-sub">Scale Noise (Q: 4.5x)</span>
+                </div>
               </button>
-              <button id="btnStop" class="btn-feat-act" title="Feature 2: Stop-Based Drift Correction (ZUPT)">
-                🛑 F2: Signal Stop
+              
+              <button id="btnStop" class="btn-feat-card feat-f2" title="Feature 2: Stop-Based Drift Correction (ZUPT)">
+                <span class="feat-icon">🛑</span>
+                <div class="feat-txt-group">
+                  <span class="feat-title">F2: Signal Stop</span>
+                  <span class="feat-sub">ZUPT + RTS Smoother</span>
+                </div>
               </button>
-              <button id="btnFallback" class="btn-feat-act" title="Feature 3: AI Fallback Mechanism">
-                📱 F3: AI Fallback
+              
+              <button id="btnFallback" class="btn-feat-card feat-f3" title="Feature 3: AI Fallback Mechanism">
+                <span class="feat-icon">📱</span>
+                <div class="feat-txt-group">
+                  <span class="feat-title">F3: AI Fallback</span>
+                  <span class="feat-sub">Failover to IEKF</span>
+                </div>
               </button>
-              <button id="btnTunnel" class="btn-feat-act" title="Feature 4: Seamless GNSS Switching">
-                🚇 F4: Tunnel Outage
+              
+              <button id="btnTunnel" class="btn-feat-card feat-f4" title="Feature 4: Seamless GNSS Switching">
+                <span class="feat-icon">🚇</span>
+                <div class="feat-txt-group">
+                  <span class="feat-title">F4: Tunnel Outage</span>
+                  <span class="feat-sub">Blackout &rarr; Damping</span>
+                </div>
               </button>
-              <button id="btnRecenter" class="btn-feat-act" title="Feature 5: Confidence-Aware Navigation">
-                🎯 F5: Center Ellipse
+              
+              <button id="btnRecenter" class="btn-feat-card feat-f5" title="Feature 5: Confidence-Aware Navigation">
+                <span class="feat-icon">🎯</span>
+                <div class="feat-txt-group">
+                  <span class="feat-title">F5: 95% Ellipse</span>
+                  <span class="feat-sub">Center Uncertainty</span>
+                </div>
               </button>
-              <button id="btnCamera" class="btn-feat-act" title="Feature 6: Optional Camera Assistance">
-                📷 F6: Camera VO
+              
+              <button id="btnCamera" class="btn-feat-card feat-f6" title="Feature 6: Optional Camera Assistance">
+                <span class="feat-icon">📷</span>
+                <div class="feat-txt-group">
+                  <span class="feat-title">F6: Camera VO</span>
+                  <span class="feat-sub">Visual Odometry Feed</span>
+                </div>
               </button>
             </div>
 
           </div>
         </div>
 
-
         <!-- Cockpit Controls Bar -->
         <div class="cockpit-controls">
-          <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+          <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
             <button id="btnPlay" class="btn-drive-main">▶ Start Drive</button>
             <button id="btnReset" class="btn-drive-reset">↺ Reset</button>
             
             <select id="scenarioSelect" class="scenario-select">
-              <option value="mumbai">🇮🇳 Mumbai: Coastal Road Undersea Tunnel (2.07 km)</option>
-              <option value="lucknow">🇮🇳 Lucknow: BBD University Corridor</option>
-              <option value="delhi">🇮🇳 New Delhi: Pragati Maidan Tunnel (1.3 km)</option>
-              <option value="atal">🇮🇳 Himachal: Atal Tunnel Rohtang (9.02 km)</option>
-              <option value="bengaluru">🇮🇳 Bengaluru: Kempegowda Airport Expressway</option>
+              <option value="india">🇮🇳 Whole India: Pan-India Subterranean &amp; Highway Network</option>
+              <option value="mumbai">🌊 Mumbai: Coastal Road Undersea Tunnel (2.07 km)</option>
+              <option value="atal">🏔️ Himachal: Atal Tunnel Rohtang (9.02 km)</option>
+              <option value="delhi">🏛️ New Delhi: Pragati Maidan Tunnel (1.3 km)</option>
+              <option value="lucknow">🎓 Lucknow: BBD University Corridor</option>
+              <option value="bengaluru">✈️ Bengaluru: Kempegowda Airport Expressway</option>
+              <option value="kolkata">🚇 Kolkata: Hooghly River Under-River Tunnel</option>
+              <option value="kashmir">❄️ Jammu &amp; Kashmir: Chenani-Nashri Tunnel (9.28 km)</option>
             </select>
           </div>
           <div style="font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 12px;">
@@ -166,6 +225,7 @@
             <span>Filter: <strong style="color: var(--accent-cyan); font-family: var(--font-mono);">15-State ES-EKF</strong></span>
           </div>
         </div>
+
 
       </div>
     </section>

@@ -1,29 +1,55 @@
 /**
  * AI-ML Based Intelligent Dead Reckoning System for Seamless Navigation
- * Master Interactive Controller & Real Geographic Leaflet Map Engine
+ * Master Interactive Controller & Pan-India Geographic Leaflet Map Engine
  */
 
 // =============================================================================
-// 1. GEOGRAPHIC CORRIDORS & SIMULATION STATE
+// 1. ALL-INDIA GEOGRAPHIC CORRIDORS & STRATEGIC TUNNELS
 // =============================================================================
 
 const SCENARIOS = {
+  india: {
+    name: "Whole India: Pan-India Subterranean & Highway Network",
+    address: "🇮🇳 Strategic National Highway & Subterranean Tunnels Network across India",
+    srcTag: "ISRO NavIC / GPS / OpenStreetMap India • 24 Satellites Nationwide",
+    center: [22.5000, 78.9629],
+    zoom: 5,
+    baseSpeed: 70.0,
+    tunnelStart: 0.25,
+    tunnelEnd: 0.65,
+    isPanIndia: true,
+    // National spine trajectory connecting North to South
+    coordinates: [
+      [33.0450, 75.2950], // Kashmir
+      [32.4030, 77.1490], // Rohtang
+      [28.6220, 77.2490], // Delhi
+      [26.8955, 81.0720], // Lucknow
+      [22.5800, 88.3450], // Kolkata
+      [18.9680, 72.8120], // Mumbai
+      [13.1160, 77.6310]  // Bengaluru
+    ],
+    tunnelPolygon: [
+      [20.0, 76.0],
+      [20.0, 82.0],
+      [24.0, 82.0],
+      [24.0, 76.0]
+    ]
+  },
   mumbai: {
     name: "Mumbai: Coastal Road Undersea Tunnel (2.07 km)",
-    address: "Marine Drive to Worli Sea Face (Mumbai Coastal Road Undersea Tunnel), Mumbai, India",
+    address: "Marine Drive to Worli Sea Face (Mumbai Coastal Road Undersea Tunnel), Mumbai, Maharashtra, India",
     srcTag: "OSM / Google Maps India • 14 Satellites Active",
     center: [18.9680, 72.8120],
     zoom: 14,
     baseSpeed: 52.0,
-    tunnelStart: 0.30,
+    tunnelStart: 0.28,
     tunnelEnd: 0.78,
-    // Real GPS coordinates along Mumbai Marine Drive through Coastal Tunnel to Worli
     coordinates: [
       [18.9438, 72.8232], // Marine Drive Nariman Point
       [18.9500, 72.8180], // Chowpatty Curve
       [18.9560, 72.8120], // Tunnel South Portal (Girgaon)
       [18.9630, 72.8065], // Undersea Bore 1
-      [18.9700, 72.8030], // Undersea Bore 2 (Deepest point)
+      [18.9700, 72.8030], // Undersea Bore 2 (Deepest Arabian Sea seabed)
       [18.9775, 72.8020], // Tunnel North Portal (Priyadarshini Park)
       [18.9860, 72.8075], // Haji Ali Connector
       [18.9980, 72.8140]  // Worli Sea Face Exit
@@ -35,27 +61,27 @@ const SCENARIOS = {
       [18.9550, 72.8090]
     ]
   },
-  lucknow: {
-    name: "Lucknow: BBD University Corridor",
-    address: "Faizabad Rd, Babu Banarasi Das University to Flyover Underpass, Lucknow, India",
-    srcTag: "OSM / Google Maps India • 16 Satellites Active",
-    center: [26.8955, 81.0720],
-    zoom: 15,
-    baseSpeed: 45.0,
-    tunnelStart: 0.35,
-    tunnelEnd: 0.72,
+  atal: {
+    name: "Himachal: Atal Tunnel Rohtang (9.02 km)",
+    address: "Dhundi South Portal to Sissu North Portal (Leh-Manali Highway), Rohtang, Himachal Pradesh, India",
+    srcTag: "OSM / Google Maps India • High Himalayan GNSS",
+    center: [32.4030, 77.1490],
+    zoom: 12,
+    baseSpeed: 60.0,
+    tunnelStart: 0.15,
+    tunnelEnd: 0.85,
     coordinates: [
-      [26.8920, 81.0600], // BBD University Main Gate
-      [26.8940, 81.0670], // Crown Mall Junction
-      [26.8955, 81.0730], // Flyover Incline (Deep Canopy)
-      [26.8970, 81.0780], // Subterranean Underpass
-      [26.8990, 81.0840]  // Faizabad Highway Exit
+      [32.3630, 77.1330], // Dhundi South Portal
+      [32.3850, 77.1410], // Mountain Core (2,500m overburden)
+      [32.4030, 77.1490], // Midpoint Refuge Station
+      [32.4250, 77.1580], // North Incline
+      [32.4430, 77.1650]  // Sissu North Portal
     ],
     tunnelPolygon: [
-      [26.8950, 81.0715],
-      [26.8975, 81.0795],
-      [26.8982, 81.0785],
-      [26.8958, 81.0705]
+      [32.3620, 77.1350],
+      [32.4440, 77.1670],
+      [32.4450, 77.1610],
+      [32.3630, 77.1290]
     ]
   },
   delhi: {
@@ -80,32 +106,32 @@ const SCENARIOS = {
       [28.6202, 77.2435]
     ]
   },
-  atal: {
-    name: "Himachal: Atal Tunnel Rohtang (9.02 km)",
-    address: "Dhundi South Portal to Sissu North Portal (Leh-Manali Highway), Rohtang, Himachal Pradesh, India",
-    srcTag: "OSM / Google Maps India • Himalayan GNSS",
-    center: [32.4030, 77.1490],
-    zoom: 12,
-    baseSpeed: 60.0,
-    tunnelStart: 0.15,
-    tunnelEnd: 0.85,
+  lucknow: {
+    name: "Lucknow: BBD University Corridor",
+    address: "Faizabad Rd, Babu Banarasi Das University to Flyover Underpass, Lucknow, Uttar Pradesh, India",
+    srcTag: "OSM / Google Maps India • 16 Satellites Active",
+    center: [26.8955, 81.0720],
+    zoom: 15,
+    baseSpeed: 45.0,
+    tunnelStart: 0.35,
+    tunnelEnd: 0.72,
     coordinates: [
-      [32.3630, 77.1330], // Dhundi South Portal
-      [32.3850, 77.1410], // Mountain Core (2,500m overburden)
-      [32.4030, 77.1490], // Midpoint Refuge Station
-      [32.4250, 77.1580], // North Incline
-      [32.4430, 77.1650]  // Sissu North Portal
+      [26.8920, 81.0600], // BBD University Main Gate
+      [26.8940, 81.0670], // Crown Mall Junction
+      [26.8955, 81.0730], // Flyover Incline (Deep Canopy)
+      [26.8970, 81.0780], // Subterranean Underpass
+      [26.8990, 81.0840]  // Faizabad Highway Exit
     ],
     tunnelPolygon: [
-      [32.3620, 77.1350],
-      [32.4440, 77.1670],
-      [32.4450, 77.1610],
-      [32.3630, 77.1290]
+      [26.8950, 81.0715],
+      [26.8975, 81.0795],
+      [26.8982, 81.0785],
+      [26.8958, 81.0705]
     ]
   },
   bengaluru: {
     name: "Bengaluru: Kempegowda Airport Expressway",
-    address: "Bellary Rd (NH 44), Hebbal Flyover to KIAL Expressway, Bengaluru, Karnataka, India",
+    address: "Bellary Rd (NH 44), Hebbal Flyover to KIAL Airport Expressway, Bengaluru, Karnataka, India",
     srcTag: "OSM / Google Maps India • 18 Satellites Active",
     center: [13.1160, 77.6310],
     zoom: 12,
@@ -125,19 +151,74 @@ const SCENARIOS = {
       [13.1480, 77.6310],
       [13.1330, 77.6160]
     ]
+  },
+  kolkata: {
+    name: "Kolkata: Hooghly River Under-River Tunnel",
+    address: "Howrah Railway Station to Mahakaran (East-West Underwater Transit), Kolkata, West Bengal, India",
+    srcTag: "OSM / Google Maps India • 16 Satellites Active",
+    center: [22.5800, 88.3450],
+    zoom: 14,
+    baseSpeed: 42.0,
+    tunnelStart: 0.25,
+    tunnelEnd: 0.80,
+    coordinates: [
+      [22.5835, 88.3425], // Howrah Railway Station
+      [22.5820, 88.3470], // River Bank Approach
+      [22.5810, 88.3510], // Underwater River Bed (-32m)
+      [22.5760, 88.3515], // Brabourne Road Exit
+      [22.5726, 88.3505]  // Mahakaran Station BBD Bagh
+    ],
+    tunnelPolygon: [
+      [22.5830, 88.3450],
+      [22.5800, 88.3530],
+      [22.5780, 88.3520],
+      [22.5810, 88.3440]
+    ]
+  },
+  kashmir: {
+    name: "Jammu & Kashmir: Chenani-Nashri Tunnel (9.28 km)",
+    address: "NH 44, Syama Prasad Mookerjee Tunnel, Chenani to Nashri, Jammu & Kashmir, India",
+    srcTag: "OSM / Google Maps India • Himalayan Satellite Pass",
+    center: [33.0450, 75.2950],
+    zoom: 12,
+    baseSpeed: 55.0,
+    tunnelStart: 0.18,
+    tunnelEnd: 0.82,
+    coordinates: [
+      [33.0080, 75.2850], // Chenani South Portal
+      [33.0300, 75.2910], // Deep Mountain Box
+      [33.0550, 75.2980], // Central Ventilation Shaft
+      [33.0820, 75.3050]  // Nashri North Portal
+    ],
+    tunnelPolygon: [
+      [33.0060, 75.2870],
+      [33.0840, 75.3080],
+      [33.0850, 75.3020],
+      [33.0070, 75.2810]
+    ]
   }
 };
 
+// Strategic Indian cities for Whole-India interactive map pins
+const INDIA_CITIES = [
+  { key: "mumbai", label: "🌊 Mumbai Undersea (2.07 km)", lat: 18.9680, lng: 72.8120 },
+  { key: "atal", label: "🏔️ Atal Rohtang (9.02 km)", lat: 32.4030, lng: 77.1490 },
+  { key: "delhi", label: "🏛️ Delhi Pragati (1.3 km)", lat: 28.6220, lng: 77.2490 },
+  { key: "lucknow", label: "🎓 Lucknow BBD Corridor", lat: 26.8955, lng: 81.0720 },
+  { key: "bengaluru", label: "✈️ Bengaluru Airport Express", lat: 13.1160, lng: 77.6310 },
+  { key: "kolkata", label: "🚇 Kolkata Under-River Tunnel", lat: 22.5800, lng: 88.3450 },
+  { key: "kashmir", label: "❄️ Kashmir Chenani-Nashri (9.28 km)", lat: 33.0450, lng: 75.2950 }
+];
+
 const state = {
-  activeScenarioKey: "mumbai",
+  activeScenarioKey: "india",
   isPlaying: true,
-  voiceEnabled: true,
   isDarkTheme: true,
   progress: 0.05,
-  speed: 48.0,
-  targetSpeed: 52.0,
-  currentLat: 18.9438,
-  currentLng: 72.8232,
+  speed: 55.0,
+  targetSpeed: 60.0,
+  currentLat: 22.5000,
+  currentLng: 78.9629,
   headingDeg: 0,
   isManualTunnel: false,
   isPotholeShock: false,
@@ -149,7 +230,7 @@ const state = {
   isCameraActive: false,
   dynamicQ: 0.35,
   uncertaintyRadius: 1.18,
-  satellites: 14,
+  satellites: 18,
   navMode: "GNSS_AIDED",
   previousNavMode: "GNSS_AIDED",
   dampingTimer: 0,
@@ -174,7 +255,7 @@ for (let i = 0; i < state.maxHistoryPoints; i++) {
   state.errHistory.push(1.18);
 }
 
-// Leaflet Map globals
+// Leaflet Map Globals
 let map = null;
 let tileLayers = {};
 let currentLayerKey = "google_dark";
@@ -183,35 +264,31 @@ let drivenPolyline = null;
 let tunnelPolygonLayer = null;
 let confidenceCircle = null;
 let vehicleMarker = null;
+let indiaCityMarkers = [];
 
 // =============================================================================
-// 2. DOM ELEMENT REFERENCES
+// 2. DOM REFERENCES
 // =============================================================================
 
 const el = {
-  // Tabs
   tabBtns: document.querySelectorAll(".nav-tab-btn"),
   tabPanes: document.querySelectorAll(".tab-pane"),
 
-  // Header
   headerModeBadge: document.getElementById("headerModeBadge"),
-  btnVoiceToggle: document.getElementById("btnVoiceToggle"),
   btnThemeToggle: document.getElementById("btnThemeToggle"),
   cockpitAddressText: document.getElementById("cockpitAddressText"),
 
-  // Map Controls
+  corridorChips: document.querySelectorAll(".corridor-chip"),
   mapLayerBtns: document.querySelectorAll(".map-layer-btn"),
   cameraHudOverlay: document.getElementById("cameraHudOverlay"),
   cameraCanvas: document.getElementById("cameraCanvas"),
 
-  // Telemetry HUD
   speedDisplay: document.getElementById("speedDisplay"),
   hAccDisplay: document.getElementById("hAccDisplay"),
   qDisplay: document.getElementById("qDisplay"),
   satsDisplay: document.getElementById("satsDisplay"),
   zuptDisplay: document.getElementById("zuptDisplay"),
 
-  // 6 Feature Action Buttons
   btnPothole: document.getElementById("btnPothole"),
   btnStop: document.getElementById("btnStop"),
   btnFallback: document.getElementById("btnFallback"),
@@ -219,12 +296,10 @@ const el = {
   btnRecenter: document.getElementById("btnRecenter"),
   btnCamera: document.getElementById("btnCamera"),
 
-  // Playback Controls
   btnPlay: document.getElementById("btnPlay"),
   btnReset: document.getElementById("btnReset"),
   scenarioSelect: document.getElementById("scenarioSelect"),
 
-  // AI Sensor Lab Gauges
   patSpeedVal: document.getElementById("patSpeedVal"),
   patSpeedMeter: document.getElementById("patSpeedMeter"),
   patAccelBadge: document.getElementById("patAccelBadge"),
@@ -246,13 +321,11 @@ const el = {
   patRelVal: document.getElementById("patRelVal"),
   patRelMeter: document.getElementById("patRelMeter"),
 
-  // Canvases
   accelCanvas: document.getElementById("accelCanvas"),
   gyroCanvas: document.getElementById("gyroCanvas"),
   dynQCanvas: document.getElementById("dynQCanvas"),
   errorCanvas: document.getElementById("errorCanvas"),
 
-  // Feature Cards Badges
   cardF1Badge: document.getElementById("cardF1Badge"),
   cardF2Badge: document.getElementById("cardF2Badge"),
   cardF3Badge: document.getElementById("cardF3Badge"),
@@ -260,17 +333,15 @@ const el = {
   cardF5Badge: document.getElementById("cardF5Badge"),
   cardF6Badge: document.getElementById("cardF6Badge"),
 
-  // Exporters
   btnExpGeoJSON: document.getElementById("btnExpGeoJSON"),
   btnExpCSV: document.getElementById("btnExpCSV"),
   btnExpBenchJSON: document.getElementById("btnExpBenchJSON"),
 
-  // Toast
   liveToast: document.getElementById("liveToast")
 };
 
 // =============================================================================
-// 3. LEAFLET MAP INITIALIZATION & TILE LAYERS
+// 3. LEAFLET MAP INITIALIZATION (WHOLE INDIA SUPPORT)
 // =============================================================================
 
 function initLeafletMap() {
@@ -304,7 +375,7 @@ function initLeafletMap() {
     maxZoom: 20
   });
 
-  // Layer 3: High-Res Satellite Imagery
+  // Layer 3: High-Resolution Satellite
   tileLayers["google_satellite"] = L.tileLayer("https://mt{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}", {
     subdomains: "0123",
     maxZoom: 20
@@ -317,16 +388,16 @@ function initLeafletMap() {
 
   tileLayers["google_dark"].addTo(map);
 
-  // Planned corridor polyline (Slate gray)
+  // Planned corridor polyline
   routePolyline = L.polyline(initialScenario.coordinates, {
     color: "#475569",
-    weight: 6.0,
+    weight: 5.0,
     opacity: 0.75,
     lineCap: "round",
     lineJoin: "round"
   }).addTo(map);
 
-  // Active AI dead reckoning driven path (Glowing Emerald Green)
+  // Active AI dead reckoning driven path
   drivenPolyline = L.polyline([[state.currentLat, state.currentLng]], {
     color: "#00e676",
     weight: 4.5,
@@ -373,9 +444,31 @@ function initLeafletMap() {
     zIndexOffset: 1000
   }).addTo(map);
 
-  // Invalidate map size on window resize or tab switch
+  // Build Whole-India City Pins
+  buildIndiaCityPins();
+
   window.addEventListener("resize", () => {
     if (map) map.invalidateSize();
+  });
+}
+
+function buildIndiaCityPins() {
+  indiaCityMarkers.forEach(m => map.removeLayer(m));
+  indiaCityMarkers = [];
+
+  INDIA_CITIES.forEach(city => {
+    const icon = L.divIcon({
+      className: "india-node-container",
+      html: `<div class="india-node-badge">${city.label}</div>`,
+      iconSize: [160, 28],
+      iconAnchor: [80, 14]
+    });
+
+    const marker = L.marker([city.lat, city.lng], { icon, zIndexOffset: 500 }).addTo(map);
+    marker.on("click", () => {
+      setScenario(city.key);
+    });
+    indiaCityMarkers.push(marker);
   });
 }
 
@@ -395,7 +488,7 @@ function switchMapLayer(layerKey) {
 }
 
 // =============================================================================
-// 4. SCENARIO LOADING & PATH INTERPOLATION
+// 4. SCENARIO SWITCHER & INTERPOLATION
 // =============================================================================
 
 function setScenario(key) {
@@ -403,7 +496,7 @@ function setScenario(key) {
   if (!scen) return;
 
   state.activeScenarioKey = key;
-  state.progress = 0.05;
+  state.progress = 0.02;
   state.targetSpeed = scen.baseSpeed;
   state.speed = scen.baseSpeed * 0.9;
   state.isManualTunnel = false;
@@ -411,22 +504,42 @@ function setScenario(key) {
   state.isStandstill = false;
   state.isFallback = false;
   state.uncertaintyRadius = 1.18;
-  state.satellites = 14;
+  state.satellites = key === "india" ? 24 : 14;
   state.drivenHistory = [];
 
   if (el.cockpitAddressText) {
     el.cockpitAddressText.textContent = scen.address;
   }
 
+  // Update Ribbon buttons
+  el.corridorChips.forEach(chip => {
+    chip.classList.toggle("active", chip.getAttribute("data-scenario") === key);
+  });
+
+  // Sync Select Dropdown
+  if (el.scenarioSelect && el.scenarioSelect.value !== key) {
+    el.scenarioSelect.value = key;
+  }
+
+  // Show/Hide Whole India Pins based on view
+  if (key === "india") {
+    indiaCityMarkers.forEach(m => {
+      if (!map.hasLayer(m)) m.addTo(map);
+    });
+  } else {
+    indiaCityMarkers.forEach(m => {
+      if (map.hasLayer(m)) map.removeLayer(m);
+    });
+  }
+
   if (map) {
-    map.flyTo(scen.center, scen.zoom, { duration: 1.2 });
+    map.flyTo(scen.center, scen.zoom, { duration: 1.4 });
     if (routePolyline) routePolyline.setLatLngs(scen.coordinates);
     if (tunnelPolygonLayer) tunnelPolygonLayer.setLatLngs(scen.tunnelPolygon);
     if (drivenPolyline) drivenPolyline.setLatLngs([]);
   }
 
-  showToast(`Loaded Corridor: ${scen.name}`);
-  speakVoiceGuidance(`Loaded navigation corridor: ${scen.name}`);
+  showToast(`Corridor Activated: ${scen.name}`);
 }
 
 function getLatLngAlongPath(t) {
@@ -451,7 +564,7 @@ function getLatLngAlongPath(t) {
 }
 
 // =============================================================================
-// 5. SIMULATION TICK & 6 UNIQUE FEATURES LOGIC
+// 5. SIMULATION TICK & 6 FEATURES LOGIC
 // =============================================================================
 
 function simulationTick() {
@@ -459,7 +572,7 @@ function simulationTick() {
 
   const scen = SCENARIOS[state.activeScenarioKey];
 
-  // Feature 2: Standstill ZUPT logic
+  // Feature 2: Stop-based drift correction (ZUPT)
   if (state.isStandstill) {
     state.stopTimer -= 0.016;
     state.targetSpeed = 0;
@@ -470,7 +583,6 @@ function simulationTick() {
       showToast("Signal turned GREEN. Accelerating out of standstill.");
     }
   } else {
-    // Smooth velocity control
     state.speed += (state.targetSpeed - state.speed) * 0.05;
   }
 
@@ -479,11 +591,11 @@ function simulationTick() {
     state.fallbackTimer -= 0.016;
     if (state.fallbackTimer <= 0) {
       state.isFallback = false;
-      showToast("AI Epistemic Uncertainty normalized. Resuming multi-task network.");
+      showToast("AI Epistemic Uncertainty normalized. Multi-task network resumed.");
     }
   }
 
-  // Feature 1: Pothole dynamic process noise scaling
+  // Feature 1: Road Pothole shock scaling
   if (state.isPotholeShock) {
     state.potholeTimer -= 0.016;
     state.dynamicQ = 4.2 + Math.random() * 0.8;
@@ -498,12 +610,11 @@ function simulationTick() {
 
   // Feature 6: Camera Visual Odometry effect
   if (state.isCameraActive) {
-    // Visual odometry bounds longitudinal velocity drift
     state.uncertaintyRadius = Math.min(1.85, state.uncertaintyRadius);
   }
 
   // Route progression
-  const speedNormalized = (state.speed / 50.0) * 0.0016;
+  const speedNormalized = (state.speed / 50.0) * (scen.isPanIndia ? 0.0006 : 0.0016);
   state.progress += speedNormalized;
   if (state.progress > 0.98) {
     state.progress = 0.02;
@@ -527,13 +638,12 @@ function simulationTick() {
     state.navMode = "GNSS_AIDED";
   }
 
-  // Mode Transition Detection
   if (state.navMode !== state.previousNavMode) {
     onModeTransition(state.previousNavMode, state.navMode);
     state.previousNavMode = state.navMode;
   }
 
-  // Feature 5: Metric Uncertainty Radius Evolution
+  // Feature 5: Horizontal uncertainty radius evolution
   if (state.navMode === "AI_DEAD_RECKONING") {
     state.satellites = 0;
     state.uncertaintyRadius = Math.min(2.82, state.uncertaintyRadius + 0.0035);
@@ -545,11 +655,11 @@ function simulationTick() {
   } else if (state.navMode === "FALLBACK_IEKF") {
     state.uncertaintyRadius = 1.95 + Math.random() * 0.2;
   } else {
-    state.satellites = 14 + Math.floor(Math.random() * 3);
+    state.satellites = scen.isPanIndia ? 24 : 14 + Math.floor(Math.random() * 3);
     state.uncertaintyRadius = 1.15 + Math.random() * 0.08;
   }
 
-  // Vehicle Lat/Lng calculation
+  // Vehicle Lat/Lng update
   const pos = getLatLngAlongPath(state.progress);
   state.currentLat = pos.lat;
   state.currentLng = pos.lng;
@@ -560,10 +670,7 @@ function simulationTick() {
     state.drivenHistory.shift();
   }
 
-  // Update Leaflet Map Visuals
   updateMapVisuals();
-
-  // Generate IMU signals & render gauges
   generateSimulatedImu(pos);
   updateCockpitUi();
   updatePatternLabUi();
@@ -575,23 +682,18 @@ function updateMapVisuals() {
   if (!map || !vehicleMarker) return;
 
   const currentLatLng = [state.currentLat, state.currentLng];
-
-  // Update vehicle position
   vehicleMarker.setLatLng(currentLatLng);
 
-  // Rotate vehicle heading arrow
   const iconEl = document.getElementById("vehicleIconInner");
   if (iconEl) {
     iconEl.style.transform = `rotate(${state.headingDeg}deg)`;
   }
 
-  // Feature 5: Update confidence circle radius & position
   if (confidenceCircle) {
     confidenceCircle.setLatLng(currentLatLng);
     confidenceCircle.setRadius(Math.max(1.0, state.uncertaintyRadius * 3.5));
   }
 
-  // Update driven polyline
   if (drivenPolyline && state.drivenHistory.length > 1) {
     drivenPolyline.setLatLngs(state.drivenHistory);
   }
@@ -599,30 +701,26 @@ function updateMapVisuals() {
 
 function onModeTransition(fromMode, toMode) {
   if (toMode === "AI_DEAD_RECKONING") {
-    showToast("⚠️ Feature 4: GNSS Lost. Engaging AI Dead Reckoning (15-State ES-EKF).");
-    speakVoiceGuidance("GNSS signal lost. Entering tunnel. AI Dead Reckoning engaged.");
+    showToast("⚠️ Feature 4: GNSS Lost! Engaging AI Dead Reckoning (15-State ES-EKF)");
     if (el.headerModeBadge) {
       el.headerModeBadge.className = "status-pill status-tunnel";
       el.headerModeBadge.textContent = "AI_DEAD_RECKONING";
     }
   } else if (toMode === "ZUPT_STOP_CORRECTION") {
-    showToast("🛑 Feature 2: Standstill detected. Applying Stop-Based ZUPT & RTS smoothing.");
-    speakVoiceGuidance("Standstill detected. Performing stop based drift correction.");
+    showToast("🛑 Feature 2: Standstill Detected! ZUPT & Retroactive RTS Drift Smoothing Active");
     if (el.headerModeBadge) {
       el.headerModeBadge.className = "status-pill status-zupt";
       el.headerModeBadge.textContent = "ZUPT_CORRECTION";
     }
   } else if (toMode === "FALLBACK_IEKF") {
-    showToast("📱 Feature 3: Epistemic shock! AI Fallback engaged -> Invariant EKF.");
-    speakVoiceGuidance("Abnormal sensor variance. Safeguarding navigation with Invariant EKF fallback.");
+    showToast("📱 Feature 3: Sensor Tripwire Shock! Failing over to Kinematic Invariant EKF");
     if (el.headerModeBadge) {
       el.headerModeBadge.className = "status-pill status-tunnel";
       el.headerModeBadge.textContent = "FALLBACK_IEKF";
     }
   } else if (fromMode === "AI_DEAD_RECKONING" && toMode === "GNSS_AIDED") {
-    state.dampingTimer = 2.5; // 2.5-second smooth exponential innovation damping
-    showToast("✅ Feature 4: GNSS Restored! Applying Exponential Innovation Damping.");
-    speakVoiceGuidance("GNSS signal restored. Applying smooth innovation damping.");
+    state.dampingTimer = 2.5;
+    showToast("✅ Feature 4: GNSS Lock Restored! Smooth Exponential Innovation Damping Active");
     if (el.headerModeBadge) {
       el.headerModeBadge.className = "status-pill status-damping";
       el.headerModeBadge.textContent = "SEAMLESS_DAMPING";
@@ -648,26 +746,22 @@ function generateSimulatedImu(pos) {
   let gy = (Math.random() - 0.5) * 0.02;
   let gz = (Math.random() - 0.5) * 0.03;
 
-  // Turning yaw rate injection
   if (Math.abs(pos.dLng) > 0.002 && Math.abs(pos.dLat) > 0.002) {
     gz += 0.25;
     ax += 0.40;
   }
 
-  // Feature 1: Pothole shock injection
   if (state.isPotholeShock) {
     az += (Math.random() - 0.3) * 6.5;
     ay += (Math.random() - 0.5) * 3.0;
   }
 
-  // Braking / Acceleration longitudinal injection
   if (state.isStandstill) {
     ay -= 2.1;
   } else if (state.speed < state.targetSpeed - 4) {
     ay += 1.4;
   }
 
-  // Push to history buffers
   state.accelHistory.x.push(ax);
   state.accelHistory.y.push(ay);
   state.accelHistory.z.push(az);
@@ -690,7 +784,7 @@ function generateSimulatedImu(pos) {
 }
 
 // =============================================================================
-// 6. UI UPDATES: COCKPIT, 6 FEATURES, SENSOR LAB
+// 6. UI UPDATES
 // =============================================================================
 
 function updateCockpitUi() {
@@ -724,13 +818,11 @@ function updateCockpitUi() {
 }
 
 function updatePatternLabUi() {
-  // Pattern 1: Speed
   if (el.patSpeedVal && el.patSpeedMeter) {
     el.patSpeedVal.textContent = `${state.speed.toFixed(1)} km/h`;
     el.patSpeedMeter.style.width = `${Math.min(100, (state.speed / 100) * 100)}%`;
   }
 
-  // Pattern 2: Acceleration / Braking
   if (el.patAccelVal && el.patAccelMeter && el.patAccelBadge) {
     if (state.isStandstill) {
       el.patAccelVal.textContent = "-2.10 m/s² (Braking)";
@@ -750,7 +842,6 @@ function updatePatternLabUi() {
     }
   }
 
-  // Pattern 3: Turning
   if (el.patTurnVal && el.patTurnMeter && el.patTurnBadge) {
     const isTurning = Math.abs(state.gyroHistory.z[state.gyroHistory.z.length - 1]) > 0.12;
     if (isTurning) {
@@ -766,7 +857,6 @@ function updatePatternLabUi() {
     }
   }
 
-  // Pattern 4: Road Bumps / Potholes
   if (el.patBumpVal && el.patBumpMeter && el.patBumpBadge) {
     if (state.isPotholeShock) {
       el.patBumpVal.textContent = "Pothole Shock Detected";
@@ -781,13 +871,11 @@ function updatePatternLabUi() {
     }
   }
 
-  // Pattern 5: Chassis Vibration
   if (el.patVibVal && el.patVibMeter && el.patVibBadge) {
     el.patVibVal.textContent = state.isPotholeShock ? "0.32g (Severe)" : "0.04g (Nominal)";
     el.patVibMeter.style.width = state.isPotholeShock ? "88%" : "10%";
   }
 
-  // Pattern 6: Phone Movement
   if (el.patPhoneVal && el.patPhoneMeter && el.patPhoneBadge) {
     if (state.isFallback) {
       el.patPhoneVal.textContent = "Unwanted Phone Movement!";
@@ -802,7 +890,6 @@ function updatePatternLabUi() {
     }
   }
 
-  // Pattern 7: Sensor Reliability Score
   if (el.patRelVal && el.patRelMeter && el.patRelBadge) {
     const trustPct = state.isFallback ? 65.0 : state.navMode === "AI_DEAD_RECKONING" ? 96.2 : 98.8;
     el.patRelVal.textContent = `${trustPct.toFixed(1)}% Trust (Dual Tripwire Arbiter Online)`;
@@ -832,7 +919,7 @@ function updateFeatureBadges() {
     } else if (state.navMode === "SEAMLESS_DAMPING") {
       el.cardF4Badge.textContent = "Seamless Damping (β=0.85)";
     } else {
-      el.cardF4Badge.textContent = "GNSS Lock (14 Sats)";
+      el.cardF4Badge.textContent = "GNSS Lock (18 Sats)";
     }
   }
   if (el.cardF5Badge) {
@@ -845,18 +932,15 @@ function updateFeatureBadges() {
   }
 }
 
-// Render optional camera feature visualization
 function renderCameraHud() {
   if (!el.cameraCanvas || !state.isCameraActive) return;
   const ctx = el.cameraCanvas.getContext("2d");
   const w = el.cameraCanvas.width;
   const h = el.cameraCanvas.height;
 
-  // Dark road perspective view
   ctx.fillStyle = "#111827";
   ctx.fillRect(0, 0, w, h);
 
-  // Perspective lane lines
   ctx.strokeStyle = "#38bdf8";
   ctx.lineWidth = 1.5;
   ctx.beginPath();
@@ -866,7 +950,6 @@ function renderCameraHud() {
   ctx.lineTo(w * 0.55, h * 0.4);
   ctx.stroke();
 
-  // Optical flow vectors
   ctx.strokeStyle = "#00f2fe";
   ctx.fillStyle = "#00f2fe";
   const numVectors = 6;
@@ -884,7 +967,6 @@ function renderCameraHud() {
     ctx.stroke();
   }
 
-  // Speed reading overlay
   ctx.fillStyle = "#ffffff";
   ctx.font = "9px monospace";
   ctx.fillText(`v_flow: ${state.speed.toFixed(1)} km/h`, 6, 12);
@@ -976,7 +1058,7 @@ function renderOscilloscopes() {
 }
 
 // =============================================================================
-// 8. 6 FEATURE BUTTON ACTIONS & INTERACTION
+// 8. 6 FEATURE ACTION HANDLERS
 // =============================================================================
 
 function setupFeatureButtons() {
@@ -986,7 +1068,6 @@ function setupFeatureButtons() {
       state.isPotholeShock = true;
       state.potholeTimer = 1.4;
       showToast("⚡ Feature 1: Pothole Shock! Scaling Dynamic Process Noise (Q: 4.5x)");
-      speakVoiceGuidance("Road bump detected. Dynamic process noise scaled to prevent filter divergence.");
     });
   }
 
@@ -995,8 +1076,7 @@ function setupFeatureButtons() {
     el.btnStop.addEventListener("click", () => {
       state.isStandstill = true;
       state.stopTimer = 4.0;
-      showToast("🛑 Feature 2: Standstill Stop! ZUPT & Retroactive RTS Drift Smoothing Active.");
-      speakVoiceGuidance("Signal stop detected. Applying zero velocity update and retroactive drift correction.");
+      showToast("🛑 Feature 2: Standstill Stop! ZUPT & Retroactive RTS Drift Smoothing Active");
     });
   }
 
@@ -1005,8 +1085,7 @@ function setupFeatureButtons() {
     el.btnFallback.addEventListener("click", () => {
       state.isFallback = true;
       state.fallbackTimer = 3.5;
-      showToast("📱 Feature 3: Epistemic Uncertainty / Phone Shake! Falling back to IEKF.");
-      speakVoiceGuidance("AI uncertainty threshold exceeded. Falling back to invariant Kalman filter.");
+      showToast("📱 Feature 3: Epistemic Shock / Phone Shake! Falling back to IEKF");
     });
   }
 
@@ -1017,10 +1096,8 @@ function setupFeatureButtons() {
       el.btnTunnel.classList.toggle("active", state.isManualTunnel);
       if (state.isManualTunnel) {
         showToast("🚇 Feature 4: Tunnel Outage INJECTED (0 GNSS Satellites, AI Dead Reckoning Online)");
-        speakVoiceGuidance("Entering tunnel. GNSS signal lost. Switching to AI dead reckoning.");
       } else {
-        showToast("☀️ Feature 4: Exiting Tunnel! Applying Seamless Exponential Damping.");
-        speakVoiceGuidance("Exiting tunnel. GNSS lock restored. Seamless innovation damping engaged.");
+        showToast("☀️ Feature 4: Exiting Tunnel! Applying Seamless Exponential Damping (β=0.85)");
       }
     });
   }
@@ -1029,7 +1106,7 @@ function setupFeatureButtons() {
   if (el.btnRecenter) {
     el.btnRecenter.addEventListener("click", () => {
       if (map) {
-        map.flyTo([state.currentLat, state.currentLng], 17, { duration: 1.0 });
+        map.flyTo([state.currentLat, state.currentLng], 16, { duration: 1.0 });
         showToast(`🎯 Feature 5: Recentered on 95% Confidence Ellipse (±${state.uncertaintyRadius.toFixed(2)}m)`);
       }
     });
@@ -1044,7 +1121,6 @@ function setupFeatureButtons() {
         el.cameraHudOverlay.style.display = state.isCameraActive ? "flex" : "none";
       }
       showToast(`📷 Feature 6: Visual Odometry Assist: ${state.isCameraActive ? "ONLINE" : "OFFLINE"}`);
-      speakVoiceGuidance(`Visual odometry camera assistance ${state.isCameraActive ? "engaged" : "disengaged"}`);
     });
   }
 
@@ -1060,7 +1136,7 @@ function setupFeatureButtons() {
   // Reset
   if (el.btnReset) {
     el.btnReset.addEventListener("click", () => {
-      state.progress = 0.05;
+      state.progress = 0.02;
       state.isManualTunnel = false;
       state.isPotholeShock = false;
       state.isStandstill = false;
@@ -1071,20 +1147,18 @@ function setupFeatureButtons() {
     });
   }
 
-  // Scenario Dropdown
+  // Corridor Selection Ribbon Chips
+  el.corridorChips.forEach(chip => {
+    chip.addEventListener("click", () => {
+      const scenarioKey = chip.getAttribute("data-scenario");
+      setScenario(scenarioKey);
+    });
+  });
+
+  // Scenario Select Dropdown
   if (el.scenarioSelect) {
     el.scenarioSelect.addEventListener("change", (e) => {
       setScenario(e.target.value);
-    });
-  }
-
-  // Voice Toggle
-  if (el.btnVoiceToggle) {
-    el.btnVoiceToggle.addEventListener("click", () => {
-      state.voiceEnabled = !state.voiceEnabled;
-      el.btnVoiceToggle.textContent = state.voiceEnabled ? "🔊 Voice: ON" : "🔇 Voice: OFF";
-      el.btnVoiceToggle.classList.toggle("active", state.voiceEnabled);
-      showToast(`Voice Guidance: ${state.voiceEnabled ? "ENABLED" : "MUTED"}`);
     });
   }
 
@@ -1107,7 +1181,7 @@ function setupFeatureButtons() {
 }
 
 // =============================================================================
-// 9. CLIENT-SIDE DATA EXPORTERS & TABS
+// 9. TABS & CLIENT-SIDE EXPORTERS
 // =============================================================================
 
 function setupTabNavigation() {
@@ -1139,19 +1213,6 @@ function showToast(msg, duration = 3000) {
   }, duration);
 }
 
-function speakVoiceGuidance(text) {
-  if (!state.voiceEnabled || !("speechSynthesis" in window)) return;
-  try {
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.rate = 1.05;
-    utterance.lang = "en-IN";
-    window.speechSynthesis.speak(utterance);
-  } catch (err) {
-    console.warn("Voice error:", err);
-  }
-}
-
 function downloadFile(content, fileName, contentType) {
   const blob = new Blob([content], { type: contentType });
   const url = URL.createObjectURL(blob);
@@ -1171,7 +1232,7 @@ function setupDataExporters() {
       const geoJson = {
         type: "FeatureCollection",
         properties: {
-          system: "AI-ML Based Intelligent Dead Reckoning System",
+          system: "All-India AI-ML Based Intelligent Dead Reckoning System",
           corridor: scen.name,
           timestamp: new Date().toISOString()
         },
@@ -1180,7 +1241,7 @@ function setupDataExporters() {
             type: "Feature",
             geometry: {
               type: "LineString",
-              coordinates: scen.coordinates.map(c => [c[1], c[0]]) // [lng, lat]
+              coordinates: scen.coordinates.map(c => [c[1], c[0]])
             },
             properties: {
               name: "Vehicle Trajectory",
@@ -1191,7 +1252,7 @@ function setupDataExporters() {
           }
         ]
       };
-      downloadFile(JSON.stringify(geoJson, null, 2), "dead_reckoning_trajectory.geojson", "application/json");
+      downloadFile(JSON.stringify(geoJson, null, 2), "dead_reckoning_india_trajectory.geojson", "application/json");
       showToast("📥 Exported Trajectory GeoJSON successfully!");
     });
   }
@@ -1204,7 +1265,7 @@ function setupDataExporters() {
         const t = now - (state.errHistory.length - i) * 20;
         csv += `${t},${state.currentLat.toFixed(6)},${state.currentLng.toFixed(6)},${state.speed.toFixed(2)},${state.errHistory[i].toFixed(3)},${state.qHistory[i].toFixed(2)},${state.satellites},${state.navMode}\n`;
       }
-      downloadFile(csv, "dead_reckoning_telemetry.csv", "text/csv");
+      downloadFile(csv, "dead_reckoning_india_telemetry.csv", "text/csv");
       showToast("📥 Exported 50Hz Telemetry CSV successfully!");
     });
   }
@@ -1268,10 +1329,10 @@ window.addEventListener("DOMContentLoaded", () => {
   initLeafletMap();
   setupFeatureButtons();
   setupDataExporters();
-  setScenario("mumbai");
+  setScenario("india"); // Start on Whole-India Overview
 
   if (el.btnPlay) el.btnPlay.textContent = "⏸ Pause Drive";
-  showToast("🧭 Real Geographic Map & 6 Features Online (50Hz ES-IEKF)", 3500);
+  showToast("🇮🇳 Whole-India Map & 6 Unique Features Online (50Hz ES-IEKF)", 4000);
 
   requestAnimationFrame(mainLoop);
 });

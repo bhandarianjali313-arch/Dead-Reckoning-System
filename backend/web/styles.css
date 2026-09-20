@@ -139,33 +139,38 @@ body.theme-light .master-header {
 
 .nav-tab-btn {
   background: transparent;
-  border: none;
+  border: 1.5px solid transparent;
   color: var(--text-muted);
-  font-size: 12.5px;
-  font-weight: 700;
-  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 800;
+  padding: 8px 16px;
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s ease;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 7px;
 }
 
 .nav-tab-btn:hover {
   color: var(--text-main);
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.12);
 }
 
 .nav-tab-btn.active {
   background: var(--bg-card);
   color: var(--accent-cyan);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  border-color: var(--accent-cyan);
+  box-shadow: 0 0 16px rgba(0, 242, 254, 0.3);
 }
 
 body.theme-light .nav-tab-btn.active {
   color: var(--accent-blue);
   background: #fff;
+  border-color: var(--accent-blue);
 }
+
 
 /* Header Action Controls */
 .header-actions {
@@ -323,12 +328,14 @@ body.theme-light .nav-tab-btn.active {
 
 .map-viewport {
   background: #050811;
-  border: 1px solid var(--border);
+  border: 1.5px solid var(--border);
   border-radius: var(--radius-lg);
   position: relative;
-  height: 390px;
+  height: 480px;
   overflow: hidden;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
 }
+
 
 #map {
   width: 100%;
@@ -471,12 +478,308 @@ body.theme-light .nav-tab-btn.active {
   border-radius: 2px;
 }
 
+/* Telemetry Column */
+.telemetry-column {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 12px;
+}
 
-/* Cockpit Control Bar */
+.speedometer-card {
+  background: var(--bg-surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
+  background: linear-gradient(180deg, rgba(13, 19, 34, 0.95), rgba(7, 13, 24, 0.95));
+}
 
+.speedometer-title {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--text-muted);
+  letter-spacing: 1.5px;
+  margin-bottom: 2px;
+}
+
+.speed-row {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.speed-number {
+  font-size: 54px;
+  font-weight: 900;
+  font-family: var(--font-mono);
+  color: var(--accent-cyan);
+  line-height: 1;
+  text-shadow: 0 0 28px rgba(0, 242, 254, 0.6);
+}
+
+.speed-unit {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--text-muted);
+  letter-spacing: 0.5px;
+}
+
+.metric-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.metric-tile {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+  transition: all 0.2s ease;
+}
+
+.metric-tile:hover {
+  border-color: rgba(255, 255, 255, 0.15);
+  background: var(--bg-card);
+}
+
+.metric-label {
+  font-size: 9.5px;
+  font-weight: 800;
+  color: var(--text-muted);
+  letter-spacing: 0.8px;
+  margin-bottom: 3px;
+}
+
+.metric-val {
+  font-size: 16px;
+  font-weight: 900;
+  font-family: var(--font-mono);
+}
+
+/* ==========================================================================
+   PAN-INDIA CORRIDOR SELECTOR RIBBON
+   ========================================================================== */
+.corridor-ribbon {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 6px 2px 14px 2px;
+  scrollbar-width: thin;
+}
+
+.corridor-chip {
+  background: var(--bg-surface);
+  border: 1.5px solid var(--border);
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 800;
+  padding: 8px 14px;
+  border-radius: 20px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.corridor-chip:hover {
+  color: var(--text-main);
+  border-color: var(--accent-cyan);
+  background: var(--bg-card);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 242, 254, 0.2);
+}
+
+.corridor-chip.active {
+  background: linear-gradient(135deg, rgba(0, 242, 254, 0.25), rgba(2, 132, 199, 0.3));
+  color: var(--accent-cyan);
+  border-color: var(--accent-cyan);
+  box-shadow: 0 0 16px rgba(0, 242, 254, 0.4);
+}
+
+.corridor-chip-india {
+  background: linear-gradient(135deg, rgba(255, 145, 0, 0.2), rgba(0, 230, 118, 0.2));
+  border-color: #ff9100;
+  color: #ffb74d;
+}
+
+.corridor-chip-india:hover, .corridor-chip-india.active {
+  border-color: #ff9100;
+  box-shadow: 0 0 18px rgba(255, 145, 0, 0.5);
+  background: linear-gradient(135deg, rgba(255, 145, 0, 0.3), rgba(0, 230, 118, 0.3));
+  color: #fff;
+}
+
+/* Whole India Landmark Marker Pins on Leaflet Map */
+.india-node-badge {
+  background: rgba(10, 14, 23, 0.94);
+  border: 1.8px solid #00f2fe;
+  color: #ffffff;
+  padding: 5px 11px;
+  border-radius: 20px;
+  font-size: 11.5px;
+  font-weight: 800;
+  white-space: nowrap;
+  box-shadow: 0 0 16px rgba(0, 242, 254, 0.65);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.india-node-badge:hover {
+  transform: scale(1.15);
+  border-color: #00e676;
+  box-shadow: 0 0 24px rgba(0, 230, 118, 0.85);
+  color: #00e676;
+}
+
+/* ==========================================================================
+   THE 6 UNIQUE FEATURES - CLEAR, BOLD, PROMINENT BUTTON CARDS
+   ========================================================================== */
+.feature-action-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.btn-feat-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1.5px solid var(--border);
+  background: var(--bg-surface);
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.btn-feat-card:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.15);
+}
+
+.btn-feat-card .feat-icon {
+  font-size: 24px;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.btn-feat-card .feat-txt-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow: hidden;
+}
+
+.btn-feat-card .feat-title {
+  font-size: 12.5px;
+  font-weight: 800;
+  letter-spacing: -0.2px;
+  line-height: 1.2;
+}
+
+.btn-feat-card .feat-sub {
+  font-size: 10px;
+  color: var(--text-muted);
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Feature 1: Neon Cyan (Road Pothole Shock) */
+.feat-f1 {
+  border-color: rgba(0, 242, 254, 0.35);
+  background: linear-gradient(135deg, rgba(0, 242, 254, 0.1), rgba(0, 242, 254, 0.02));
+}
+.feat-f1 .feat-title { color: var(--accent-cyan); }
+.feat-f1:hover, .feat-f1.active {
+  border-color: var(--accent-cyan);
+  box-shadow: 0 0 18px rgba(0, 242, 254, 0.45);
+  background: rgba(0, 242, 254, 0.18);
+}
+
+/* Feature 2: Vivid Crimson Red (Signal Stop ZUPT) */
+.feat-f2 {
+  border-color: rgba(255, 56, 92, 0.35);
+  background: linear-gradient(135deg, rgba(255, 56, 92, 0.1), rgba(255, 56, 92, 0.02));
+}
+.feat-f2 .feat-title { color: #ff5277; }
+.feat-f2:hover, .feat-f2.active {
+  border-color: #ff385c;
+  box-shadow: 0 0 18px rgba(255, 56, 92, 0.45);
+  background: rgba(255, 56, 92, 0.18);
+}
+
+/* Feature 3: Vivid Magenta (AI Fallback to IEKF) */
+.feat-f3 {
+  border-color: rgba(247, 37, 133, 0.35);
+  background: linear-gradient(135deg, rgba(247, 37, 133, 0.1), rgba(247, 37, 133, 0.02));
+}
+.feat-f3 .feat-title { color: #f72585; }
+.feat-f3:hover, .feat-f3.active {
+  border-color: #f72585;
+  box-shadow: 0 0 18px rgba(247, 37, 133, 0.45);
+  background: rgba(247, 37, 133, 0.18);
+}
+
+/* Feature 4: Electric Amber (Tunnel Outage & Damping) */
+.feat-f4 {
+  border-color: rgba(255, 145, 0, 0.35);
+  background: linear-gradient(135deg, rgba(255, 145, 0, 0.1), rgba(255, 145, 0, 0.02));
+}
+.feat-f4 .feat-title { color: #ff9100; }
+.feat-f4:hover, .feat-f4.active {
+  border-color: #ff9100;
+  box-shadow: 0 0 18px rgba(255, 145, 0, 0.45);
+  background: rgba(255, 145, 0, 0.18);
+}
+
+/* Feature 5: Neon Emerald Green (95% Error Ellipse) */
+.feat-f5 {
+  border-color: rgba(0, 230, 118, 0.35);
+  background: linear-gradient(135deg, rgba(0, 230, 118, 0.1), rgba(0, 230, 118, 0.02));
+}
+.feat-f5 .feat-title { color: var(--accent-green); }
+.feat-f5:hover, .feat-f5.active {
+  border-color: var(--accent-green);
+  box-shadow: 0 0 18px rgba(0, 230, 118, 0.45);
+  background: rgba(0, 230, 118, 0.18);
+}
+
+/* Feature 6: Royal Violet Purple (Camera Visual Odometry) */
+.feat-f6 {
+  border-color: rgba(168, 85, 247, 0.35);
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.1), rgba(168, 85, 247, 0.02));
+}
+.feat-f6 .feat-title { color: #c084fc; }
+.feat-f6:hover, .feat-f6.active {
+  border-color: #a855f7;
+  box-shadow: 0 0 18px rgba(168, 85, 247, 0.45);
+  background: rgba(168, 85, 247, 0.18);
+}
 
 /* Cockpit Control Bar */
 .cockpit-controls {
+
   display: flex;
   align-items: center;
   justify-content: space-between;
