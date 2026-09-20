@@ -56,6 +56,8 @@ WEB_DIR = Path(__file__).parent / "web"
 DOCS_DATA_DIR = Path(__file__).parent.parent / "docs" / "data"
 
 app.mount("/static", StaticFiles(directory=str(WEB_DIR)), name="static")
+if (WEB_DIR / "leaflet").exists():
+    app.mount("/leaflet", StaticFiles(directory=str(WEB_DIR / "leaflet")), name="leaflet_static")
 if DOCS_DATA_DIR.exists():
     app.mount("/data", StaticFiles(directory=str(DOCS_DATA_DIR)), name="data_static")
 
