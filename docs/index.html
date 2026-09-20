@@ -2,337 +2,264 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI-ML Based Intelligent Dead Reckoning System for Seamless Navigation</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>AI-DR Live Vehicular Navigation — Consumer Turn-by-Turn App</title>
   <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
-  <div class="container">
+  <div class="app-container">
     
-    <!-- CARD 1: LIVE NAVIGATION COCKPIT (THE PROTOTYPE) -->
-    <div class="card">
-      
-      <!-- Top Status Bar -->
-      <div class="header-bar">
-        <div class="brand-group">
-          <span class="logo-badge">AI-DR 🇮🇳</span>
-          <span class="brand-title">Live Vehicular Navigation</span>
-          <span class="api-pill">✓ Google Maps API: Active</span>
-        </div>
-        <div class="header-actions">
-          <button id="btnTheme" class="btn-theme">☀️ Light / 🌙 Dark</button>
-          <div id="modeBadge" class="status-badge status-gnss">GNSS_AIDED</div>
-        </div>
-      </div>
+    <!-- FULLSCREEN NAVIGATION MAP LAYER -->
+    <div class="map-canvas-container">
+      <svg id="mapSvg" class="navigation-svg" viewBox="0 0 400 320" preserveAspectRatio="xMidYMid slice">
+        <defs>
+          <!-- Tunnel Shading Gradient -->
+          <linearGradient id="tunnelGrad" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#1e3a8a" stop-opacity="0.85"/>
+            <stop offset="50%" stop-color="#1e1b4b" stop-opacity="0.95"/>
+            <stop offset="100%" stop-color="#312e81" stop-opacity="0.85"/>
+          </linearGradient>
 
-      <!-- Live Reverse-Geocoded Address Banner -->
-      <div class="address-banner" style="margin-top: 14px;">
-        <div style="display:flex; align-items:center; gap:8px; overflow:hidden;">
-          <span>📍</span>
-          <span id="addressText" class="address-text">Marine Drive (Netaji Subhash Chandra Bose Rd), Nariman Point, Mumbai, India</span>
-        </div>
-        <span class="address-source">OSM / Google Maps India</span>
-      </div>
+          <!-- Map Grid Pattern -->
+          <pattern id="navGrid" width="24" height="24" patternUnits="userSpaceOnUse">
+            <path d="M 24 0 L 0 0 0 24" fill="none" stroke="#172033" stroke-width="0.7"/>
+          </pattern>
 
-      <!-- Interactive Navigation Map & Telemetry HUD Grid -->
-      <div class="cockpit-grid" style="margin-top: 14px;">
-        
-        <!-- Vector Map Canvas (Left 3 cols) -->
-        <div class="map-viewport">
-          <svg id="mapSvg" class="map-svg" viewBox="0 0 320 210">
-            <defs>
-              <linearGradient id="tunnelGrad" x1="0" y1="0" x2="1" y2="0">
-                <stop offset="0%" stop-color="#1e3a8a" stop-opacity="0.75"/>
-                <stop offset="100%" stop-color="#312e81" stop-opacity="0.75"/>
-              </linearGradient>
-              <pattern id="mapGrid" width="20" height="20" patternUnits="userSpaceOnUse">
-                <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#1e293b" stroke-width="0.7"/>
-              </pattern>
-            </defs>
+          <!-- Vehicle Directional Cone Glow -->
+          <radialGradient id="beamGrad" cx="50%" cy="100%" r="90%">
+            <stop offset="0%" stop-color="#00f2fe" stop-opacity="0.35"/>
+            <stop offset="100%" stop-color="#00f2fe" stop-opacity="0.0"/>
+          </radialGradient>
+        </defs>
 
-            <!-- Background Grid -->
-            <rect width="100%" height="100%" fill="url(#mapGrid)"/>
+        <!-- Background Road Network Grid -->
+        <rect width="100%" height="100%" fill="url(#navGrid)"/>
 
-            <!-- Tunnel Zone Highlight -->
-            <rect id="tunnelZoneRect" x="135" y="30" width="140" height="42" fill="url(#tunnelGrad)" rx="6" stroke="#3b82f6" stroke-width="1.2" stroke-dasharray="3,3"/>
-            <text id="tunnelZoneTitle" x="140" y="46" fill="#93c5fd" font-size="8.5" font-weight="bold">MUMBAI COASTAL TUNNEL (2.07 KM)</text>
-            <text id="tunnelZoneSub" x="140" y="58" fill="#60a5fa" font-size="8">100% Undersea GNSS Blackout</text>
+        <!-- Secondary Road Context Lines -->
+        <path d="M 20 120 L 380 120 M 180 20 L 180 300 M 50 250 L 350 250" fill="none" stroke="#1e293b" stroke-width="3" stroke-linecap="round"/>
 
-            <!-- Road Trajectory Line -->
-            <path id="routeCasing" d="M 30 180 L 30 90 Q 30 50 70 50 L 290 50" fill="none" stroke="#334155" stroke-width="8" stroke-linecap="round"/>
-            <path id="routePath" d="M 30 180 L 30 90 Q 30 50 70 50 L 290 50" fill="none" stroke="#10b981" stroke-width="3.2" stroke-linecap="round"/>
+        <!-- Undersea / Underground Tunnel Zone Tube -->
+        <g id="tunnelZoneGroup">
+          <rect id="tunnelZoneRect" x="140" y="45" width="165" height="50" rx="10" fill="url(#tunnelGrad)" stroke="#3b82f6" stroke-width="1.6" stroke-dasharray="5,4"/>
+          <text id="tunnelZoneTitle" x="148" y="66" fill="#93c5fd" font-size="10" font-weight="900" letter-spacing="0.5">MUMBAI UNDERSEA TUNNEL (2.07 KM)</text>
+          <text id="tunnelZoneSub" x="148" y="82" fill="#60a5fa" font-size="8.5" font-weight="600">GNSS Signal Denied Zone • 100% Blackout</text>
+        </g>
 
-            <!-- Landmarks -->
-            <text id="startLandmarkText" x="36" y="170" fill="#64748b" font-size="8">Marine Drive (Mumbai)</text>
-            <text id="endLandmarkText" x="200" y="105" fill="#64748b" font-size="8">Worli Sea Face Link</text>
+        <!-- Route Casing & Live Trajectory Polyline -->
+        <path id="routeCasing" d="M 40 260 L 40 140 Q 40 70 95 70 L 350 70" fill="none" stroke="#334155" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+        <path id="routePath" d="M 40 260 L 40 140 Q 40 70 95 70 L 350 70" fill="none" stroke="#10b981" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
 
-            <!-- 95% Confidence Ellipse -->
-            <ellipse id="confEllipse" cx="30" cy="180" rx="14" ry="10" fill="#00f2fe" fill-opacity="0.25" stroke="#00f2fe" stroke-width="1.2" class="pulse-ellipse"/>
-
-            <!-- Vehicle Marker -->
-            <g id="vehicleGroup" transform="translate(30, 180)">
-              <circle r="7" fill="#00f2fe" stroke="#ffffff" stroke-width="2"/>
-              <path id="vehicleArrowPath" d="M 0 -4 L 3 3 L -3 3 Z" fill="#0f172a"/>
-            </g>
-          </svg>
-
-          <!-- Over-Map Legend Badge -->
-          <div class="map-legend">
-            <span class="legend-line"></span> AI Dead Reckoning
-            <span class="legend-dot"></span> 95% Confidence Ellipse
-          </div>
-        </div>
-
-        <!-- Telemetry HUD Column (Right 2 cols) -->
-        <div class="telemetry-column">
+        <!-- Landmark Markers & Labels -->
+        <g id="landmarksGroup">
+          <circle cx="40" cy="260" r="4" fill="#38bdf8"/>
+          <text id="startLandmarkText" x="52" y="264" fill="#94a3b8" font-size="9" font-weight="700">Marine Drive Start</text>
           
-          <!-- Speedometer -->
-          <div class="speedometer-box">
-            <span class="speed-label">VEHICULAR SPEED</span>
-            <div class="speed-value-row">
-              <span id="speedDisplay" class="speed-digits">0</span>
-              <span class="speed-unit">KM/H</span>
-            </div>
-          </div>
+          <circle cx="350" cy="70" r="4" fill="#ef4444"/>
+          <text id="endLandmarkText" x="270" y="58" fill="#94a3b8" font-size="9" font-weight="700">Worli Sea Face Exit</text>
+        </g>
 
-          <!-- Metric Cards Grid -->
-          <div class="metrics-grid">
-            <div class="metric-card">
-              <div class="metric-header">95% ERROR</div>
-              <div id="hAccDisplay" class="metric-value" style="color: var(--accent-green);">±1.2 m</div>
-            </div>
-            <div class="metric-card">
-              <div class="metric-header">DYNAMIC Q</div>
-              <div id="qDisplay" class="metric-value" style="color: var(--accent-cyan);">0.35x</div>
-            </div>
-            <div class="metric-card">
-              <div class="metric-header">SATELLITES</div>
-              <div id="satsDisplay" class="metric-value">14 Sats</div>
-            </div>
-            <div class="metric-card">
-              <div class="metric-header">STOP ZUPT</div>
-              <div id="zuptDisplay" class="metric-value" style="color: var(--text-muted);">STANDBY</div>
-            </div>
-          </div>
+        <!-- 95% Horizontal Confidence Error Ellipse -->
+        <ellipse id="confEllipse" cx="40" cy="260" rx="18" ry="12" fill="#00f2fe" fill-opacity="0.25" stroke="#00f2fe" stroke-width="1.5" class="pulse-ellipse"/>
 
-          <!-- Anomaly Injection Trigger Buttons -->
-          <div class="anomaly-row">
-            <button id="btnTunnel" class="btn-anomaly btn-anomaly-tunnel" title="Simulate immediate GNSS blackout">
-              🚇 Tunnel
-            </button>
-            <button id="btnPothole" class="btn-anomaly btn-anomaly-pothole" title="Inject road bump/shock to dynamically scale Q noise">
-              ⚡ Pothole
-            </button>
-            <button id="btnStop" class="btn-anomaly btn-anomaly-stop" title="Trigger red-light stop & retroactive drift correction">
-              🛑 Stop
-            </button>
-          </div>
-
-        </div>
-      </div>
-
-      <!-- Drive Play / Pause & Scenario Bar -->
-      <div class="controls-bar" style="margin-top: 14px;">
-        <div class="controls-left">
-          <button id="btnPlay" class="btn-primary-drive">▶ Start Drive</button>
-          <button id="btnReset" class="btn-secondary">↺ Reset</button>
-          <select id="scenarioSelect" class="scenario-select">
-            <option value="mumbai">🇮🇳 Mumbai: Coastal Road Undersea Tunnel (2.07 km)</option>
-            <option value="lucknow">🇮🇳 Lucknow: BBD University Corridor</option>
-            <option value="delhi">🇮🇳 New Delhi: Pragati Maidan Tunnel (1.3 km)</option>
-            <option value="atal">🇮🇳 Himachal: Atal Tunnel Rohtang (9.02 km)</option>
-            <option value="bengaluru">🇮🇳 Bengaluru: Kempegowda Airport Expressway</option>
-          </select>
-        </div>
-        <div class="controls-right">
-          <span>Cloud: <strong style="color: var(--accent-green); font-family: var(--font-mono);">Firebase / AWS Synced</strong></span>
-          <span>•</span>
-          <span>Filter: <strong style="color: var(--accent-cyan); font-family: var(--font-mono);">15-State ES-EKF</strong></span>
-        </div>
-      </div>
-
+        <!-- Dynamic Vehicle Navigation Puck (Directional Cone & Arrow) -->
+        <g id="vehicleGroup" transform="translate(40, 260)">
+          <!-- Forward Headlight Beam -->
+          <polygon points="0,0 -20,-45 20,-45" fill="url(#beamGrad)"/>
+          <!-- Outer Radar Pulse Ring -->
+          <circle r="12" fill="none" stroke="#00f2fe" stroke-width="1.5" opacity="0.6"/>
+          <!-- Vehicle Inner Core -->
+          <circle r="7.5" fill="#00f2fe" stroke="#ffffff" stroke-width="2.5"/>
+          <!-- Arrow Indicator -->
+          <path d="M 0 -5 L 3.5 3 L -3.5 3 Z" fill="#0f172a"/>
+        </g>
+      </svg>
     </div>
 
-    <!-- CARD 2: OUR 6 UNIQUE FEATURES -->
-    <div class="card">
-      <div class="section-heading">
-        <span>⭐ Our 6 Unique Features</span>
+    <!-- FLOATING TOP BAR (Search & Controls) -->
+    <div class="floating-top-bar">
+      <div class="search-box">
+        <div class="search-left">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="destinationInput" class="search-input" placeholder="Search destination (e.g. Worli Sea Face, Atal Tunnel)..." value="Worli Sea Face via Undersea Tunnel">
+        </div>
+        <div class="search-actions">
+          <button id="btnVoiceToggle" class="btn-icon active" title="Toggle Synthetic Voice Guidance">🔊</button>
+          <button id="btnThemeToggle" class="btn-icon" title="Toggle Light/Dark Theme">🌙</button>
+          <button id="btnOpenFeatures" class="btn-icon" title="View 6 Unique Features & Tech Stack">⭐</button>
+        </div>
       </div>
-      <div class="features-grid">
-        
-        <!-- Feature 1 -->
-        <div class="feature-box">
-          <div class="feature-top">
-            <span class="feature-num">FEATURE 1</span>
-            <span id="f1Badge" class="feature-badge">Active (Q: 0.35x)</span>
+
+      <!-- Turn-by-Turn Maneuver Instruction Banner (Apple Maps Style) -->
+      <div id="turnBanner" class="turn-banner">
+        <div class="turn-left">
+          <div id="turnIcon" class="turn-maneuver-icon">↰</div>
+          <div class="turn-text-group">
+            <div id="turnDistance" class="turn-distance">In 250 m</div>
+            <div id="turnStreet" class="turn-street">Turn Left onto Mumbai Coastal Undersea Tunnel</div>
           </div>
-          <div class="feature-title">Dynamic Process-Noise Adaptation</div>
-          <div class="feature-desc">Instead of keeping uncertainty fixed, AI changes it according to the driving situation based on IMU spectral roughness and dynamics.</div>
-          <div class="feature-impact"><strong>Impact:</strong> Smooth road → lower uncertainty ($Q \sim 0.35$); bumpy road or sharp turn → higher uncertainty ($Q \sim 5.5$).</div>
         </div>
-
-        <!-- Feature 2 -->
-        <div class="feature-box">
-          <div class="feature-top">
-            <span class="feature-num">FEATURE 2</span>
-            <span id="f2Badge" class="feature-badge">Standby (Cruising)</span>
-          </div>
-          <div class="feature-title">Stop-Based Drift Correction</div>
-          <div class="feature-desc">When the vehicle stops, the system gets an opportunity to estimate the accumulated drift by comparing the estimated journey with the road map.</div>
-          <div class="feature-impact"><strong>Impact:</strong> Corrects previous $A \rightarrow B$ trajectory before vehicle continues toward $C$.</div>
-        </div>
-
-        <!-- Feature 3 -->
-        <div class="feature-box">
-          <div class="feature-top">
-            <span class="feature-num">FEATURE 3</span>
-            <span id="f3Badge" class="feature-badge">Dual Tripwire: Nominal</span>
-          </div>
-          <div class="feature-title">AI Fallback Mechanism</div>
-          <div class="feature-desc">We don't blindly trust AI. If the AI becomes uncertain because of abnormal sensor data or sudden phone movement, the system safely intervenes.</div>
-          <div class="feature-impact"><strong>Impact:</strong> Temporarily falls back to traditional robust physics-based Invariant EKF, keeping navigation alive.</div>
-        </div>
-
-        <!-- Feature 4 -->
-        <div class="feature-box">
-          <div class="feature-top">
-            <span class="feature-num">FEATURE 4</span>
-            <span id="f4Badge" class="feature-badge">Seamless Damping</span>
-          </div>
-          <div class="feature-title">Seamless GNSS Switching</div>
-          <div class="feature-desc">GNSS and dead reckoning work together when GNSS is available. When GNSS disappears, the system automatically relies more on IMU, AI and map positioning.</div>
-          <div class="feature-impact"><strong>Impact:</strong> Smoothly dampens innovation error upon exit instead of suddenly jumping.</div>
-        </div>
-
-        <!-- Feature 5 -->
-        <div class="feature-box">
-          <div class="feature-top">
-            <span class="feature-num">FEATURE 5</span>
-            <span id="f5Badge" class="feature-badge">95% Ellipse Bound</span>
-          </div>
-          <div class="feature-title">Confidence-Aware Navigation</div>
-          <div class="feature-desc">The system provides not only a position but also an indication of how confident it is in that position and how much error may exist.</div>
-          <div class="feature-impact"><strong>Impact:</strong> Provides drivers with real-time horizontal uncertainty radii ($\pm 1.2\text{m}$).</div>
-        </div>
-
-        <!-- Feature 6 -->
-        <div class="feature-box">
-          <div class="feature-top">
-            <span class="feature-num">FEATURE 6</span>
-            <span id="f6Badge" class="feature-badge">Visual Odometry Ready</span>
-          </div>
-          <div class="feature-title">Optional Camera Assistance</div>
-          <div class="feature-desc">If needed, the smartphone camera can provide an additional movement estimate using visual information alongside IMU data.</div>
-          <div class="feature-impact"><strong>Impact:</strong> Bounds velocity drift during prolonged tunnel blackouts.</div>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- CARD 3: COMPARATIVE BENCHMARK ARENA -->
-    <div class="card">
-      <div class="section-heading">
-        <span>📊 Comparative Benchmark Arena (1.5 km Tunnel Outage)</span>
-      </div>
-      <table class="benchmark-table">
-        <thead>
-          <tr>
-            <th>Navigation Method</th>
-            <th>Horizontal RMSE</th>
-            <th>CEP50</th>
-            <th>CEP95</th>
-            <th>Max Tunnel Drift</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr class="row-proposed">
-            <td>⭐ Proposed AI ES-IEKF System</td>
-            <td>1.18 m</td>
-            <td>0.85 m</td>
-            <td>2.14 m</td>
-            <td>2.82 m</td>
-            <td><span class="feature-badge">PASS (Sub-3m)</span></td>
-          </tr>
-          <tr>
-            <td>Standard Kinematic EKF (Fixed Q)</td>
-            <td>4.65 m</td>
-            <td>3.42 m</td>
-            <td>8.90 m</td>
-            <td>14.50 m</td>
-            <td><span style="color: var(--accent-orange); font-weight: 700;">DEGRADED</span></td>
-          </tr>
-          <tr>
-            <td>Raw IMU Double Integration</td>
-            <td>48.20 m</td>
-            <td>32.10 m</td>
-            <td>98.40 m</td>
-            <td>182.60 m</td>
-            <td><span style="color: var(--accent-red); font-weight: 700;">DIVERGED</span></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <!-- CARD 4: 8-TIER TECH STACK ARCHITECTURE -->
-    <div class="card">
-      <div class="section-heading">
-        <span>🛠️ 8-Tier Technology Stack</span>
-      </div>
-      <div class="tiers-grid">
-        <div class="tier-card">
-          <div class="tier-name">Tier 1: Core Math &amp; Alignment</div>
-          <div class="tier-detail">SO(3) Rotations, Virtual Phone Alignment ($R_{phone}^{veh}$), ECEF &amp; ENU transforms.</div>
-        </div>
-        <div class="tier-card">
-          <div class="tier-name">Tier 2: Kinematic Simulation</div>
-          <div class="tier-detail">Indian road corridors, realistic sensor bias, noise scales, and tunnel blackouts.</div>
-        </div>
-        <div class="tier-card">
-          <div class="tier-name">Tier 3: AI/ML Kinematics</div>
-          <div class="tier-detail">DeepIMUNet (1D-CNN + GRU) predicting motion states and process noise scaling.</div>
-        </div>
-        <div class="tier-card">
-          <div class="tier-name">Tier 4: Sensor Fusion</div>
-          <div class="tier-detail">15-State Error-State Kalman Filter with Non-Holonomic Constraints (NHC) and ZUPT.</div>
-        </div>
-        <div class="tier-card">
-          <div class="tier-name">Tier 5: Map Matching</div>
-          <div class="tier-detail">Hidden Markov Model (HMM) Viterbi road snapping on OpenStreetMap topology.</div>
-        </div>
-        <div class="tier-card">
-          <div class="tier-name">Tier 6: Location APIs</div>
-          <div class="tier-detail">Google Maps Geocoding &amp; Directions APIs + OSM Nominatim &amp; OSRM routing.</div>
-        </div>
-        <div class="tier-card">
-          <div class="tier-name">Tier 7: Cloud Sync</div>
-          <div class="tier-detail">FastAPI backend streaming, Firebase Firestore &amp; AWS DynamoDB sync.</div>
-        </div>
-        <div class="tier-card">
-          <div class="tier-name">Tier 8: Client Apps</div>
-          <div class="tier-detail">Interactive Web Platform &amp; Cross-Platform Flutter Mobile Application.</div>
+        <div class="turn-right">
+          <div id="gnssModePill" class="gnss-status-pill">GNSS_AIDED</div>
+          <div id="hAccPill" class="accuracy-pill">±1.2 m</div>
         </div>
       </div>
     </div>
 
-    <!-- CARD 5: DATA EXPORTERS -->
-    <div class="card">
-      <div class="section-heading">
-        <span>📥 Trajectory &amp; Telemetry Data Exporter</span>
+    <!-- FLOATING QUICK ANOMALY CONTROLS (Right Side) -->
+    <div class="floating-quick-controls">
+      <button id="btnTriggerTunnel" class="btn-pill-control" title="Simulate immediate GNSS blackout">
+        <span>🚇</span> Tunnel Outage
+      </button>
+      <button id="btnTriggerPothole" class="btn-pill-control" title="Simulate pothole shock & process noise expansion">
+        <span>⚡</span> Road Pothole
+      </button>
+      <button id="btnTriggerStop" class="btn-pill-control" title="Simulate traffic signal stop & ZUPT drift correction">
+        <span>🛑</span> Signal Stop
+      </button>
+    </div>
+
+    <!-- FLOATING BOTTOM NAVIGATION SHEET (Google Maps Style) -->
+    <div class="bottom-sheet">
+      
+      <!-- ETA, Speedometer & Distance Row -->
+      <div class="sheet-header-row">
+        <div class="trip-metrics">
+          <div id="tripEta" class="trip-eta">14 min</div>
+          <div id="tripDist" class="trip-dist">6.8 km</div>
+          <div id="tripArrival" class="trip-arrival">17:05 arrival</div>
+        </div>
+
+        <div class="speed-gauge-group">
+          <!-- Speed Limit Badge -->
+          <div class="speed-limit-sign">80</div>
+          <!-- Real-Time Speedometer Circle -->
+          <div class="speed-circle">
+            <span id="liveSpeedVal" class="speed-num">0</span>
+            <span class="speed-unit-lbl">KM/H</span>
+          </div>
+        </div>
       </div>
-      <p style="font-size: 12.5px; color: var(--text-muted); margin-bottom: 10px;">
-        Export active navigation trajectory, driven coordinates, confidence error bounds, and IMU telemetry logs directly in your browser:
-      </p>
-      <div class="export-bar">
-        <button id="btnExportGeoJSON" class="btn-export">📥 Export GeoJSON (.geojson)</button>
-        <button id="btnExportCSV" class="btn-export">📥 Export CSV (.csv)</button>
-        <button id="btnExportJSON" class="btn-export">📥 Export Benchmarks (.json)</button>
+
+      <!-- Live Street Address & IMU Status Details -->
+      <div class="sheet-detail-row">
+        <div class="current-address-label">
+          <span>📍</span>
+          <span id="currentAddressText">Marine Drive (Netaji Subhash Chandra Bose Rd), Mumbai, India</span>
+        </div>
+        <div class="telemetry-pills">
+          <span id="dynQTag" class="tag-metric" style="color: var(--accent-cyan);">Q: 0.35x</span>
+          <span id="satsTag" class="tag-metric">14 Sats</span>
+          <span id="zuptTag" class="tag-metric" style="color: var(--text-muted);">ZUPT: STANDBY</span>
+        </div>
+      </div>
+
+      <!-- Navigation Play Controls & Corridor Selector -->
+      <div class="sheet-controls-row">
+        <button id="btnNavPlay" class="btn-nav-primary">
+          <span>▶</span> Start Navigation
+        </button>
+        <button id="btnNavReset" class="btn-nav-secondary">
+          <span>↺</span> Reset
+        </button>
+
+        <!-- Indian Corridor Route Selector -->
+        <select id="corridorSelect" class="corridor-dropdown">
+          <option value="mumbai">🇮🇳 Mumbai: Coastal Undersea Tunnel (2.07 km)</option>
+          <option value="lucknow">🇮🇳 Lucknow: BBD University Corridor</option>
+          <option value="delhi">🇮🇳 New Delhi: Pragati Maidan Tunnel (1.3 km)</option>
+          <option value="atal">🇮🇳 Himachal: Atal Tunnel Rohtang (9.02 km)</option>
+          <option value="bengaluru">🇮🇳 Bengaluru: Airport Expressway &amp; Underpass</option>
+        </select>
+
+        <button id="btnOpenDrawer" class="btn-features-toggle">
+          6 Features
+        </button>
+      </div>
+
+    </div>
+
+    <!-- FEATURES & TECH STACK DRAWER MODAL -->
+    <div id="featuresDrawer" class="features-drawer">
+      <div class="features-modal-card">
+        <div class="modal-header-row">
+          <div class="modal-title">⭐ Our 6 Unique Features &amp; Architecture</div>
+          <button id="btnCloseDrawer" class="btn-close-modal">&times;</button>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <!-- Feature 1 -->
+          <div class="drawer-feature-item">
+            <div class="drawer-feature-top">
+              <span class="drawer-feat-num">FEATURE 1</span>
+              <span id="drawerF1Badge" class="drawer-feat-badge">Dynamic Q: 0.35x</span>
+            </div>
+            <div class="drawer-feat-title">Dynamic Process-Noise Adaptation</div>
+            <div class="drawer-feat-desc">Instead of keeping uncertainty fixed, AI changes it according to the driving situation based on IMU spectral roughness. Smooth road → lower uncertainty ($Q \sim 0.35$); bumpy road or sharp turn → higher uncertainty ($Q \sim 5.5$).</div>
+          </div>
+
+          <!-- Feature 2 -->
+          <div class="drawer-feature-item">
+            <div class="drawer-feature-top">
+              <span class="drawer-feat-num">FEATURE 2</span>
+              <span id="drawerF2Badge" class="drawer-feat-badge">Standstill ZUPT Ready</span>
+            </div>
+            <div class="drawer-feature-title">Stop-Based Drift Correction</div>
+            <div class="drawer-feature-desc">When the vehicle stops at signals, the system estimates accumulated drift and retroactively corrects the previous $A \rightarrow B$ trajectory before continuing to $C$.</div>
+          </div>
+
+          <!-- Feature 3 -->
+          <div class="drawer-feature-item">
+            <div class="drawer-feature-top">
+              <span class="drawer-feat-num">FEATURE 3</span>
+              <span class="drawer-feat-badge">Dual Tripwire: Nominal</span>
+            </div>
+            <div class="drawer-feature-title">AI Fallback Mechanism</div>
+            <div class="drawer-feature-desc">We don't blindly trust AI. If the AI becomes uncertain from abnormal sensor data or phone handling, the system temporarily falls back to the robust Invariant EKF.</div>
+          </div>
+
+          <!-- Feature 4 -->
+          <div class="drawer-feature-item">
+            <div class="drawer-feature-top">
+              <span class="drawer-feat-num">FEATURE 4</span>
+              <span class="drawer-feat-badge">Seamless Damping</span>
+            </div>
+            <div class="drawer-feature-title">Seamless GNSS Switching</div>
+            <div class="drawer-feature-desc">When GNSS disappears in tunnels, the system relies on IMU and AI dead reckoning. When GNSS returns, it smoothly dampens innovation errors over 2.5s instead of suddenly jumping.</div>
+          </div>
+
+          <!-- Feature 5 -->
+          <div class="drawer-feature-item">
+            <div class="drawer-feature-top">
+              <span class="drawer-feat-num">FEATURE 5</span>
+              <span class="drawer-feat-badge">95% Ellipse Active</span>
+            </div>
+            <div class="drawer-feature-title">Confidence-Aware Navigation</div>
+            <div class="drawer-feature-desc">Real-time horizontal error ellipse eigen-decomposition providing drivers with exact metric uncertainty radii ($\pm 1.2\text{m}$).</div>
+          </div>
+
+          <!-- Feature 6 -->
+          <div class="drawer-feature-item">
+            <div class="drawer-feature-top">
+              <span class="drawer-feat-num">FEATURE 6</span>
+              <span class="drawer-feat-badge">Visual Odometry Ready</span>
+            </div>
+            <div class="drawer-feature-title">Optional Camera Assistance</div>
+            <div class="drawer-feature-desc">Smartphone camera monocular optical flow speed updates bound longitudinal velocity drift during prolonged tunnel blackouts.</div>
+          </div>
+        </div>
+
+        <!-- Export Action Bar Inside Drawer -->
+        <div style="display: flex; gap: 8px; justify-content: flex-end; border-top: 1px solid var(--border-subtle); padding-top: 12px; margin-top: 4px;">
+          <button id="btnExportGeoJSON" class="btn-nav-secondary" style="font-size: 11px; padding: 6px 12px;">📥 Export GeoJSON</button>
+          <button id="btnExportCSV" class="btn-nav-secondary" style="font-size: 11px; padding: 6px 12px;">📥 Export CSV</button>
+        </div>
       </div>
     </div>
+
+    <!-- Navigation Toast Message -->
+    <div id="navToast" class="nav-toast" style="display: none;"></div>
 
   </div>
-
-  <div id="toast" class="toast-msg" style="display: none;"></div>
 
   <script src="./app.js"></script>
 </body>

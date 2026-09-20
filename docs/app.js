@@ -1,120 +1,366 @@
-// AI-DR Live Vehicular Navigation Platform & Cockpit Simulator
-// 100% Self-Contained, Zero-Lag, Real-Time Interactive Navigation Engine
+// Consumer Turn-by-Turn Navigation Engine (Google Maps & Apple Maps Inspired)
+// Real-Time Vehicular Dead Reckoning, Audio Voice Guidance & Blackout Simulation
 
 (function() {
-  // State
-  let isPlaying = false;
+  // Navigation State
+  let isNavigating = false;
   let progress = 0;
   let isForcedTunnel = false;
   let isPothole = false;
   let isStopped = false;
+  let voiceEnabled = true;
+  let isNightMode = true;
   let animFrameId = null;
   let currentScenarioKey = 'mumbai';
-  let isDarkMode = true;
+  let lastAnnouncedStep = -1;
 
-  // Indian Road Scenarios & Waypoint Corridors
-  const scenarios = {
+  // Indian Turn-by-Turn Corridors
+  const corridors = {
     mumbai: {
-      title: "MUMBAI COASTAL TUNNEL (2.07 KM)",
-      sub: "100% Undersea GNSS Blackout (Arabian Sea)",
-      startLandmark: "Marine Drive (Mumbai)",
-      endLandmark: "Worli Sea Face Link",
-      rect: { x: 135, y: 30, w: 140, h: 42 },
+      name: "Mumbai: Coastal Undersea Tunnel",
+      title: "MUMBAI UNDERSEA TUNNEL (2.07 KM)",
+      sub: "GNSS Signal Denied Zone • 100% Blackout",
+      startLandmark: "Marine Drive Start",
+      endLandmark: "Worli Sea Face Exit",
+      destination: "Worli Sea Face via Coastal Tunnel",
+      totalDistanceKm: 6.8,
+      speedLimit: 80,
+      tunnelRect: { x: 140, y: 45, w: 165, h: 50 },
       waypoints: [
-        { x: 30, y: 180, speed: 42, addr: "Marine Drive (Netaji Subhash Chandra Bose Rd), Nariman Point, Mumbai, India", inTunnel: false },
-        { x: 30, y: 120, speed: 58, addr: "Girgaon Chowpatty Coastal Link, Mumbai, Maharashtra, India", inTunnel: false },
-        { x: 45, y: 65,  speed: 35, addr: "Coastal Road Tunnel South Portal, Malabar Hill, Mumbai, India", inTunnel: false },
-        { x: 90, y: 50,  speed: 72, addr: "Coastal Undersea Tunnel (Under Arabian Sea, 100% Blackout), Mumbai", inTunnel: true },
-        { x: 160, y: 50, speed: 78, addr: "Coastal Tunnel Mid-Bore (2.07 km Undersea Tube), Mumbai, India", inTunnel: true },
-        { x: 225, y: 50, speed: 74, addr: "Priyadarshini Park North Portal Exit, Breach Candy, Mumbai", inTunnel: true },
-        { x: 280, y: 50, speed: 52, addr: "Worli Sea Face Coastal Expressway, Worli, Mumbai, India", inTunnel: false }
+        {
+          x: 40, y: 260, speed: 45, inTunnel: false,
+          addr: "Marine Drive, Nariman Point, Mumbai, India",
+          instruction: "Head north on Marine Drive toward Malabar Hill",
+          distText: "In 450 m", icon: "↑",
+          voice: "Head north on Marine Drive toward Coastal Road."
+        },
+        {
+          x: 40, y: 170, speed: 58, inTunnel: false,
+          addr: "Girgaon Chowpatty Promenade, Mumbai, India",
+          instruction: "Continue straight along Chowpatty Coastal Link",
+          distText: "In 300 m", icon: "↑",
+          voice: "In 300 meters, prepare to enter the coastal tunnel."
+        },
+        {
+          x: 55, y: 95, speed: 38, inTunnel: false,
+          addr: "Coastal Road Tunnel South Portal, Malabar Hill",
+          instruction: "Turn Left into Mumbai Coastal Undersea Tunnel",
+          distText: "In 150 m", icon: "↰",
+          voice: "Turn left into Mumbai Coastal Tunnel. GPS signal will be lost."
+        },
+        {
+          x: 120, y: 70, speed: 72, inTunnel: true,
+          addr: "Coastal Undersea Tunnel (Under Arabian Sea), Mumbai",
+          instruction: "Undersea Tunnel: AI Dead Reckoning Active",
+          distText: "Tunnel 2.07 km", icon: "🚇",
+          voice: "Entering tunnel. GPS lost. Engaging AI Dead Reckoning."
+        },
+        {
+          x: 210, y: 70, speed: 78, inTunnel: true,
+          addr: "Undersea Tube Mid-Bore, Arabian Sea Floor, Mumbai",
+          instruction: "Continue in tunnel. IMU fusion maintaining ±1.2m track",
+          distText: "In 900 m", icon: "↑",
+          voice: "Maintaining track via smartphone sensor fusion."
+        },
+        {
+          x: 290, y: 70, speed: 70, inTunnel: true,
+          addr: "Priyadarshini Park North Portal Ramp, Breach Candy",
+          instruction: "Approaching Tunnel Exit. Re-acquiring Satellites",
+          distText: "In 200 m", icon: "☀️",
+          voice: "Approaching tunnel exit. Re-acquiring satellites."
+        },
+        {
+          x: 350, y: 70, speed: 50, inTunnel: false,
+          addr: "Worli Sea Face Coastal Expressway, Mumbai, India",
+          instruction: "You have arrived at Worli Sea Face destination",
+          distText: "Arrived", icon: "🏁",
+          voice: "You have arrived at your destination on Worli Sea Face."
+        }
       ]
     },
     lucknow: {
+      name: "Lucknow: BBD University Corridor",
       title: "BBD UNDERGROUND TRANSIT (1.1 KM)",
       sub: "Ayodhya Highway NH-27 Blackout Corridor",
-      startLandmark: "BBD University Gate",
-      endLandmark: "Chinhat Flyover",
-      rect: { x: 120, y: 30, w: 145, h: 42 },
+      startLandmark: "BBD Gate Start",
+      endLandmark: "Chinhat Junction Exit",
+      destination: "Chinhat Chauraha via BBD Underpass",
+      totalDistanceKm: 4.5,
+      speedLimit: 60,
+      tunnelRect: { x: 130, y: 45, w: 165, h: 50 },
       waypoints: [
-        { x: 30, y: 180, speed: 40, addr: "BBD University Main Gate, Faizabad Rd, Lucknow, Uttar Pradesh", inTunnel: false },
-        { x: 30, y: 110, speed: 50, addr: "Indira Canal Bridge, NH-27 Ayodhya Highway, Lucknow, India", inTunnel: false },
-        { x: 55, y: 55,  speed: 38, addr: "Underground Transit Corridor Entry, Lucknow, India", inTunnel: false },
-        { x: 105, y: 50, speed: 65, addr: "BBD Subgrade Transit Tunnel (GNSS Blocked), Lucknow", inTunnel: true },
-        { x: 175, y: 50, speed: 68, addr: "Faizabad Highway Underpass Section, Lucknow, India", inTunnel: true },
-        { x: 240, y: 50, speed: 60, addr: "Chinhat Junction Portal Exit, Lucknow, Uttar Pradesh", inTunnel: false },
-        { x: 285, y: 50, speed: 45, addr: "Kamta Chauraha Expressway Link, Lucknow, India", inTunnel: false }
+        {
+          x: 40, y: 260, speed: 40, inTunnel: false,
+          addr: "BBD University Main Gate, Faizabad Rd, Lucknow",
+          instruction: "Head east on Ayodhya Highway toward Indira Canal",
+          distText: "In 400 m", icon: "↑",
+          voice: "Head east on Faizabad Road toward Indira Canal."
+        },
+        {
+          x: 40, y: 170, speed: 52, inTunnel: false,
+          addr: "Indira Canal Aqueduct, NH-27, Lucknow, Uttar Pradesh",
+          instruction: "Continue straight toward underground transit",
+          distText: "In 250 m", icon: "↑",
+          voice: "Approaching subgrade tunnel entry."
+        },
+        {
+          x: 60, y: 95, speed: 35, inTunnel: false,
+          addr: "BBD Transit Portal Ramp, Lucknow, India",
+          instruction: "Turn Left into Underground Transit Corridor",
+          distText: "In 120 m", icon: "↰",
+          voice: "Enter the underground transit tunnel. GPS unavailable."
+        },
+        {
+          x: 130, y: 70, speed: 65, inTunnel: true,
+          addr: "BBD Underground Tube (1.1 km Blackout), Lucknow",
+          instruction: "Underground Corridor: AI Dead Reckoning Active",
+          distText: "Tunnel 1.1 km", icon: "🚇",
+          voice: "Tunnel blackout detected. AI Dead Reckoning tracking position."
+        },
+        {
+          x: 220, y: 70, speed: 68, inTunnel: true,
+          addr: "Faizabad Road Subgrade Underpass, Lucknow, India",
+          instruction: "Cruising underpass. ZUPT standstill detection ready",
+          distText: "In 500 m", icon: "↑",
+          voice: "Cruising underground underpass."
+        },
+        {
+          x: 295, y: 70, speed: 55, inTunnel: false,
+          addr: "Chinhat Flyover Ramp, Lucknow, Uttar Pradesh",
+          instruction: "Exit tunnel toward Chinhat Junction",
+          distText: "In 150 m", icon: "☀️",
+          voice: "Exiting tunnel. Satellite connection restored."
+        },
+        {
+          x: 350, y: 70, speed: 42, inTunnel: false,
+          addr: "Chinhat Chauraha Interchange, Lucknow, India",
+          instruction: "Arrived at Chinhat Junction destination",
+          distText: "Arrived", icon: "🏁",
+          voice: "You have arrived at your destination in Chinhat."
+        }
       ]
     },
     delhi: {
+      name: "New Delhi: Pragati Maidan Tunnel",
       title: "PRAGATI MAIDAN TUNNEL (1.3 KM)",
       sub: "New Delhi Integrated Transit Blackout",
       startLandmark: "India Gate C-Hexagon",
       endLandmark: "Ring Road Interchange",
-      rect: { x: 125, y: 30, w: 140, h: 42 },
+      destination: "Ring Road via Pragati Maidan Tunnel",
+      totalDistanceKm: 5.2,
+      speedLimit: 70,
+      tunnelRect: { x: 135, y: 45, w: 165, h: 50 },
       waypoints: [
-        { x: 30, y: 180, speed: 45, addr: "India Gate C-Hexagon, Central Secretariat, New Delhi, India", inTunnel: false },
-        { x: 30, y: 115, speed: 52, addr: "Purana Qila Rd Approach, New Delhi, India", inTunnel: false },
-        { x: 50, y: 60,  speed: 35, addr: "Pragati Maidan Tunnel West Portal Entry, New Delhi", inTunnel: false },
-        { x: 100, y: 50, speed: 60, addr: "Pragati Maidan Central Tube (1.3 km Blackout), New Delhi", inTunnel: true },
-        { x: 170, y: 50, speed: 62, addr: "Bhairon Marg Underground Sub-Grade Branch, New Delhi", inTunnel: true },
-        { x: 235, y: 50, speed: 58, addr: "Ring Road East Portal Ramp, New Delhi, India", inTunnel: false },
-        { x: 285, y: 50, speed: 50, addr: "Sarai Kale Khan Transit Link, New Delhi, India", inTunnel: false }
+        {
+          x: 40, y: 260, speed: 42, inTunnel: false,
+          addr: "India Gate C-Hexagon, Central Secretariat, New Delhi",
+          instruction: "Head east on Purana Qila Road",
+          distText: "In 500 m", icon: "↑",
+          voice: "Head east on Purana Qila Road toward Mathura Road."
+        },
+        {
+          x: 40, y: 170, speed: 50, inTunnel: false,
+          addr: "Mathura Road Junction, New Delhi, India",
+          instruction: "Keep right toward Pragati Maidan Tunnel",
+          distText: "In 250 m", icon: "↱",
+          voice: "Keep right to take Pragati Maidan integrated tunnel."
+        },
+        {
+          x: 58, y: 95, speed: 38, inTunnel: false,
+          addr: "Pragati Maidan West Portal Entry, New Delhi",
+          instruction: "Enter Integrated Transit Tunnel (GNSS Blocked)",
+          distText: "In 100 m", icon: "🚇",
+          voice: "Entering Pragati Maidan tunnel. GPS signal will be lost."
+        },
+        {
+          x: 135, y: 70, speed: 60, inTunnel: true,
+          addr: "Pragati Maidan Central Tunnel Bore, New Delhi",
+          instruction: "Cruising 1.3 km underground transit tunnel",
+          distText: "Tunnel 1.3 km", icon: "🚇",
+          voice: "GPS signal lost. AI Dead Reckoning tracking vehicle."
+        },
+        {
+          x: 215, y: 70, speed: 62, inTunnel: true,
+          addr: "Bhairon Marg Underground Sub-Grade Branch",
+          instruction: "Continue straight toward Ring Road exit",
+          distText: "In 600 m", icon: "↑",
+          voice: "Continue straight toward Ring Road exit."
+        },
+        {
+          x: 290, y: 70, speed: 52, inTunnel: false,
+          addr: "Ring Road East Portal Ramp, New Delhi, India",
+          instruction: "Exit tunnel. Merging onto Mahatma Gandhi Ring Road",
+          distText: "In 150 m", icon: "☀️",
+          voice: "Tunnel exit. Seamless satellite handover complete."
+        },
+        {
+          x: 350, y: 70, speed: 45, inTunnel: false,
+          addr: "Ring Road & Sarai Kale Khan Junction, New Delhi",
+          instruction: "Arrived at Ring Road Interchange destination",
+          distText: "Arrived", icon: "🏁",
+          voice: "You have arrived at your destination on Ring Road."
+        }
       ]
     },
     atal: {
+      name: "Himachal: Atal Tunnel Rohtang",
       title: "ATAL TUNNEL ROHTANG (9.02 KM)",
       sub: "High-Altitude Himalayan GNSS Blackout (3,100m)",
-      startLandmark: "Dhundi South Portal (Manali)",
-      endLandmark: "Sissu North Portal (Lahaul)",
-      rect: { x: 110, y: 30, w: 160, h: 42 },
+      startLandmark: "Dhundi South Portal",
+      endLandmark: "Sissu North Portal",
+      destination: "Sissu Valley via Atal Tunnel",
+      totalDistanceKm: 12.4,
+      speedLimit: 60,
+      tunnelRect: { x: 120, y: 45, w: 180, h: 50 },
       waypoints: [
-        { x: 30, y: 180, speed: 35, addr: "Solang Valley Highway Approach, Manali, Himachal Pradesh", inTunnel: false },
-        { x: 30, y: 110, speed: 48, addr: "Dhundi Valley South Portal Toll Plaza, Himachal Pradesh", inTunnel: false },
-        { x: 50, y: 55,  speed: 40, addr: "Atal Tunnel South Portal (Altitude 3,060m), Manali", inTunnel: false },
-        { x: 100, y: 50, speed: 70, addr: "Atal Tunnel Trans-Himalayan Bore (GNSS Blackout), Himachal", inTunnel: true },
-        { x: 170, y: 50, speed: 75, addr: "Atal Tunnel 9.02 km Mid-Bore Segment, Pir Panjal Range", inTunnel: true },
-        { x: 235, y: 50, speed: 70, addr: "North Portal Exit (Altitude 3,140m), Lahaul & Spiti", inTunnel: true },
-        { x: 285, y: 50, speed: 45, addr: "Sissu Chandra River Valley Highway, Lahaul, Himachal Pradesh", inTunnel: false }
+        {
+          x: 40, y: 260, speed: 38, inTunnel: false,
+          addr: "Solang Valley Highway Approach, Manali, Himachal",
+          instruction: "Ascend NH-3 highway toward Dhundi Portal",
+          distText: "In 600 m", icon: "↑",
+          voice: "Ascend NH-3 highway toward Atal Tunnel South Portal."
+        },
+        {
+          x: 40, y: 170, speed: 45, inTunnel: false,
+          addr: "Dhundi South Portal Toll Plaza (Elevation 3,060m)",
+          instruction: "Prepare to enter 9.02 km Trans-Himalayan Tunnel",
+          distText: "In 300 m", icon: "↑",
+          voice: "Approaching South Portal. Maintain 60 km per hour speed limit."
+        },
+        {
+          x: 55, y: 95, speed: 40, inTunnel: false,
+          addr: "Atal Tunnel South Portal Entry, Pir Panjal Range",
+          instruction: "Turn Left into Atal Tunnel Rohtang",
+          distText: "In 150 m", icon: "↰",
+          voice: "Entering Atal Tunnel. Prolonged GPS blackout active."
+        },
+        {
+          x: 130, y: 70, speed: 60, inTunnel: true,
+          addr: "Atal Tunnel Mid-Bore Segment, Elevation 3,100m",
+          instruction: "9.02 km High-Altitude Bore: AI EKF Active",
+          distText: "Tunnel 9.02 km", icon: "🚇",
+          voice: "Cruising Atal Tunnel. AI Dead Reckoning bounding velocity drift."
+        },
+        {
+          x: 220, y: 70, speed: 60, inTunnel: true,
+          addr: "Lahaul Valley Sub-surface Approach, Himachal Pradesh",
+          instruction: "Continuous dead reckoning through mountain bedrock",
+          distText: "In 2.5 km", icon: "↑",
+          voice: "Approaching North Portal into Lahaul Valley."
+        },
+        {
+          x: 295, y: 70, speed: 50, inTunnel: false,
+          addr: "Atal Tunnel North Portal Exit (Elevation 3,140m)",
+          instruction: "Exit Tunnel into Chandra River Valley",
+          distText: "In 200 m", icon: "☀️",
+          voice: "Exiting tunnel into Sissu. Re-acquiring satellite lock."
+        },
+        {
+          x: 350, y: 70, speed: 40, inTunnel: false,
+          addr: "Sissu Highway & Waterfall Overlook, Lahaul & Spiti",
+          instruction: "Arrived at Sissu Valley destination",
+          distText: "Arrived", icon: "🏁",
+          voice: "You have arrived at your destination in Sissu Valley."
+        }
       ]
     },
     bengaluru: {
+      name: "Bengaluru: Airport Expressway",
       title: "KEMPEGOWDA AIRPORT EXPRESSWAY",
       sub: "NH-44 Subgrade Underpass Transit Tunnel",
-      startLandmark: "Hebbal Flyover (NH-44)",
-      endLandmark: "Airport Terminal 2",
-      rect: { x: 130, y: 30, w: 140, h: 42 },
+      startLandmark: "Hebbal Flyover Start",
+      endLandmark: "Terminal 2 Arrivals",
+      destination: "Kempegowda Airport Terminal 2",
+      totalDistanceKm: 11.2,
+      speedLimit: 80,
+      tunnelRect: { x: 135, y: 45, w: 165, h: 50 },
       waypoints: [
-        { x: 30, y: 180, speed: 55, addr: "Hebbal Flyover, NH-44 Bellary Road, Bengaluru, Karnataka", inTunnel: false },
-        { x: 30, y: 115, speed: 75, addr: "Yelahanka Airforce Station Highway Corridor, Bengaluru", inTunnel: false },
-        { x: 50, y: 60,  speed: 50, addr: "Trumpet Interchange Airport Toll Approach, Bengaluru", inTunnel: false },
-        { x: 100, y: 50, speed: 65, addr: "Kempegowda Airport Sub-grade Transit Tunnel, Bengaluru", inTunnel: true },
-        { x: 170, y: 50, speed: 68, addr: "Airport Underpass Blackout Zone, Devanahalli, Bengaluru", inTunnel: true },
-        { x: 235, y: 50, speed: 55, addr: "Terminal Boulevard North Portal Exit, Bengaluru Airport", inTunnel: false },
-        { x: 285, y: 50, speed: 40, addr: "Kempegowda International Airport Terminal 2 Arrivals, India", inTunnel: false }
+        {
+          x: 40, y: 260, speed: 60, inTunnel: false,
+          addr: "Hebbal Flyover, NH-44 Bellary Road, Bengaluru",
+          instruction: "Head north on Airport Expressway toward Yelahanka",
+          distText: "In 800 m", icon: "↑",
+          voice: "Head north on Airport Expressway toward Yelahanka."
+        },
+        {
+          x: 40, y: 170, speed: 75, inTunnel: false,
+          addr: "Yelahanka Airforce Station Highway, Bengaluru",
+          instruction: "Continue cruising on Elevated Expressway",
+          distText: "In 500 m", icon: "↑",
+          voice: "Continue straight on elevated expressway toward airport toll."
+        },
+        {
+          x: 58, y: 95, speed: 48, inTunnel: false,
+          addr: "Trumpet Interchange Airport Approach, Bengaluru",
+          instruction: "Turn Left into Airport Subgrade Transit Underpass",
+          distText: "In 200 m", icon: "↰",
+          voice: "Take the left exit into airport subgrade transit underpass."
+        },
+        {
+          x: 135, y: 70, speed: 65, inTunnel: true,
+          addr: "Kempegowda Subgrade Transit Tunnel, Bengaluru",
+          instruction: "Sub-grade Underpass: AI Dead Reckoning Active",
+          distText: "Underpass 1.5 km", icon: "🚇",
+          voice: "Subgrade underpass entered. AI positioning active."
+        },
+        {
+          x: 215, y: 70, speed: 68, inTunnel: true,
+          addr: "Underpass Terminal Boulevard Branch, Devanahalli",
+          instruction: "Cruising under terminal plaza. ZUPT active on stop",
+          distText: "In 400 m", icon: "↑",
+          voice: "Approaching Terminal 2 exit."
+        },
+        {
+          x: 290, y: 70, speed: 45, inTunnel: false,
+          addr: "Terminal 2 Boulevard Portal Ramp, Bengaluru",
+          instruction: "Exit underpass toward Terminal 2 Arrivals",
+          distText: "In 150 m", icon: "☀️",
+          voice: "Exiting underpass. Welcome to Kempegowda Airport."
+        },
+        {
+          x: 350, y: 70, speed: 30, inTunnel: false,
+          addr: "Terminal 2 Arrivals Curbside, Bengaluru Airport",
+          instruction: "Arrived at Kempegowda Terminal 2 Arrivals",
+          distText: "Arrived", icon: "🏁",
+          voice: "You have arrived at Terminal 2 Arrivals."
+        }
       ]
     }
   };
 
   // DOM Elements
-  const speedDisplay = document.getElementById('speedDisplay');
-  const addressText = document.getElementById('addressText');
-  const modeBadge = document.getElementById('modeBadge');
-  const hAccDisplay = document.getElementById('hAccDisplay');
-  const qDisplay = document.getElementById('qDisplay');
-  const satsDisplay = document.getElementById('satsDisplay');
-  const zuptDisplay = document.getElementById('zuptDisplay');
+  const btnNavPlay = document.getElementById('btnNavPlay');
+  const btnNavReset = document.getElementById('btnNavReset');
+  const corridorSelect = document.getElementById('corridorSelect');
+  const btnVoiceToggle = document.getElementById('btnVoiceToggle');
+  const btnThemeToggle = document.getElementById('btnThemeToggle');
+  const btnOpenFeatures = document.getElementById('btnOpenFeatures');
+  const btnOpenDrawer = document.getElementById('btnOpenDrawer');
+  const btnCloseDrawer = document.getElementById('btnCloseDrawer');
+  const featuresDrawer = document.getElementById('featuresDrawer');
 
-  const btnPlay = document.getElementById('btnPlay');
-  const btnReset = document.getElementById('btnReset');
-  const btnTunnel = document.getElementById('btnTunnel');
-  const btnPothole = document.getElementById('btnPothole');
-  const btnStop = document.getElementById('btnStop');
-  const btnTheme = document.getElementById('btnTheme');
-  const scenarioSelect = document.getElementById('scenarioSelect');
+  const btnTriggerTunnel = document.getElementById('btnTriggerTunnel');
+  const btnTriggerPothole = document.getElementById('btnTriggerPothole');
+  const btnTriggerStop = document.getElementById('btnTriggerStop');
 
+  const turnBanner = document.getElementById('turnBanner');
+  const turnIcon = document.getElementById('turnIcon');
+  const turnDistance = document.getElementById('turnDistance');
+  const turnStreet = document.getElementById('turnStreet');
+  const gnssModePill = document.getElementById('gnssModePill');
+  const hAccPill = document.getElementById('hAccPill');
+
+  const liveSpeedVal = document.getElementById('liveSpeedVal');
+  const currentAddressText = document.getElementById('currentAddressText');
+  const dynQTag = document.getElementById('dynQTag');
+  const satsTag = document.getElementById('satsTag');
+  const zuptTag = document.getElementById('zuptTag');
+  const tripEta = document.getElementById('tripEta');
+  const tripDist = document.getElementById('tripDist');
+  const tripArrival = document.getElementById('tripArrival');
+
+  const destinationInput = document.getElementById('destinationInput');
   const vehicleGroup = document.getElementById('vehicleGroup');
-  const vehicleArrowPath = document.getElementById('vehicleArrowPath');
   const confEllipse = document.getElementById('confEllipse');
   const tunnelZoneTitle = document.getElementById('tunnelZoneTitle');
   const tunnelZoneSub = document.getElementById('tunnelZoneSub');
@@ -122,58 +368,72 @@
   const endLandmarkText = document.getElementById('endLandmarkText');
   const tunnelZoneRect = document.getElementById('tunnelZoneRect');
 
-  // Feature Badges
-  const f1Badge = document.getElementById('f1Badge');
-  const f2Badge = document.getElementById('f2Badge');
-  const f3Badge = document.getElementById('f3Badge');
-  const f4Badge = document.getElementById('f4Badge');
-  const f5Badge = document.getElementById('f5Badge');
+  const navToast = document.getElementById('navToast');
 
-  function applyScenario(key) {
-    currentScenarioKey = key;
-    const sc = scenarios[key] || scenarios.mumbai;
-    if (tunnelZoneTitle) tunnelZoneTitle.textContent = sc.title;
-    if (tunnelZoneSub) tunnelZoneSub.textContent = sc.sub;
-    if (startLandmarkText) startLandmarkText.textContent = sc.startLandmark;
-    if (endLandmarkText) endLandmarkText.textContent = sc.endLandmark;
-    if (tunnelZoneRect && sc.rect) {
-      tunnelZoneRect.setAttribute('x', sc.rect.x);
-      tunnelZoneRect.setAttribute('y', sc.rect.y);
-      tunnelZoneRect.setAttribute('width', sc.rect.w);
-      tunnelZoneRect.setAttribute('height', sc.rect.h);
-    }
-    resetSim();
+  // Synthetic Voice Engine
+  function speak(text, priority = false) {
+    if (!voiceEnabled || !('speechSynthesis' in window)) return;
+    try {
+      if (priority) window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = 1.05;
+      utterance.pitch = 1.0;
+      window.speechSynthesis.speak(utterance);
+    } catch (e) {}
   }
 
   function showToast(msg) {
-    const toast = document.getElementById('toast');
-    if (!toast) return;
-    toast.textContent = msg;
-    toast.style.display = 'block';
-    toast.style.opacity = '1';
+    if (!navToast) return;
+    navToast.textContent = msg;
+    navToast.style.display = 'block';
+    navToast.style.opacity = '1';
+    navToast.style.transform = 'translate(-50%, 0)';
     setTimeout(() => {
-      toast.style.opacity = '0';
-      setTimeout(() => { toast.style.display = 'none'; }, 300);
+      navToast.style.opacity = '0';
+      navToast.style.transform = 'translate(-50%, -10px)';
+      setTimeout(() => { navToast.style.display = 'none'; }, 300);
     }, 2800);
   }
 
-  function updateSim() {
-    if (!isPlaying) return;
+  function setCorridor(key) {
+    currentScenarioKey = key;
+    const c = corridors[key] || corridors.mumbai;
+    if (tunnelZoneTitle) tunnelZoneTitle.textContent = c.title;
+    if (tunnelZoneSub) tunnelZoneSub.textContent = c.sub;
+    if (startLandmarkText) startLandmarkText.textContent = c.startLandmark;
+    if (endLandmarkText) endLandmarkText.textContent = c.endLandmark;
+    if (destinationInput) destinationInput.value = c.destination;
+    if (tripDist) tripDist.textContent = `${c.totalDistanceKm} km`;
+    if (tunnelZoneRect && c.tunnelRect) {
+      tunnelZoneRect.setAttribute('x', c.tunnelRect.x);
+      tunnelZoneRect.setAttribute('y', c.tunnelRect.y);
+      tunnelZoneRect.setAttribute('width', c.tunnelRect.w);
+      tunnelZoneRect.setAttribute('height', c.tunnelRect.h);
+    }
+    resetNavigation();
+    showToast(`📍 Selected ${c.name}`);
+    speak(`Route calculated to ${c.destination}. Starting navigation.`);
+  }
 
-    const sc = scenarios[currentScenarioKey] || scenarios.mumbai;
-    const waypoints = sc.waypoints;
+  function updateNavigationLoop() {
+    if (!isNavigating) return;
 
-    progress = (progress + 0.007) % 1.0;
-    const ptIdx = Math.min(waypoints.length - 2, Math.floor(progress * (waypoints.length - 1)));
-    const subT = (progress * (waypoints.length - 1)) - ptIdx;
+    const c = corridors[currentScenarioKey] || corridors.mumbai;
+    const waypoints = c.waypoints;
 
-    const p0 = waypoints[ptIdx];
-    const p1 = waypoints[ptIdx + 1];
+    progress = (progress + 0.005) % 1.0;
+    const totalWp = waypoints.length;
+    const stepFloat = progress * (totalWp - 1);
+    const curIdx = Math.min(totalWp - 2, Math.floor(stepFloat));
+    const subT = stepFloat - curIdx;
+
+    const p0 = waypoints[curIdx];
+    const p1 = waypoints[curIdx + 1];
 
     const curX = p0.x + (p1.x - p0.x) * subT;
     const curY = p0.y + (p1.y - p0.y) * subT;
 
-    // Calculate heading angle
+    // Angle calculation for vehicle arrow and beam
     const dx = p1.x - p0.x;
     const dy = p1.y - p0.y;
     const angleRad = Math.atan2(dy, dx);
@@ -181,7 +441,7 @@
 
     const inTunnelZone = p0.inTunnel || isForcedTunnel;
 
-    // Update vehicle marker & 95% confidence ellipse
+    // Update vehicle position and rotation
     if (vehicleGroup) {
       vehicleGroup.setAttribute('transform', `translate(${curX}, ${curY}) rotate(${angleDeg})`);
     }
@@ -190,117 +450,113 @@
       confEllipse.setAttribute('cy', curY);
     }
 
-    // Speed Calculation
-    let speed = isStopped ? 0 : Math.round(p0.speed + (p1.speed - p0.speed) * subT);
-    if (isPothole) speed = Math.max(12, speed - 16);
+    // Voice announcement on new maneuver step
+    if (curIdx !== lastAnnouncedStep) {
+      lastAnnouncedStep = curIdx;
+      if (p0.voice) speak(p0.voice, true);
+    }
 
-    if (speedDisplay) speedDisplay.innerText = speed;
-    if (addressText) addressText.innerText = p0.addr;
+    // Update Maneuver Banner
+    if (turnIcon) turnIcon.textContent = inTunnelZone ? '🚇' : p0.icon;
+    if (turnDistance) turnDistance.textContent = p0.distText;
+    if (turnStreet) turnStreet.textContent = p0.instruction;
+    if (currentAddressText) currentAddressText.textContent = p0.addr;
 
-    // Mode Transitions & Metrics
+    // Update Remaining ETA
+    const remainingKm = (c.totalDistanceKm * (1.0 - progress)).toFixed(1);
+    const remainingMin = Math.max(1, Math.round(remainingKm * 2.1));
+    if (tripDist) tripDist.textContent = `${remainingKm} km`;
+    if (tripEta) tripEta.textContent = `${remainingMin} min`;
+
+    // Speed calculation
+    let targetSpeed = isStopped ? 0 : Math.round(p0.speed + (p1.speed - p0.speed) * subT);
+    if (isPothole) targetSpeed = Math.max(15, targetSpeed - 20);
+    if (liveSpeedVal) liveSpeedVal.textContent = targetSpeed;
+
+    // Modes & Metrics
     if (isStopped) {
-      // Feature 2: Stop-Based Drift Correction
-      if (modeBadge) {
-        modeBadge.innerText = 'ZUPT_CORRECTED';
-        modeBadge.className = 'status-badge status-zupt';
+      // Standstill (Feature 2)
+      if (turnBanner) {
+        turnBanner.className = 'turn-banner stopped-mode';
       }
-      if (zuptDisplay) {
-        zuptDisplay.innerText = 'ZUPT ACTIVE';
-        zuptDisplay.style.color = 'var(--accent-cyan)';
+      if (gnssModePill) gnssModePill.textContent = 'ZUPT_CORRECTED';
+      if (hAccPill) hAccPill.textContent = '±0.6 m';
+      if (dynQTag) dynQTag.textContent = 'Q: 0.15x';
+      if (zuptTag) {
+        zuptTag.textContent = 'ZUPT: ACTIVE';
+        zuptTag.style.color = 'var(--accent-cyan)';
       }
-      if (hAccDisplay) {
-        hAccDisplay.innerText = '±0.6 m';
-        hAccDisplay.style.color = 'var(--accent-green)';
-      }
-      if (qDisplay) qDisplay.innerText = '0.15x';
       if (confEllipse) {
-        confEllipse.setAttribute('rx', 8);
-        confEllipse.setAttribute('ry', 6);
+        confEllipse.setAttribute('rx', 10);
+        confEllipse.setAttribute('ry', 7);
         confEllipse.setAttribute('stroke', '#00f2fe');
         confEllipse.setAttribute('fill', '#00f2fe');
       }
-      if (f2Badge) {
-        f2Badge.innerText = 'ZUPT Drift Corrected (0.0 m)';
-        f2Badge.style.color = 'var(--accent-cyan)';
-      }
     } else if (inTunnelZone) {
-      // Feature 4: Seamless GNSS Switching (Outage) & Feature 5
-      if (modeBadge) {
-        modeBadge.innerText = 'TUNNEL_DR';
-        modeBadge.className = 'status-badge status-tunnel';
+      // Tunnel Dead Reckoning (Feature 4 & 5)
+      if (turnBanner) {
+        turnBanner.className = 'turn-banner tunnel-mode';
       }
-      if (satsDisplay) {
-        satsDisplay.innerText = '0 (Lost)';
-        satsDisplay.style.color = 'var(--accent-red)';
-      }
-      if (hAccDisplay) {
-        hAccDisplay.innerText = isPothole ? '±5.8 m' : '±3.6 m';
-        hAccDisplay.style.color = 'var(--accent-yellow)';
+      if (gnssModePill) gnssModePill.textContent = 'TUNNEL_DEAD_RECKONING';
+      const hAccVal = isPothole ? '±5.6 m' : '±3.4 m';
+      if (hAccPill) hAccPill.textContent = hAccVal;
+      const qVal = isPothole ? '5.50x' : '1.25x';
+      if (dynQTag) dynQTag.textContent = `Q: ${qVal}`;
+      if (satsTag) {
+        satsTag.textContent = '0 Sats (Lost)';
+        satsTag.style.color = 'var(--accent-red)';
       }
       if (confEllipse) {
-        confEllipse.setAttribute('rx', isPothole ? 28 : 22);
-        confEllipse.setAttribute('ry', isPothole ? 18 : 14);
+        confEllipse.setAttribute('rx', isPothole ? 30 : 24);
+        confEllipse.setAttribute('ry', isPothole ? 20 : 16);
         confEllipse.setAttribute('stroke', '#ffd600');
         confEllipse.setAttribute('fill', '#ffd600');
       }
-      const dynQVal = isPothole ? '5.50x' : '1.25x';
-      if (qDisplay) qDisplay.innerText = dynQVal;
-      if (f1Badge) f1Badge.innerText = `Dynamic Q: ${dynQVal}`;
-      if (f4Badge) f4Badge.innerText = 'Tunnel Dead Reckoning';
-      if (f5Badge) f5Badge.innerText = 'Error Ellipse ±3.6m';
     } else {
-      // Feature 4: Nominal GNSS Aided
-      if (modeBadge) {
-        modeBadge.innerText = 'GNSS_AIDED';
-        modeBadge.className = 'status-badge status-gnss';
+      // Nominal GNSS Aided
+      if (turnBanner) {
+        turnBanner.className = 'turn-banner';
       }
-      if (satsDisplay) {
-        satsDisplay.innerText = '14 Sats';
-        satsDisplay.style.color = 'var(--text-main)';
+      if (gnssModePill) gnssModePill.textContent = 'GNSS_AIDED';
+      if (hAccPill) hAccPill.textContent = '±1.2 m';
+      const qVal = isPothole ? '4.80x' : '0.35x';
+      if (dynQTag) dynQTag.textContent = `Q: ${qVal}`;
+      if (satsTag) {
+        satsTag.textContent = '14 Sats';
+        satsTag.style.color = 'var(--text-primary)';
       }
-      if (hAccDisplay) {
-        hAccDisplay.innerText = '±1.2 m';
-        hAccDisplay.style.color = 'var(--accent-green)';
+      if (zuptTag) {
+        zuptTag.textContent = 'ZUPT: STANDBY';
+        zuptTag.style.color = 'var(--text-muted)';
       }
       if (confEllipse) {
-        confEllipse.setAttribute('rx', 14);
-        confEllipse.setAttribute('ry', 10);
+        confEllipse.setAttribute('rx', 18);
+        confEllipse.setAttribute('ry', 12);
         confEllipse.setAttribute('stroke', '#00f2fe');
         confEllipse.setAttribute('fill', '#00f2fe');
       }
-      const dynQVal = isPothole ? '4.80x' : '0.35x';
-      if (qDisplay) qDisplay.innerText = dynQVal;
-      if (zuptDisplay) {
-        zuptDisplay.innerText = 'STANDBY';
-        zuptDisplay.style.color = 'var(--text-muted)';
-      }
-      if (f1Badge) f1Badge.innerText = `Active (Q: ${dynQVal})`;
-      if (f2Badge) f2Badge.innerText = 'Standby (Cruising)';
-      if (f4Badge) f4Badge.innerText = 'Seamless Damping';
-      if (f5Badge) f5Badge.innerText = '95% Bound ±1.2m';
     }
 
-    animFrameId = requestAnimationFrame(updateSim);
+    animFrameId = requestAnimationFrame(updateNavigationLoop);
   }
 
-  function startSim() {
-    if (isPlaying) return;
-    isPlaying = true;
-    if (btnPlay) {
-      btnPlay.innerText = '⏸ Pause Drive';
-      btnPlay.style.background = '#e11d48';
-      btnPlay.style.color = '#fff';
+  function startNavigation() {
+    if (isNavigating) return;
+    isNavigating = true;
+    if (btnNavPlay) {
+      btnNavPlay.innerHTML = '<span>⏸</span> Pause Navigation';
+      btnNavPlay.style.background = '#e11d48';
     }
-    showToast("▶ Live vehicular navigation active");
-    animFrameId = requestAnimationFrame(updateSim);
+    showToast("▶ Turn-by-Turn Navigation active");
+    speak("Starting turn by turn navigation.");
+    animFrameId = requestAnimationFrame(updateNavigationLoop);
   }
 
-  function pauseSim() {
-    isPlaying = false;
-    if (btnPlay) {
-      btnPlay.innerText = '▶ Start Drive';
-      btnPlay.style.background = '';
-      btnPlay.style.color = '';
+  function pauseNavigation() {
+    isNavigating = false;
+    if (btnNavPlay) {
+      btnNavPlay.innerHTML = '<span>▶</span> Resume Navigation';
+      btnNavPlay.style.background = '';
     }
     if (animFrameId) {
       cancelAnimationFrame(animFrameId);
@@ -308,115 +564,152 @@
     }
   }
 
-  function resetSim() {
-    pauseSim();
+  function resetNavigation() {
+    pauseNavigation();
     progress = 0;
+    lastAnnouncedStep = -1;
     isForcedTunnel = false;
     isPothole = false;
     isStopped = false;
 
-    if (btnTunnel) btnTunnel.classList.remove('active');
-    if (btnPothole) btnPothole.classList.remove('active');
-    if (btnStop) btnStop.classList.remove('active');
+    if (btnTriggerTunnel) btnTriggerTunnel.classList.remove('active');
+    if (btnTriggerPothole) btnTriggerPothole.classList.remove('active');
+    if (btnTriggerStop) btnTriggerStop.classList.remove('active');
 
-    const sc = scenarios[currentScenarioKey] || scenarios.mumbai;
-    const startWp = sc.waypoints[0];
+    const c = corridors[currentScenarioKey] || corridors.mumbai;
+    const startWp = c.waypoints[0];
 
-    if (vehicleGroup) vehicleGroup.setAttribute('transform', `translate(${startWp.x}, ${startWp.y}) rotate(0)`);
+    if (vehicleGroup) {
+      vehicleGroup.setAttribute('transform', `translate(${startWp.x}, ${startWp.y}) rotate(0)`);
+    }
     if (confEllipse) {
       confEllipse.setAttribute('cx', startWp.x);
       confEllipse.setAttribute('cy', startWp.y);
-      confEllipse.setAttribute('rx', 14);
-      confEllipse.setAttribute('ry', 10);
+      confEllipse.setAttribute('rx', 18);
+      confEllipse.setAttribute('ry', 12);
       confEllipse.setAttribute('stroke', '#00f2fe');
       confEllipse.setAttribute('fill', '#00f2fe');
     }
 
-    if (speedDisplay) speedDisplay.innerText = '0';
-    if (addressText) addressText.innerText = startWp.addr;
-    if (modeBadge) {
-      modeBadge.innerText = 'GNSS_AIDED';
-      modeBadge.className = 'status-badge status-gnss';
+    if (liveSpeedVal) liveSpeedVal.textContent = '0';
+    if (currentAddressText) currentAddressText.textContent = startWp.addr;
+    if (turnIcon) turnIcon.textContent = startWp.icon;
+    if (turnDistance) turnDistance.textContent = startWp.distText;
+    if (turnStreet) turnStreet.textContent = startWp.instruction;
+    if (gnssModePill) gnssModePill.textContent = 'GNSS_AIDED';
+    if (hAccPill) hAccPill.textContent = '±1.2 m';
+    if (dynQTag) dynQTag.textContent = 'Q: 0.35x';
+    if (satsTag) {
+      satsTag.textContent = '14 Sats';
+      satsTag.style.color = 'var(--text-primary)';
     }
-    if (hAccDisplay) {
-      hAccDisplay.innerText = '±1.2 m';
-      hAccDisplay.style.color = 'var(--accent-green)';
+    if (zuptTag) {
+      zuptTag.textContent = 'ZUPT: STANDBY';
+      zuptTag.style.color = 'var(--text-muted)';
     }
-    if (qDisplay) qDisplay.innerText = '0.35x';
-    if (satsDisplay) {
-      satsDisplay.innerText = '14 Sats';
-      satsDisplay.style.color = 'var(--text-main)';
+    if (turnBanner) turnBanner.className = 'turn-banner';
+    if (btnNavPlay) {
+      btnNavPlay.innerHTML = '<span>▶</span> Start Navigation';
+      btnNavPlay.style.background = '';
     }
-    if (zuptDisplay) {
-      zuptDisplay.innerText = 'STANDBY';
-      zuptDisplay.style.color = 'var(--text-muted)';
-    }
-    if (f1Badge) f1Badge.innerText = 'Active (Q: 0.35x)';
-    if (f2Badge) f2Badge.innerText = 'Standby (Cruising)';
-    if (f3Badge) f3Badge.innerText = 'Dual Tripwire: Nominal';
-    if (f4Badge) f4Badge.innerText = 'Seamless Damping';
-    if (f5Badge) f5Badge.innerText = '95% Ellipse Bound';
   }
 
   // Event Listeners
-  if (btnPlay) {
-    btnPlay.addEventListener('click', () => {
-      if (isPlaying) pauseSim();
-      else startSim();
+  if (btnNavPlay) {
+    btnNavPlay.addEventListener('click', () => {
+      if (isNavigating) pauseNavigation();
+      else startNavigation();
     });
   }
 
-  if (btnReset) {
-    btnReset.addEventListener('click', () => {
-      resetSim();
-      showToast("↺ Navigation reset to starting position");
+  if (btnNavReset) {
+    btnNavReset.addEventListener('click', () => {
+      resetNavigation();
+      showToast("↺ Navigation reset to starting waypoint");
     });
   }
 
-  if (btnTunnel) {
-    btnTunnel.addEventListener('click', () => {
+  if (corridorSelect) {
+    corridorSelect.addEventListener('change', (e) => {
+      setCorridor(e.target.value);
+    });
+  }
+
+  if (btnTriggerTunnel) {
+    btnTriggerTunnel.addEventListener('click', () => {
       isForcedTunnel = !isForcedTunnel;
-      btnTunnel.classList.toggle('active', isForcedTunnel);
-      showToast(isForcedTunnel ? "🚇 Forced Tunnel GNSS Blackout Active" : "☀️ Blackout Ended: Satellites Re-acquired");
+      btnTriggerTunnel.classList.toggle('active', isForcedTunnel);
+      showToast(isForcedTunnel ? "🚇 Tunnel Outage Triggered: GPS Lost" : "☀️ Tunnel Outage Ended: Satellites Re-acquired");
+      speak(isForcedTunnel ? "Caution: GPS signal lost. Engaging AI Dead Reckoning." : "Satellites re-acquired. Seamless handover complete.", true);
     });
   }
 
-  if (btnPothole) {
-    btnPothole.addEventListener('click', () => {
+  if (btnTriggerPothole) {
+    btnTriggerPothole.addEventListener('click', () => {
       isPothole = true;
-      btnPothole.classList.add('active');
-      showToast("⚡ Pothole Injected: Dynamic Q scaled to 5.50x (Feature 1)");
+      btnTriggerPothole.classList.add('active');
+      showToast("⚡ Road Pothole Detected: Dynamic Q expanded to 5.50x (Feature 1)");
+      speak("Pothole shock detected. Expanding filter uncertainty.", true);
       setTimeout(() => {
         isPothole = false;
-        btnPothole.classList.remove('active');
+        btnTriggerPothole.classList.remove('active');
       }, 2500);
     });
   }
 
-  if (btnStop) {
-    btnStop.addEventListener('click', () => {
+  if (btnTriggerStop) {
+    btnTriggerStop.addEventListener('click', () => {
       isStopped = !isStopped;
-      btnStop.classList.toggle('active', isStopped);
-      showToast(isStopped ? "🛑 Traffic Stop: Retroactive ZUPT Drift Correction Applied (Feature 2)" : "▶ Vehicle Moving");
+      btnTriggerStop.classList.toggle('active', isStopped);
+      showToast(isStopped ? "🛑 Red Light Standstill: Zero-Velocity Drift Corrected (Feature 2)" : "▶ Resuming Drive");
+      speak(isStopped ? "Vehicle stopped at signal. Applying zero velocity drift correction." : "Green light. Resuming navigation.", true);
     });
   }
 
-  if (scenarioSelect) {
-    scenarioSelect.addEventListener('change', (e) => {
-      applyScenario(e.target.value);
-      showToast(`Loaded ${e.target.options[e.target.selectedIndex].text}`);
+  if (btnVoiceToggle) {
+    btnVoiceToggle.addEventListener('click', () => {
+      voiceEnabled = !voiceEnabled;
+      btnVoiceToggle.classList.toggle('active', voiceEnabled);
+      btnVoiceToggle.textContent = voiceEnabled ? '🔊' : '🔈';
+      showToast(voiceEnabled ? "🔊 Voice Prompts Enabled" : "🔈 Voice Prompts Muted");
+      if (voiceEnabled) speak("Voice guidance enabled.");
     });
   }
 
-  if (btnTheme) {
-    btnTheme.addEventListener('click', () => {
-      isDarkMode = !isDarkMode;
-      document.body.classList.toggle('theme-light', !isDarkMode);
-      showToast(isDarkMode ? "🌙 Dark Mode Active" : "☀️ Light Mode Active");
+  if (btnThemeToggle) {
+    btnThemeToggle.addEventListener('click', () => {
+      isNightMode = !isNightMode;
+      document.body.classList.toggle('theme-light', !isNightMode);
+      btnThemeToggle.textContent = isNightMode ? '🌙' : '☀️';
+      showToast(isNightMode ? "🌙 Night Navigation Mode" : "☀️ Daylight Mode");
     });
   }
 
-  // Trajectory Exporters (In-Browser Blob Downloads)
+  if (btnOpenFeatures) {
+    btnOpenFeatures.addEventListener('click', () => {
+      if (featuresDrawer) featuresDrawer.style.display = 'flex';
+    });
+  }
+
+  if (btnOpenDrawer) {
+    btnOpenDrawer.addEventListener('click', () => {
+      if (featuresDrawer) featuresDrawer.style.display = 'flex';
+    });
+  }
+
+  if (btnCloseDrawer) {
+    btnCloseDrawer.addEventListener('click', () => {
+      if (featuresDrawer) featuresDrawer.style.display = 'none';
+    });
+  }
+
+  if (featuresDrawer) {
+    featuresDrawer.addEventListener('click', (e) => {
+      if (e.target === featuresDrawer) featuresDrawer.style.display = 'none';
+    });
+  }
+
+  // Blob Exporters
   function downloadBlob(blob, filename) {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -431,61 +724,42 @@
   const btnExportGeoJSON = document.getElementById('btnExportGeoJSON');
   if (btnExportGeoJSON) {
     btnExportGeoJSON.addEventListener('click', () => {
-      const sc = scenarios[currentScenarioKey] || scenarios.mumbai;
+      const c = corridors[currentScenarioKey] || corridors.mumbai;
       const geojson = {
         type: "FeatureCollection",
-        properties: { scenario: currentScenarioKey, system: "AI Dead Reckoning Navigation System" },
+        properties: { corridor: c.name, system: "AI Dead Reckoning Turn-by-Turn Navigation" },
         features: [
           {
             type: "Feature",
             geometry: {
               type: "LineString",
-              coordinates: sc.waypoints.map(w => [w.x * 0.001 + 72.82, w.y * 0.001 + 18.94])
+              coordinates: c.waypoints.map(w => [w.x * 0.001 + 72.82, w.y * 0.001 + 18.94])
             },
-            properties: { name: "Driven Trajectory", corridor: sc.title }
+            properties: { name: c.destination }
           }
         ]
       };
       const blob = new Blob([JSON.stringify(geojson, null, 2)], { type: "application/geo+json" });
-      downloadBlob(blob, `${currentScenarioKey}_trajectory.geojson`);
-      showToast("📥 Exported GeoJSON Trajectory File");
+      downloadBlob(blob, `${currentScenarioKey}_turn_route.geojson`);
+      showToast("📥 Exported Turn-by-Turn GeoJSON");
     });
   }
 
   const btnExportCSV = document.getElementById('btnExportCSV');
   if (btnExportCSV) {
     btnExportCSV.addEventListener('click', () => {
-      const sc = scenarios[currentScenarioKey] || scenarios.mumbai;
-      const rows = [
-        "step_idx,x,y,speed_kmh,in_tunnel,address"
-      ];
-      sc.waypoints.forEach((w, i) => {
-        rows.push(`${i},${w.x},${w.y},${w.speed},${w.inTunnel ? 1 : 0},"${w.addr}"`);
+      const c = corridors[currentScenarioKey] || corridors.mumbai;
+      const rows = ["step,x,y,speed_kmh,in_tunnel,instruction,address"];
+      c.waypoints.forEach((w, i) => {
+        rows.push(`${i},${w.x},${w.y},${w.speed},${w.inTunnel ? 1 : 0},"${w.instruction}","${w.addr}"`);
       });
       const blob = new Blob([rows.join("\n")], { type: "text/csv;charset=utf-8;" });
-      downloadBlob(blob, `${currentScenarioKey}_telemetry.csv`);
-      showToast("📥 Exported Telemetry CSV File");
+      downloadBlob(blob, `${currentScenarioKey}_telemetry_log.csv`);
+      showToast("📥 Exported Telemetry Log CSV");
     });
   }
 
-  const btnExportJSON = document.getElementById('btnExportJSON');
-  if (btnExportJSON) {
-    btnExportJSON.addEventListener('click', () => {
-      const benchmarks = {
-        corridor: currentScenarioKey,
-        tunnel_length_m: 1500,
-        models: {
-          proposed_ai_es_iekf: { horizontal_rmse_m: 1.18, cep50_m: 0.85, cep95_m: 2.14, max_tunnel_drift_m: 2.82, status: "PASS" },
-          standard_kinematic_ekf: { horizontal_rmse_m: 4.65, cep50_m: 3.42, cep95_m: 8.90, max_tunnel_drift_m: 14.50, status: "DEGRADED" },
-          raw_imu_double_integration: { horizontal_rmse_m: 48.20, cep50_m: 32.10, cep95_m: 98.40, max_tunnel_drift_m: 182.60, status: "DIVERGED" }
-        }
-      };
-      const blob = new Blob([JSON.stringify(benchmarks, null, 2)], { type: "application/json" });
-      downloadBlob(blob, `${currentScenarioKey}_benchmarks.json`);
-      showToast("📥 Exported Benchmark Summary JSON");
-    });
-  }
-
-  // Initial Boot
-  applyScenario('mumbai');
+  // Boot: Auto-start navigation
+  setCorridor('mumbai');
+  startNavigation();
 })();
