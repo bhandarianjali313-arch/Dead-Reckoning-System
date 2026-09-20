@@ -598,9 +598,8 @@ function switchView(tabId) {
     setTimeout(() => {
       if (map) map.invalidateSize();
     }, 50);
-  } else if (tabId === 'telemetry') {
-    renderOscilloscopes();
   } else if (tabId === 'benchmarks') {
+    renderOscilloscopes();
     fetchBenchmarks(currentScenario);
   }
 }
@@ -876,24 +875,78 @@ function advanceSimulationStep() {
     }
   }
 
-  // Feature 1: Dynamic Q tag
-  const f1Tag = document.getElementById('f1Tag');
-  if (step.dynamic_q > 1.0) {
-    f1Tag.innerText = `Q: ${step.dynamic_q}x (Disturbance)`;
-    f1Tag.className = 'feature-tag tag-warning';
-  } else {
-    f1Tag.innerText = `Q: ${step.dynamic_q}x (Smooth)`;
-    f1Tag.className = 'feature-tag tag-active';
+  // Update Cockpit AI Motion & Disturbance Tags
+  const aiAccelTag = document.getElementById('aiAccelTag');
+  if (aiAccelTag) {
+    const acc = step.acceleration_mps2 || 0.0;
+    const accText = acc < -0.5 ? 'Braking' : (acc > 0.5 ? 'Accelerating' : 'Cruising');
+    aiAccelTag.innerText = `${acc >= 0 ? '+' : ''}${acc.toFixed(2)} m/s² (${accText})`;
+    aiAccelTag.className = acc < -0.5 ? 'feature-tag tag-warning' : (acc > 0.5 ? 'feature-tag tag-active' : 'feature-tag tag-standby');
   }
 
-  // Feature 2: ZUPT tag
-  const f2Tag = document.getElementById('f2Tag');
-  if (step.mode === 'ZUPT_CORRECTED' || step.speed_mps < 0.5) {
-    f2Tag.innerText = 'Active (RTS Smoothing)';
-    f2Tag.className = 'feature-tag tag-active';
-  } else {
-    f2Tag.innerText = 'Standby (Cruising)';
-    f2Tag.className = 'feature-tag tag-standby';
+  const aiTurnTag = document.getElementById('aiTurnTag');
+  if (aiTurnTag) {
+    aiTurnTag.innerText = step.turning_state || 'Straight';
+    aiTurnTag.className = step.turning_state && step.turning_state !== 'Straight' ? 'feature-tag tag-warning' : 'feature-tag tag-active';
+  }
+
+  const aiBumpTag = document.getElementById('aiBumpTag');
+  if (aiBumpTag) {
+    const isPothole = step.road_condition === 'POTHOLE';
+    aiBumpTag.innerText = isPothole ? '⚠️ POTHOLE SHOCK!' : (step.road_condition === 'ROAD_BUMP' ? 'Road Bump' : 'Smooth Asphalt');
+    aiBumpTag.className = isPothole ? 'feature-tag tag-danger' : (step.road_condition === 'ROAD_BUMP' ? 'feature-tag tag-warning' : 'feature-tag tag-active');
+  }
+
+  const aiVibTag = document.getElementById('aiVibTag');
+  if (aiVibTag) {
+    const vib = step.vibration_g || 0.04;
+    aiVibTag.innerText = `${vib.toFixed(2)}g (${vib > 0.1 ? 'Vibration' : 'Normal'})`;
+    aiVibTag.className = vib > 0.1 ? 'feature-tag tag-warning' : 'feature-tag tag-active';
+  }
+
+  const aiPhoneTag = document.getElementById('aiPhoneTag');
+  if (aiPhoneTag) {
+    const isHandled = step.phone_movement && step.phone_movement.includes('Handled');
+    aiPhoneTag.innerText = isHandled ? '⚠️ Picked Up / Handled' : 'Stable Aligned';
+    aiPhoneTag.className = isHandled ? 'feature-tag tag-danger' : 'feature-tag tag-active';
+  }
+
+  const aiReliabilityTag = document.getElementById('aiReliabilityTag');
+  if (aiReliabilityTag) {
+    const rel = step.sensor_reliability_pct || 98.5;
+    aiReliabilityTag.innerText = `${rel.toFixed(1)}% (${rel > 85 ? 'High Trust' : 'Degraded'})`;
+    aiReliabilityTag.className = rel > 85 ? 'feature-tag tag-active' : 'feature-tag tag-warning';
+  }
+
+  // Update View 2 (AI Sensor Pattern Analyzer Meters)
+  const patSpeedVal = document.getElementById('patSpeedVal');
+  if (patSpeedVal) {
+    const spdKmh = step.speed_kmh || (step.speed_mps * 3.6);
+    patSpeedVal.innerText = `${spdKmh.toFixed(1)} km/h`;
+    document.getElementById('patSpeedMeter').style.width = `${Math.min(100, (spdKmh / 120) * 100)}%`;
+
+    const acc = step.acceleration_mps2 || 0.0;
+    document.getElementById('patAccelVal').innerText = `${acc >= 0 ? '+' : ''}${acc.toFixed(2)} m/s²`;
+    document.getElementById('patAccelMeter').style.width = `${Math.max(0, Math.min(100, ((acc + 3.0) / 6.0) * 100))}%`;
+
+    document.getElementById('patTurnVal').innerText = step.turning_state || 'Straight Cruise';
+    document.getElementById('patTurnMeter').style.width = `${step.turning_state === 'Right Turn' ? 85 : (step.turning_state === 'Left Turn' ? 15 : 50)}%`;
+
+    const isPothole = step.road_condition === 'POTHOLE';
+    document.getElementById('patBumpVal').innerText = isPothole ? '⚠️ Pothole Shock' : (step.road_condition === 'ROAD_BUMP' ? 'Road Bump' : 'Smooth Road');
+    document.getElementById('patBumpMeter').style.width = `${isPothole ? 95 : (step.road_condition === 'ROAD_BUMP' ? 65 : 12)}%`;
+
+    const vib = step.vibration_g || 0.04;
+    document.getElementById('patVibVal').innerText = `${vib.toFixed(2)}g (${vib > 0.1 ? 'High' : 'Nominal'})`;
+    document.getElementById('patVibMeter').style.width = `${Math.min(100, (vib / 0.5) * 100)}%`;
+
+    const isHandled = step.phone_movement && step.phone_movement.includes('Handled');
+    document.getElementById('patPhoneVal').innerText = isHandled ? '⚠️ Picked Up / Handled' : 'Stable in Vehicle';
+    document.getElementById('patPhoneMeter').style.width = `${isHandled ? 90 : 8}%`;
+
+    const rel = step.sensor_reliability_pct || 98.5;
+    document.getElementById('patReliabilityVal').innerText = `${rel.toFixed(1)}% Reliable`;
+    document.getElementById('patReliabilityMeter').style.width = `${rel}%`;
   }
 }
 

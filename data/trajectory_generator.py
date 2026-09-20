@@ -225,6 +225,8 @@ class TrajectoryGenerator:
                 "lon": lon,
                 "alt": alt,
                 "v_forward": v_forward,
+                "a_forward": a_long,
+                "yaw_rate": yaw_rate,
                 "ve": ve,
                 "vn": vn,
                 "yaw_deg": math.degrees(yaw_rad),

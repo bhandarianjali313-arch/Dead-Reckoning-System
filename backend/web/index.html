@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI Dead Reckoning Navigation System - Commercial Platform (India)</title>
+  <title>AI-ML Based Intelligent Dead Reckoning System for Seamless Navigation</title>
   <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="stylesheet" href="/static/styles.css">
@@ -13,23 +13,26 @@
   <header>
     <div class="logo-area">
       <div class="logo-badge">AI-DR 🇮🇳</div>
-      <h1 style="font-size:16px; font-weight:800; letter-spacing:-0.3px;">Dead Reckoning Platform</h1>
-      <span class="api-badge" style="background: rgba(0,230,118,0.15); color: #00e676; border-color: rgba(0,230,118,0.4);">✓ Google Maps Live</span>
+      <div>
+        <h1 style="font-size:15px; font-weight:800; letter-spacing:-0.2px;">AI-ML Intelligent Dead Reckoning System</h1>
+        <div style="font-size:10px; color:var(--text-muted); font-weight:500;">Seamless Navigation in GPS/GNSS-Denied Environments (Tunnels, Underground Roads, Dense Urban Canyons, Forests)</div>
+      </div>
     </div>
 
-    <!-- Navigation Tabs -->
+    <!-- Navigation Tabs (Aligned with Solution Architecture) -->
     <nav class="nav-tabs">
-      <button class="nav-tab active" data-tab="cockpit">🧭 Live Cockpit</button>
-      <button class="nav-tab" data-tab="telemetry">📈 Sensor Lab</button>
-      <button class="nav-tab" data-tab="benchmarks">🧪 Benchmarks</button>
-      <button class="nav-tab" data-tab="builder">🗺️ Route Builder</button>
-      <button class="nav-tab" data-tab="apihub">💻 API &amp; Export</button>
+      <button class="nav-tab active" data-tab="cockpit">🧭 1. Live Cockpit</button>
+      <button class="nav-tab" data-tab="analyzer">🧠 2. AI Sensor Analyzer</button>
+      <button class="nav-tab" data-tab="fusion">🔄 3. Fusion &amp; 6 Features</button>
+      <button class="nav-tab" data-tab="techstack">🛠️ 4. 8-Tier Tech Stack</button>
+      <button class="nav-tab" data-tab="benchmarks">📊 5. Benchmarks &amp; Lab</button>
+      <button class="nav-tab" data-tab="apihub">💻 6. API &amp; Export</button>
     </nav>
 
     <!-- Header Actions & Status -->
     <div class="header-status">
       <div id="modePill" class="status-pill status-gnss">GNSS_AIDED</div>
-      <div id="tunnelWarning" class="status-pill status-tunnel" style="display: none;">UNDERSEA TUNNEL OUTAGE</div>
+      <div id="tunnelWarning" class="status-pill status-tunnel" style="display: none;">GPS BLACKOUT ZONE</div>
       <button id="btnVoiceToggle" class="btn btn-sm btn-voice active" title="Synthetic Voice Navigation Guidance">🔊 Voice: ON</button>
       <button id="btnThemeToggle" class="btn btn-sm" style="background:#223254; font-weight:700;">☀️ Light Mode</button>
       <button id="btnOpenMapSettings" class="btn btn-sm" style="background:#223254;">⚙ Settings</button>
@@ -51,7 +54,7 @@
 
       <!-- Search & Route Bar on Map -->
       <div class="map-search-bar">
-        <input type="text" id="searchInput" placeholder="Search Indian landmarks (e.g. Marine Drive, BBD University, India Gate, Atal Tunnel)..." />
+        <input type="text" id="searchInput" placeholder="Search Indian landmarks (e.g. Marine Drive, BBD University, Pragati Maidan, Atal Tunnel)..." />
         <button id="btnSearch" class="btn btn-primary btn-sm">Search API</button>
       </div>
 
@@ -59,7 +62,7 @@
       <div class="live-address-banner">
         <div class="address-icon">📍</div>
         <div class="address-content">
-          <div class="address-title">LIVE GEOCODED ADDRESS (GOOGLE MAPS PLATFORM)</div>
+          <div class="address-title">LIVE ROAD &amp; GEOCODED ADDRESS (GOOGLE MAPS &amp; OSM INDIA)</div>
           <div id="liveAddressText" class="address-text">Marine Drive (Netaji Subhash Chandra Bose Rd), Nariman Point, Mumbai, Maharashtra, India</div>
         </div>
         <div id="apiSourceTag" class="api-source-tag">Google Maps API</div>
@@ -91,7 +94,7 @@
         </div>
         <div class="legend-item">
           <div class="legend-line line-gnss"></div>
-          <span>GNSS Fix (Blackout in Tunnel)</span>
+          <span>GNSS Fix (Lost in Tunnels/Forests)</span>
         </div>
         <div class="legend-item">
           <div class="legend-line line-raw"></div>
@@ -106,7 +109,7 @@
         
         <!-- Speedometer & Confidence -->
         <div class="card">
-          <div class="card-title">Vehicle Telemetry &amp; Location</div>
+          <div class="card-title">Vehicle Telemetry &amp; Dead Reckoning Position</div>
           <div class="speed-display">
             <span id="speedVal" class="speed-value">0</span>
             <span class="speed-unit">km/h</span>
@@ -121,7 +124,7 @@
               <div id="confTierVal" class="metric-val" style="color: var(--accent-green);">HIGH</div>
             </div>
             <div class="metric-box">
-              <div class="metric-label">Satellites</div>
+              <div class="metric-label">GNSS Satellites</div>
               <div id="satsVal" class="metric-val">14 Sats</div>
             </div>
             <div class="metric-box">
@@ -133,8 +136,8 @@
           <!-- 3D Vehicle Attitude & Artificial Horizon -->
           <div class="attitude-horizon-card">
             <div class="attitude-horizon-header">
-              <span>3D Attitude &amp; Horizon</span>
-              <span id="attitudeAlignmentTag" style="color:var(--accent-cyan); font-weight:bold;">VIRTUAL ALIGN: OK</span>
+              <span>Automatic Phone Orientation Alignment</span>
+              <span id="attitudeAlignmentTag" style="color:var(--accent-cyan); font-weight:bold;">AUTO-DISCOVERED</span>
             </div>
             <div class="horizon-wrapper">
               <div class="horizon-disc">
@@ -164,53 +167,60 @@
                 </div>
               </div>
             </div>
+            <p style="font-size:10px; color:var(--text-muted); margin-top:6px;">Phone orientation is automatically estimated inside vehicle (phone does not have to be in a fixed position).</p>
           </div>
         </div>
 
-        <!-- 6 Unique Features Monitor -->
+        <!-- AI Motion Pattern Analyzer (Cockpit Live Card) -->
         <div class="card">
-          <div class="card-title">Active AI Features (6/6)</div>
+          <div class="card-title">Live AI Motion &amp; Disturbance Analysis</div>
           <div class="feature-list">
             <div class="feature-item">
-              <span>1. Dynamic Q Adaptation</span>
-              <span id="f1Tag" class="feature-tag tag-active">Q: 0.35x (Smooth)</span>
+              <span>⚡ Accel / Braking:</span>
+              <span id="aiAccelTag" class="feature-tag tag-active">+0.0 m/s² (Cruising)</span>
             </div>
             <div class="feature-item">
-              <span>2. Stop ZUPT &amp; Retro-Correction</span>
-              <span id="f2Tag" class="feature-tag tag-standby">Standby (Cruising)</span>
+              <span>🔄 Turning Dynamics:</span>
+              <span id="aiTurnTag" class="feature-tag tag-active">Straight</span>
             </div>
             <div class="feature-item">
-              <span>3. AI Fallback Arbiter</span>
-              <span id="f3Tag" class="feature-tag tag-active">Nominal (Trust: 100%)</span>
+              <span>🕳️ Bumps &amp; Potholes:</span>
+              <span id="aiBumpTag" class="feature-tag tag-active">Smooth Asphalt</span>
             </div>
             <div class="feature-item">
-              <span>4. Seamless GNSS Switcher</span>
-              <span id="f4Tag" class="feature-tag tag-active">Innovation Damping Ready</span>
+              <span>📳 Road/Engine Vibration:</span>
+              <span id="aiVibTag" class="feature-tag tag-active">0.04g (Normal)</span>
             </div>
             <div class="feature-item">
-              <span>5. Confidence Ellipse Tracker</span>
-              <span id="f5Tag" class="feature-tag tag-active">Active (2.45σ)</span>
+              <span>📱 Phone Movement:</span>
+              <span id="aiPhoneTag" class="feature-tag tag-active">Stable Aligned</span>
             </div>
             <div class="feature-item">
-              <span>6. Camera Visual Odometry</span>
-              <span id="f6Tag" class="feature-tag tag-active">Optical Flow Engaged</span>
+              <span>🛡️ Sensor Reliability:</span>
+              <span id="aiReliabilityTag" class="feature-tag tag-active">98.5% (High Trust)</span>
             </div>
           </div>
         </div>
 
         <!-- Simulation Controls & Anomaly Injection -->
         <div class="card controls-card">
-          <div class="card-title">Interactive Indian Scenarios &amp; Controls</div>
+          <div class="card-title">Simulated Driving Environments (India)</div>
           
           <div class="scenario-selector">
             <select id="scenarioSelect" class="scenario-select">
-              <option value="mumbai_tunnel" selected>🇮🇳 Mumbai: Coastal Road Undersea Tunnel (2.07 km)</option>
-              <option value="lucknow_bbd">🇮🇳 Lucknow: BBD University &amp; Ayodhya Highway (NH-27)</option>
-              <option value="delhi_tunnel">🇮🇳 New Delhi: Pragati Maidan Transit Tunnel (1.3 km)</option>
-              <option value="atal_tunnel">🇮🇳 Himachal: Atal Tunnel Rohtang (9.02 km Trans-Himalayan)</option>
-              <option value="bengaluru_airport">🇮🇳 Bengaluru: Kempegowda Airport Expressway (NH-44)</option>
-              <option value="pune_mumbai_expressway">🇮🇳 Western Ghats: Pune-Mumbai Khandala Tunnels</option>
-              <option value="kashmir_chenani">🇮🇳 Kashmir: Dr. Syama Prasad Mookerjee Tunnel (9.28 km)</option>
+              <optgroup label="🚇 Undersea &amp; Underground Tunnels">
+                <option value="mumbai_tunnel" selected>🇮🇳 Mumbai: Coastal Road Undersea Tunnel (2.07 km)</option>
+                <option value="delhi_tunnel">🇮🇳 New Delhi: Pragati Maidan Transit Tunnel (1.3 km)</option>
+                <option value="atal_tunnel">🇮🇳 Himachal: Atal Tunnel Rohtang (9.02 km Trans-Himalayan)</option>
+                <option value="kashmir_chenani">🇮🇳 Kashmir: Dr. Syama Prasad Mookerjee Tunnel (9.28 km)</option>
+              </optgroup>
+              <optgroup label="🏢 Dense Urban Street Canyons">
+                <option value="lucknow_bbd">🇮🇳 Lucknow: BBD University &amp; Ayodhya Highway (NH-27)</option>
+              </optgroup>
+              <optgroup label="🌲 Dense Forest &amp; Mountain Passes">
+                <option value="pune_mumbai_expressway">🇮🇳 Western Ghats: Pune-Mumbai Khandala Ghat Tunnels</option>
+                <option value="bengaluru_airport">🇮🇳 Bengaluru: Kempegowda Airport Expressway (NH-44)</option>
+              </optgroup>
             </select>
           </div>
 
@@ -233,119 +243,366 @@
   </div>
 
   <!-- =========================================================================
-       VIEW 2: SENSOR & TELEMETRY LAB (OSCILLOSCOPE)
+       VIEW 2: AI SENSOR PATTERN ANALYZER (Stage 3 of Solution)
        ========================================================================= -->
-  <div id="view-telemetry" class="tab-pane">
-    <div class="telemetry-lab-container">
-      <div style="display:flex; justify-content:space-between; align-items:center;">
-        <div>
-          <h2 style="font-size:18px; font-weight:800; color:var(--text-main);">Real-Time Sensor Oscilloscope &amp; Telemetry Stream</h2>
-          <p style="font-size:12px; color:var(--text-muted);">Live 50 Hz smartphone inertial measurement unit (IMU) waveforms and covariance propagation.</p>
-        </div>
-        <div style="display:flex; gap:10px;">
-          <span class="api-badge" style="background:rgba(0,242,254,0.15); color:var(--accent-cyan);">Stream Rate: 50 Hz</span>
-          <span class="api-badge" style="background:rgba(0,230,118,0.15); color:var(--accent-green);">Filter: ES-IEKF 15-State</span>
-        </div>
+  <div id="view-analyzer" class="tab-pane">
+    <div class="solution-container">
+      <div class="solution-banner">
+        <h2 style="font-size:17px; font-weight:800; color:var(--accent-cyan);">🧠 AI Motion Pattern &amp; Sensor Disturbance Characterization</h2>
+        <p style="font-size:12px; color:var(--text-main);">
+          As specified in our solution: <em>"AI analyzes the smartphone sensor patterns to identify speed, acceleration, braking, turning, bumps, potholes, vibration and unwanted phone movement, while also estimating how reliable the sensor data is."</em>
+        </p>
       </div>
 
-      <div class="lab-grid">
-        <!-- 3-Axis Accelerometer -->
-        <div class="oscilloscope-card">
-          <div class="oscilloscope-header">
-            <div class="oscilloscope-title">📊 3-Axis Accelerometer (m/s²)</div>
-            <div class="oscilloscope-legend">
-              <span class="oscilloscope-legend-item"><div class="osc-dot" style="background:#00f2fe;"></div> Ax</span>
-              <span class="oscilloscope-legend-item"><div class="osc-dot" style="background:#00e676;"></div> Ay</span>
-              <span class="oscilloscope-legend-item"><div class="osc-dot" style="background:#ff3d71;"></div> Az</span>
-            </div>
+      <!-- 7 AI Pattern Cards Grid -->
+      <div class="ai-pattern-grid">
+        <!-- 1. Speed -->
+        <div class="ai-pattern-card">
+          <div class="ai-pattern-header">
+            <span>1. Speed Estimation</span>
+            <span>v_forward</span>
           </div>
-          <canvas id="accelCanvas" class="oscilloscope-canvas" width="600" height="180"></canvas>
+          <div id="patSpeedVal" class="ai-pattern-val">0.0 km/h</div>
+          <div class="ai-meter-bg"><div id="patSpeedMeter" class="ai-meter-fill" style="width: 0%;"></div></div>
+          <p style="font-size:11px; color:var(--text-muted);">Inertial forward velocity derived from DeepIMUNet temporal recurrent layers.</p>
         </div>
 
-        <!-- 3-Axis Gyroscope -->
-        <div class="oscilloscope-card">
-          <div class="oscilloscope-header">
-            <div class="oscilloscope-title">🔄 3-Axis Gyroscope (rad/s)</div>
-            <div class="oscilloscope-legend">
-              <span class="oscilloscope-legend-item"><div class="osc-dot" style="background:#00f2fe;"></div> Wx</span>
-              <span class="oscilloscope-legend-item"><div class="osc-dot" style="background:#ffd600;"></div> Wy</span>
-              <span class="oscilloscope-legend-item"><div class="osc-dot" style="background:#a78bfa;"></div> Wz</span>
-            </div>
+        <!-- 2. Acceleration & Braking -->
+        <div class="ai-pattern-card">
+          <div class="ai-pattern-header">
+            <span>2. Acceleration &amp; Braking</span>
+            <span>a_longitudinal</span>
           </div>
-          <canvas id="gyroCanvas" class="oscilloscope-canvas" width="600" height="180"></canvas>
+          <div id="patAccelVal" class="ai-pattern-val">+0.00 m/s²</div>
+          <div class="ai-meter-bg"><div id="patAccelMeter" class="ai-meter-fill" style="width: 50%;"></div></div>
+          <p style="font-size:11px; color:var(--text-muted);">Detects vehicle throttle and brake forces independent of phone tilt.</p>
         </div>
 
-        <!-- Dynamic Q Process Noise -->
-        <div class="oscilloscope-card">
-          <div class="oscilloscope-header">
-            <div class="oscilloscope-title">⚡ Feature 1: Dynamic Process Noise Scaling (α_Q)</div>
-            <div class="oscilloscope-legend">
-              <span class="oscilloscope-legend-item"><div class="osc-dot" style="background:#ffd600;"></div> α_Q [0.1 - 10.0x]</span>
-            </div>
+        <!-- 3. Turning -->
+        <div class="ai-pattern-card">
+          <div class="ai-pattern-header">
+            <span>3. Turning Dynamics</span>
+            <span>ω_yaw</span>
           </div>
-          <canvas id="dynQCanvas" class="oscilloscope-canvas" width="600" height="180"></canvas>
+          <div id="patTurnVal" class="ai-pattern-val">Straight Cruise</div>
+          <div class="ai-meter-bg"><div id="patTurnMeter" class="ai-meter-fill" style="width: 50%;"></div></div>
+          <p style="font-size:11px; color:var(--text-muted);">Identifies lane changes, sharp 90° turns, and roundabout maneuvers.</p>
         </div>
 
-        <!-- 95% Confidence Error Ellipse -->
-        <div class="oscilloscope-card">
-          <div class="oscilloscope-header">
-            <div class="oscilloscope-title">🎯 Feature 5: 95% Horizontal Accuracy (± meters)</div>
-            <div class="oscilloscope-legend">
-              <span class="oscilloscope-legend-item"><div class="osc-dot" style="background:#00f2fe;"></div> Metric Ellipse Radius</span>
-            </div>
+        <!-- 4. Bumps & Potholes -->
+        <div class="ai-pattern-card">
+          <div class="ai-pattern-header">
+            <span>4. Bumps &amp; Potholes</span>
+            <span>Road Surface</span>
           </div>
-          <canvas id="errorCanvas" class="oscilloscope-canvas" width="600" height="180"></canvas>
+          <div id="patBumpVal" class="ai-pattern-val">Smooth Road</div>
+          <div class="ai-meter-bg"><div id="patBumpMeter" class="ai-meter-fill" style="width: 10%;"></div></div>
+          <p style="font-size:11px; color:var(--text-muted);">Detects transient vertical shocks to trigger Feature 1 (Dynamic Q scaling).</p>
+        </div>
+
+        <!-- 5. Road & Engine Vibration -->
+        <div class="ai-pattern-card">
+          <div class="ai-pattern-header">
+            <span>5. Road &amp; Engine Vibration</span>
+            <span>Spectral Noise</span>
+          </div>
+          <div id="patVibVal" class="ai-pattern-val">0.04 g (Nominal)</div>
+          <div class="ai-meter-bg"><div id="patVibMeter" class="ai-meter-fill" style="width: 15%;"></div></div>
+          <p style="font-size:11px; color:var(--text-muted);">Filters vehicular engine RPM harmonics from real motion signals.</p>
+        </div>
+
+        <!-- 6. Unwanted Phone Movement -->
+        <div class="ai-pattern-card">
+          <div class="ai-pattern-header">
+            <span>6. Unwanted Phone Movement</span>
+            <span>Handling Arbiter</span>
+          </div>
+          <div id="patPhoneVal" class="ai-pattern-val">Stable in Vehicle</div>
+          <div class="ai-meter-bg"><div id="patPhoneMeter" class="ai-meter-fill" style="width: 5%;"></div></div>
+          <p style="font-size:11px; color:var(--text-muted);">Distinguishes driver picking up phone from vehicle turns to prevent false drift.</p>
+        </div>
+
+        <!-- 7. Sensor Data Reliability -->
+        <div class="ai-pattern-card" style="grid-column: 1 / -1;">
+          <div class="ai-pattern-header">
+            <span>7. Sensor Data Reliability Estimation</span>
+            <span>Epistemic Trust Score</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div id="patReliabilityVal" class="ai-pattern-val" style="font-size:22px;">98.5% Reliable</div>
+            <span id="patReliabilityTier" class="api-badge" style="background:rgba(0,230,118,0.2); color:var(--accent-green); font-size:12px;">HIGH CONFIDENCE</span>
+          </div>
+          <div class="ai-meter-bg" style="height:10px;"><div id="patReliabilityMeter" class="ai-meter-fill" style="width: 98.5%;"></div></div>
+          <p style="font-size:11px; color:var(--text-muted); margin-top:4px;">
+            Continuously calculates how reliable sensor data is. If uncertainty spikes (>0.45), Feature 3 instantly falls back to traditional IEKF.
+          </p>
         </div>
       </div>
     </div>
   </div>
 
   <!-- =========================================================================
-       VIEW 3: BENCHMARK ARENA
+       VIEW 3: SENSOR FUSION & 6 UNIQUE FEATURES
+       ========================================================================= -->
+  <div id="view-fusion" class="tab-pane">
+    <div class="solution-container">
+      <div class="solution-banner">
+        <h2 style="font-size:17px; font-weight:800; color:var(--accent-cyan);">🔄 EKF / UKF / IEKF Sensor-Fusion &amp; The 6 Unique Features</h2>
+        <p style="font-size:12px; color:var(--text-main);">
+          <em>"When GNSS is available, it quietly helps maintain accurate positioning. When GNSS disappears, the system automatically switches to AI + IMU based dead reckoning, corrected using map matching and vehicle-motion constraints."</em>
+        </p>
+      </div>
+
+      <!-- 4-Stage Pipeline Flowchart -->
+      <div class="pipeline-flow">
+        <div class="pipeline-step-card active">
+          <div class="pipeline-step-num">Stage 1: Collection</div>
+          <h4 style="font-size:13px; color:#fff;">Raw Smartphone Sensors</h4>
+          <p style="font-size:11px; color:var(--text-muted);">Accel, Gyro, Mag, GNSS, and Camera Optical Flow.</p>
+        </div>
+        <div class="pipeline-step-card active">
+          <div class="pipeline-step-num">Stage 2: Preprocessing</div>
+          <h4 style="font-size:13px; color:#fff;">Virtual Alignment</h4>
+          <p style="font-size:11px; color:var(--text-muted);">Cleans sensor data &amp; discovers orientation inside vehicle.</p>
+        </div>
+        <div class="pipeline-step-card active">
+          <div class="pipeline-step-num">Stage 3: AI Inference</div>
+          <h4 style="font-size:13px; color:#fff;">Motion Characterization</h4>
+          <p style="font-size:11px; color:var(--text-muted);">DeepIMUNet classifies speed, bumps, vibration, &amp; reliability.</p>
+        </div>
+        <div class="pipeline-step-card active">
+          <div class="pipeline-step-num">Stage 4: Positioning</div>
+          <h4 style="font-size:13px; color:#fff;">ES-IEKF + Map Match</h4>
+          <p style="font-size:11px; color:var(--text-muted);">Seamless dead reckoning, NHC constraints &amp; road snapping.</p>
+        </div>
+      </div>
+
+      <!-- 6 Unique Features Cards -->
+      <div style="display:grid; grid-template-columns: repeat(2, 1fr); gap:14px; margin-top:10px;">
+        <div class="bench-model-card">
+          <div class="bench-badge" style="background:rgba(0,230,118,0.2); color:var(--accent-green); border:1px solid var(--accent-green);">Unique Feature 1</div>
+          <h3 style="font-size:14px; color:#fff;">1. Dynamic Process-Noise Adaptation</h3>
+          <p style="font-size:12px; color:var(--text-main);">Instead of keeping uncertainty fixed, AI changes it according to driving situation.</p>
+          <div style="background:var(--bg-primary); padding:8px; border-radius:6px; font-size:11px; color:var(--text-muted); font-family:monospace;">
+            • Smooth road → lower uncertainty (Q ~ 0.35x)<br>
+            • Bumpy road or sharp turn → higher uncertainty (Q ~ 5.5x)
+          </div>
+        </div>
+
+        <div class="bench-model-card">
+          <div class="bench-badge" style="background:rgba(0,230,118,0.2); color:var(--accent-green); border:1px solid var(--accent-green);">Unique Feature 2</div>
+          <h3 style="font-size:14px; color:#fff;">2. Stop-Based Drift Correction</h3>
+          <p style="font-size:12px; color:var(--text-main);">When the vehicle stops at red lights, the system estimates accumulated drift by comparing journey with road map.</p>
+          <div style="background:var(--bg-primary); padding:8px; border-radius:6px; font-size:11px; color:var(--text-muted); font-family:monospace;">
+            • Generalized Likelihood Ratio standstill test (ZUPT)<br>
+            • Corrects previous A → B trajectory before continuing to C
+          </div>
+        </div>
+
+        <div class="bench-model-card">
+          <div class="bench-badge" style="background:rgba(0,230,118,0.2); color:var(--accent-green); border:1px solid var(--accent-green);">Unique Feature 3</div>
+          <h3 style="font-size:14px; color:#fff;">3. AI Fallback Mechanism</h3>
+          <p style="font-size:12px; color:var(--text-main);">We don't blindly trust AI. Safeguarded with instant physics failover.</p>
+          <div style="background:var(--bg-primary); padding:8px; border-radius:6px; font-size:11px; color:var(--text-muted); font-family:monospace;">
+            • Abnormal sensor data or sudden phone movement detected<br>
+            • Temporarily falls back to traditional IEKF, keeping navigation alive
+          </div>
+        </div>
+
+        <div class="bench-model-card">
+          <div class="bench-badge" style="background:rgba(0,230,118,0.2); color:var(--accent-green); border:1px solid var(--accent-green);">Unique Feature 4</div>
+          <h3 style="font-size:14px; color:#fff;">4. Seamless GNSS Switching</h3>
+          <p style="font-size:12px; color:var(--text-main);">Dual-mode cooperation between GNSS and Dead Reckoning.</p>
+          <div style="background:var(--bg-primary); padding:8px; border-radius:6px; font-size:11px; color:var(--text-muted); font-family:monospace;">
+            • When GNSS disappears → automatically relies on IMU + AI + Map<br>
+            • When GNSS returns → smoothly corrects error instead of sudden jumping
+          </div>
+        </div>
+
+        <div class="bench-model-card">
+          <div class="bench-badge" style="background:rgba(0,230,118,0.2); color:var(--accent-green); border:1px solid var(--accent-green);">Unique Feature 5</div>
+          <h3 style="font-size:14px; color:#fff;">5. Confidence-Aware Navigation</h3>
+          <p style="font-size:12px; color:var(--text-main);">Provides real-time indication of how confident it is and how much error exists.</p>
+          <div style="background:var(--bg-primary); padding:8px; border-radius:6px; font-size:11px; color:var(--text-muted); font-family:monospace;">
+            • Real-time 2D covariance eigen-decomposition<br>
+            • Extracts 95% horizontal confidence error ellipses (± meters)
+          </div>
+        </div>
+
+        <div class="bench-model-card">
+          <div class="bench-badge" style="background:rgba(0,230,118,0.2); color:var(--accent-green); border:1px solid var(--accent-green);">Unique Feature 6</div>
+          <h3 style="font-size:14px; color:#fff;">6. Optional Camera Assistance</h3>
+          <p style="font-size:12px; color:var(--text-main);">Monocular visual odometry assisting inertial dead reckoning.</p>
+          <div style="background:var(--bg-primary); padding:8px; border-radius:6px; font-size:11px; color:var(--text-muted); font-family:monospace;">
+            • Smartphone camera provides movement estimate using optical flow<br>
+            • Works alongside IMU to bound longitudinal velocity drift
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       VIEW 4: 8-TIER TECH STACK EXPLORER
+       ========================================================================= -->
+  <div id="view-techstack" class="tab-pane">
+    <div class="solution-container">
+      <div class="solution-banner">
+        <h2 style="font-size:17px; font-weight:800; color:var(--accent-cyan);">🛠️ The 8-Tier Technology Stack Implementation</h2>
+        <p style="font-size:12px; color:var(--text-main);">
+          Complete verification and implementation of the exact 8 tech stack tiers specified for this project:
+        </p>
+      </div>
+
+      <div class="tech-tier-grid">
+        <!-- Tier 1 -->
+        <div class="tech-tier-card">
+          <div class="tech-tier-num">Tier 1: Mobile App Development</div>
+          <h4 style="font-size:14px; color:#fff;">Flutter, Android &amp; iOS</h4>
+          <p style="font-size:11px; color:var(--text-muted);">Cross-platform native mobile application with touch HUD, offline map cache, and sensor stream.</p>
+          <div class="tech-badge-list">
+            <span class="tech-tag">Flutter</span>
+            <span class="tech-tag">Dart</span>
+            <span class="tech-tag">Android</span>
+            <span class="tech-tag">iOS</span>
+          </div>
+        </div>
+
+        <!-- Tier 2 -->
+        <div class="tech-tier-card">
+          <div class="tech-tier-num">Tier 2: Sensor Data Collection</div>
+          <h4 style="font-size:14px; color:#fff;">Multi-Sensor Ingestion</h4>
+          <p style="font-size:11px; color:var(--text-muted);">Continuous 50Hz smartphone IMU, compass, GNSS receiver, and camera optical flow frames.</p>
+          <div class="tech-badge-list">
+            <span class="tech-tag">Accelerometer</span>
+            <span class="tech-tag">Gyroscope</span>
+            <span class="tech-tag">Magnetometer</span>
+            <span class="tech-tag">GNSS</span>
+            <span class="tech-tag">Camera</span>
+          </div>
+        </div>
+
+        <!-- Tier 3 -->
+        <div class="tech-tier-card">
+          <div class="tech-tier-num">Tier 3: Data Preprocessing</div>
+          <h4 style="font-size:14px; color:#fff;">Python, NumPy, Pandas</h4>
+          <p style="font-size:11px; color:var(--text-muted);">Noise filtering, gravity decomposition, coordinate frames (WGS84, ECEF, ENU), and virtual alignment.</p>
+          <div class="tech-badge-list">
+            <span class="tech-tag">Python</span>
+            <span class="tech-tag">NumPy</span>
+            <span class="tech-tag">Pandas</span>
+            <span class="tech-tag">Virtual Alignment</span>
+          </div>
+        </div>
+
+        <!-- Tier 4 -->
+        <div class="tech-tier-card">
+          <div class="tech-tier-num">Tier 4: AI/ML Models</div>
+          <h4 style="font-size:14px; color:#fff;">TensorFlow &amp; PyTorch</h4>
+          <p style="font-size:11px; color:var(--text-muted);">DeepIMUNet (1D-CNN + GRU) multi-task neural network analyzing speed, bumps, vibration, &amp; reliability.</p>
+          <div class="tech-badge-list">
+            <span class="tech-tag">TensorFlow</span>
+            <span class="tech-tag">PyTorch</span>
+            <span class="tech-tag">1D-CNN</span>
+            <span class="tech-tag">GRU</span>
+          </div>
+        </div>
+
+        <!-- Tier 5 -->
+        <div class="tech-tier-card">
+          <div class="tech-tier-num">Tier 5: Sensor Fusion &amp; Positioning</div>
+          <h4 style="font-size:14px; color:#fff;">MATLAB &amp; Python</h4>
+          <p style="font-size:11px; color:var(--text-muted);">15-State Error-State / Invariant EKF engine with Non-Holonomic Constraints (NHC) and ZUPT.</p>
+          <div class="tech-badge-list">
+            <span class="tech-tag">MATLAB</span>
+            <span class="tech-tag">Python</span>
+            <span class="tech-tag">ES-IEKF</span>
+            <span class="tech-tag">ZUPT</span>
+          </div>
+        </div>
+
+        <!-- Tier 6 -->
+        <div class="tech-tier-card">
+          <div class="tech-tier-num">Tier 6: Maps &amp; Location Services</div>
+          <h4 style="font-size:14px; color:#fff;">OpenStreetMap &amp; Google Maps</h4>
+          <p style="font-size:11px; color:var(--text-muted);">HMM map matching, road centerline snapping, Google Maps Geocoding API, and 60 FPS vector tiles.</p>
+          <div class="tech-badge-list">
+            <span class="tech-tag">Google Maps API</span>
+            <span class="tech-tag">OpenStreetMap</span>
+            <span class="tech-tag">HMM Matcher</span>
+          </div>
+        </div>
+
+        <!-- Tier 7 -->
+        <div class="tech-tier-card">
+          <div class="tech-tier-num">Tier 7: Backend &amp; Cloud</div>
+          <h4 style="font-size:14px; color:#fff;">FastAPI, Firebase &amp; AWS</h4>
+          <p style="font-size:11px; color:var(--text-muted);">Microservice telemetry ingestion, WebSocket 50Hz stream, and cloud sync for Firebase &amp; AWS DynamoDB.</p>
+          <div class="tech-badge-list">
+            <span class="tech-tag">FastAPI</span>
+            <span class="tech-tag">Firebase</span>
+            <span class="tech-tag">AWS DynamoDB</span>
+            <span class="tech-tag">WebSocket</span>
+          </div>
+        </div>
+
+        <!-- Tier 8 -->
+        <div class="tech-tier-card">
+          <div class="tech-tier-num">Tier 8: Development &amp; Testing</div>
+          <h4 style="font-size:14px; color:#fff;">VS Code, GitHub, Jupyter, Matplotlib</h4>
+          <p style="font-size:11px; color:var(--text-muted);">Comprehensive automated verification runner, benchmark SVG generator, and Jupyter research notebook.</p>
+          <div class="tech-badge-list">
+            <span class="tech-tag">VS Code</span>
+            <span class="tech-tag">GitHub</span>
+            <span class="tech-tag">Jupyter</span>
+            <span class="tech-tag">Matplotlib</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       VIEW 5: BENCHMARKS & SENSOR LAB
        ========================================================================= -->
   <div id="view-benchmarks" class="tab-pane">
     <div class="benchmarks-container">
       <div style="display:flex; justify-content:space-between; align-items:center;">
         <div>
-          <h2 style="font-size:18px; font-weight:800; color:var(--text-main);">AI Model &amp; Positioning Benchmark Arena</h2>
-          <p style="font-size:12px; color:var(--text-muted);">Rigorous statistical verification comparing Proposed AI Dead Reckoning against classical kinematic filters and unfiltered IMU baseline.</p>
+          <h2 style="font-size:18px; font-weight:800; color:var(--text-main);">Performance Benchmarks &amp; Sensor Telemetry Oscilloscopes</h2>
+          <p style="font-size:12px; color:var(--text-muted);">Statistical comparison proving Proposed AI Dead Reckoning vs. classical kinematic filters and unfiltered raw IMU.</p>
         </div>
         <button id="btnRefreshBenchmarks" class="btn btn-primary btn-sm">↺ Re-Calculate Metrics</button>
       </div>
 
       <!-- 3-Model Comparison Cards -->
       <div class="benchmarks-summary-grid">
-        <!-- Proposed AI -->
         <div class="bench-model-card proposed">
           <div class="bench-badge" style="background:rgba(0,230,118,0.2); color:var(--accent-green); border:1px solid var(--accent-green);">Proposed System</div>
           <h3 style="font-size:15px; color:#fff;">AI DeepIMUNet + ES-IEKF</h3>
-          <p style="font-size:11px; color:var(--text-muted);">Multi-task 1D-CNN + GRU with Dynamic Q, ZUPT, and RTS Smoothing.</p>
+          <p style="font-size:11px; color:var(--text-muted);">Dynamic Q, ZUPT, and RTS Smoothing with Map Matching.</p>
           <table class="bench-metrics-table">
             <tr><td>Horizontal RMSE</td><td id="bProposedRmse" style="color:var(--accent-green);">1.42 m</td></tr>
             <tr><td>CEP50 (50% Error)</td><td id="bProposedCep50" style="color:var(--accent-green);">0.85 m</td></tr>
             <tr><td>CEP95 (95% Error)</td><td id="bProposedCep95" style="color:var(--accent-green);">1.95 m</td></tr>
             <tr><td>Max Tunnel Drift</td><td id="bProposedDrift" style="color:var(--accent-green);">2.80 m</td></tr>
-            <tr><td>Compute Latency</td><td>1.15 ms / step</td></tr>
             <tr><td>Overall Grade</td><td style="color:var(--accent-green);">EXCELLENT</td></tr>
           </table>
         </div>
 
-        <!-- Standard Kinematic EKF -->
         <div class="bench-model-card">
           <div class="bench-badge" style="background:rgba(255,214,0,0.2); color:var(--accent-yellow); border:1px solid var(--accent-yellow);">Industry Baseline</div>
           <h3 style="font-size:15px; color:#fff;">Standard Kinematic EKF</h3>
-          <p style="font-size:11px; color:var(--text-muted);">Fixed process noise matrix $Q$, without AI disturbance classification or ZUPT.</p>
+          <p style="font-size:11px; color:var(--text-muted);">Fixed process noise matrix $Q$, without AI disturbance classification.</p>
           <table class="bench-metrics-table">
             <tr><td>Horizontal RMSE</td><td id="bEkfRmse" style="color:var(--accent-yellow);">4.05 m</td></tr>
             <tr><td>CEP50 (50% Error)</td><td id="bEkfCep50" style="color:var(--accent-yellow);">2.25 m</td></tr>
             <tr><td>CEP95 (95% Error)</td><td id="bEkfCep95" style="color:var(--accent-yellow);">6.05 m</td></tr>
             <tr><td>Max Tunnel Drift</td><td id="bEkfDrift" style="color:var(--accent-yellow);">8.96 m</td></tr>
-            <tr><td>Compute Latency</td><td>0.95 ms / step</td></tr>
             <tr><td>Overall Grade</td><td style="color:var(--accent-yellow);">MODERATE</td></tr>
           </table>
         </div>
 
-        <!-- Raw IMU -->
         <div class="bench-model-card">
           <div class="bench-badge" style="background:rgba(255,61,113,0.2); color:var(--accent-red); border:1px solid var(--accent-red);">Unfiltered Baseline</div>
           <h3 style="font-size:15px; color:#fff;">Raw IMU Double Integration</h3>
@@ -355,119 +612,42 @@
             <tr><td>CEP50 (50% Error)</td><td id="bRawCep50" style="color:var(--accent-red);">64.2 m</td></tr>
             <tr><td>CEP95 (95% Error)</td><td id="bRawCep95" style="color:var(--accent-red);">214.8 m</td></tr>
             <tr><td>Max Tunnel Drift</td><td id="bRawDrift" style="color:var(--accent-red);">340.2 m</td></tr>
-            <tr><td>Compute Latency</td><td>0.05 ms / step</td></tr>
             <tr><td>Overall Grade</td><td style="color:var(--accent-red);">DIVERGENT</td></tr>
           </table>
         </div>
       </div>
 
-      <!-- Feature Matrix -->
-      <div class="oscilloscope-card" style="padding:16px;">
-        <h3 style="font-size:14px; font-weight:700; color:var(--text-main); margin-bottom:12px;">Technical Feature Matrix Across Regimes</h3>
-        <table class="bench-metrics-table" style="font-size:13px;">
-          <thead>
-            <tr style="color:var(--text-muted); text-align:left;">
-              <th style="padding-bottom:8px;">Evaluation Dimension</th>
-              <th style="padding-bottom:8px; color:var(--accent-green);">Proposed AI System</th>
-              <th style="padding-bottom:8px; color:var(--accent-yellow);">Standard EKF</th>
-              <th style="padding-bottom:8px; color:var(--accent-red);">Raw IMU</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr><td>Prolonged GNSS Blackout (> 2 km)</td><td style="color:var(--accent-green);">✓ Sub-3m bounded drift</td><td style="color:var(--accent-yellow);">⚠️ Drifts 8 - 15m</td><td style="color:var(--accent-red);">✗ Blows up (>300m)</td></tr>
-            <tr><td>Road Potholes &amp; Speed Bumps</td><td style="color:var(--accent-green);">✓ Dynamic Q expands to 5.5x</td><td style="color:var(--accent-yellow);">⚠️ Spurious shock injects velocity error</td><td style="color:var(--accent-red);">✗ Permanent speed bias</td></tr>
-            <tr><td>Red Light &amp; Stop Signs</td><td style="color:var(--accent-green);">✓ ZUPT + RTS Retrospective Smoothing</td><td style="color:var(--accent-yellow);">✗ Stationary creep</td><td style="color:var(--accent-red);">✗ Runaway acceleration</td></tr>
-            <tr><td>Tunnel Exit GNSS Handover</td><td style="color:var(--accent-green);">✓ Exponential Innovation Damping</td><td style="color:var(--accent-yellow);">⚠️ Map teleportation / snap</td><td style="color:var(--accent-red);">✗ No re-convergence</td></tr>
-            <tr><td>Driver Uncertainty Display</td><td style="color:var(--accent-green);">✓ Exact 95% Error Ellipses</td><td style="color:var(--accent-yellow);">⚠️ Fixed scalar covariance</td><td style="color:var(--accent-red);">✗ None</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
-  <!-- =========================================================================
-       VIEW 4: CUSTOM ROUTE & TUNNEL BUILDER
-       ========================================================================= -->
-  <div id="view-builder" class="tab-pane">
-    <div class="route-builder-container">
-      <!-- Controls Form -->
-      <div class="route-builder-form">
-        <div>
-          <h2 style="font-size:16px; font-weight:800; color:var(--text-main);">Custom Indian Route Builder</h2>
-          <p style="font-size:11px; color:var(--text-muted);">Generate on-the-fly custom driving scenarios with customizable GNSS blackout corridors and sensor noise.</p>
-        </div>
-
-        <!-- City Presets -->
-        <div class="form-group">
-          <label>Quick Indian City Corridor Presets:</label>
-          <div class="city-preset-pills">
-            <div class="city-preset-pill active" data-lat="18.9438" data-lon="72.8232" data-city="Mumbai" data-name="Mumbai Coastal Road">Mumbai Marine Drive</div>
-            <div class="city-preset-pill" data-lat="26.8890" data-lon="81.0560" data-city="Lucknow" data-name="Lucknow BBD Highway">Lucknow BBD Univ</div>
-            <div class="city-preset-pill" data-lat="28.6129" data-lon="77.2295" data-city="New Delhi" data-name="Pragati Maidan Tunnel">New Delhi Pragati</div>
-            <div class="city-preset-pill" data-lat="13.1986" data-lon="77.7066" data-city="Bengaluru" data-name="Airport Expressway">Bengaluru Airport</div>
-            <div class="city-preset-pill" data-lat="18.7562" data-lon="73.3421" data-city="Khandala" data-name="Khandala Ghat Tunnels">Pune-Mumbai Ghats</div>
-            <div class="city-preset-pill" data-lat="12.9716" data-lon="77.5946" data-city="Bengaluru" data-name="Bengaluru MG Road">Bengaluru Central</div>
-            <div class="city-preset-pill" data-lat="17.3850" data-lon="78.4867" data-city="Hyderabad" data-name="Hyderabad Outer Ring">Hyderabad ORR</div>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label>Route / Scenario Title:</label>
-          <input type="text" id="builderTitle" class="form-input" value="Custom Indian Highway Transit" />
-        </div>
-
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-          <div class="form-group">
-            <label>Start Latitude (°N):</label>
-            <input type="number" id="builderLat" class="form-input" step="0.0001" value="18.9438" />
-          </div>
-          <div class="form-group">
-            <label>Start Longitude (°E):</label>
-            <input type="number" id="builderLon" class="form-input" step="0.0001" value="72.8232" />
-          </div>
-        </div>
-
-        <div class="form-group">
-          <div style="display:flex; justify-content:space-between;">
-            <label>Tunnel Blackout Duration:</label>
-            <span id="builderTunnelVal" style="font-size:12px; font-weight:700; color:var(--accent-cyan);">45s (1.5 km)</span>
-          </div>
-          <input type="range" id="builderTunnelRange" class="form-range" min="15" max="90" step="5" value="45" />
-        </div>
-
-        <div class="form-group">
-          <div style="display:flex; justify-content:space-between;">
-            <label>Target Cruising Speed:</label>
-            <span id="builderSpeedVal" style="font-size:12px; font-weight:700; color:var(--accent-green);">60 km/h</span>
-          </div>
-          <input type="range" id="builderSpeedRange" class="form-range" min="30" max="120" step="5" value="60" />
-        </div>
-
-        <div class="form-group">
-          <div style="display:flex; justify-content:space-between;">
-            <label>Smartphone IMU Noise Multiplier:</label>
-            <span id="builderNoiseVal" style="font-size:12px; font-weight:700; color:var(--accent-yellow);">1.0x (Nominal)</span>
-          </div>
-          <input type="range" id="builderNoiseRange" class="form-range" min="0.5" max="3.0" step="0.1" value="1.0" />
-        </div>
-
-        <button id="btnGenerateCustom" class="btn btn-primary" style="padding:12px; font-size:14px; font-weight:700;">🚀 Generate &amp; Run Simulation</button>
-      </div>
-
-      <!-- Preview Console -->
-      <div style="padding:20px; display:flex; flex-direction:column; gap:16px; overflow-y:auto;">
+      <!-- Real-Time Oscilloscopes -->
+      <div class="lab-grid" style="margin-top:10px;">
         <div class="oscilloscope-card">
-          <h3 style="font-size:14px; font-weight:700; color:var(--text-main);">Simulation Generator Status</h3>
-          <p style="font-size:12px; color:var(--text-muted);">Once generated, your custom trajectory will be streamed immediately into the Live Cockpit and Oscilloscope Lab with complete Dead Reckoning fusion metrics.</p>
-          <div id="builderLog" class="api-code-box" style="margin-top:10px; height:320px;">[System ready for custom scenario generation]
-Select a preset above or input custom coordinates, then click 'Generate &amp; Run Simulation'.</div>
+          <div class="oscilloscope-header">
+            <div class="oscilloscope-title">📊 3-Axis Accelerometer (m/s²)</div>
+            <div class="oscilloscope-legend">
+              <span class="oscilloscope-legend-item"><div class="osc-dot" style="background:#00f2fe;"></div> Ax</span>
+              <span class="oscilloscope-legend-item"><div class="osc-dot" style="background:#00e676;"></div> Ay</span>
+              <span class="oscilloscope-legend-item"><div class="osc-dot" style="background:#ff3d71;"></div> Az</span>
+            </div>
+          </div>
+          <canvas id="accelCanvas" class="oscilloscope-canvas" width="600" height="160"></canvas>
+        </div>
+
+        <div class="oscilloscope-card">
+          <div class="oscilloscope-header">
+            <div class="oscilloscope-title">🔄 3-Axis Gyroscope (rad/s)</div>
+            <div class="oscilloscope-legend">
+              <span class="oscilloscope-legend-item"><div class="osc-dot" style="background:#00f2fe;"></div> Wx</span>
+              <span class="oscilloscope-legend-item"><div class="osc-dot" style="background:#ffd600;"></div> Wy</span>
+              <span class="oscilloscope-legend-item"><div class="osc-dot" style="background:#a78bfa;"></div> Wz</span>
+            </div>
+          </div>
+          <canvas id="gyroCanvas" class="oscilloscope-canvas" width="600" height="160"></canvas>
         </div>
       </div>
     </div>
   </div>
 
   <!-- =========================================================================
-       VIEW 5: DEVELOPER API & DATA HUB
+       VIEW 6: DEVELOPER API & DATA EXPORT HUB
        ========================================================================= -->
   <div id="view-apihub" class="tab-pane">
     <div class="api-hub-container">
@@ -481,7 +661,6 @@ Select a preset above or input custom coordinates, then click 'Generate &amp; Ru
           <button id="btnExportCSV" class="btn" style="padding:10px; font-weight:700; background:#1b2845;">📊 Download Telemetry CSV (.csv)</button>
           <button id="btnExportBenchmarks" class="btn" style="padding:10px; font-weight:700; background:#223254;">📈 Download Benchmark Summary (.json)</button>
         </div>
-        <p style="font-size:11px; color:var(--text-muted); margin-top:6px;">Compatible with QGIS, Google Earth Pro, MATLAB, Python GeoPandas, and Tableau.</p>
       </div>
 
       <!-- WebSocket Live Stream Tester -->
@@ -502,16 +681,13 @@ Select a preset above or input custom coordinates, then click 'Generate &amp; Ru
       <!-- REST API Quick Explorer -->
       <div class="api-card" style="grid-column: 1 / -1;">
         <h3 style="font-size:15px; font-weight:700; color:var(--text-main);">🔗 REST API Endpoint Explorer</h3>
-        <p style="font-size:12px; color:var(--text-muted);">Click any endpoint below to inspect real-time JSON responses directly from the FastAPI microservice:</p>
-        
         <div style="display:flex; gap:10px; flex-wrap:wrap; margin:10px 0;">
+          <button class="btn btn-sm btn-api-test" data-url="/api/solution/architecture">GET /api/solution/architecture</button>
           <button class="btn btn-sm btn-api-test" data-url="/api/health">GET /api/health</button>
           <button class="btn btn-sm btn-api-test" data-url="/api/maps/config">GET /api/maps/config</button>
           <button class="btn btn-sm btn-api-test" data-url="/api/simulation/scenarios">GET /api/simulation/scenarios</button>
           <button class="btn btn-sm btn-api-test" data-url="/api/benchmarks/summary?scenario=mumbai_tunnel">GET /api/benchmarks/summary</button>
-          <button class="btn btn-sm btn-api-test" data-url="/api/maps/reverse-geocode?lat=18.9438&lon=72.8232">GET /api/maps/reverse-geocode</button>
         </div>
-
         <div id="apiResponseBox" class="api-code-box" style="height:240px;">Select an endpoint above to view live JSON response...</div>
       </div>
     </div>
